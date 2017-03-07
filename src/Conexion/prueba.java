@@ -38,6 +38,7 @@ public class prueba extends javax.swing.JFrame {
         año = new javax.swing.JTextField();
         mes = new javax.swing.JTextField();
         dia = new javax.swing.JTextField();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -54,6 +55,13 @@ public class prueba extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setText("Consultar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -64,7 +72,9 @@ public class prueba extends javax.swing.JFrame {
                         .addGap(108, 108, 108)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(descripcion)))
+                            .addComponent(descripcion))
+                        .addGap(44, 44, 44)
+                        .addComponent(jButton2))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(59, 59, 59)
                         .addComponent(año, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -72,7 +82,7 @@ public class prueba extends javax.swing.JFrame {
                         .addComponent(mes, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(14, 14, 14)
                         .addComponent(dia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(198, Short.MAX_VALUE))
+                .addContainerGap(98, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -80,12 +90,15 @@ public class prueba extends javax.swing.JFrame {
                 .addGap(65, 65, 65)
                 .addComponent(descripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(año, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(dia, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(año, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(mes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(16, 16, 16)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
                 .addContainerGap(138, Short.MAX_VALUE))
         );
 
@@ -93,8 +106,9 @@ public class prueba extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       conexion conectar = new conexion();
-       Connection conexion = conectar.Conectar();
+       ConexionConMariaDB conectar = new ConexionConMariaDB("prueba", "usuario", "usuario");
+       Connection conexion = conectar.getConexion();
+        System.out.println("Conexion = "+conexion);
        String contenido = descripcion.getText();
        String año = this.año.getText();
        String mes = this.mes.getText();
@@ -102,16 +116,18 @@ public class prueba extends javax.swing.JFrame {
        String fecha = año+"/"+mes+"/"+dia;
        String instruccion = "";
        
-       instruccion = "INSERT INTO telefono(Numero) VALUES ('77848372')";
+       instruccion = "INSERT INTO usuario(NombreUsuario, Contrasenia) VALUES ('usuario2', 'user2c')";
         try {
            PreparedStatement  pst = conexion.prepareStatement(instruccion);
            
            int a = pst.executeUpdate();
+           pst.close();
            if (a>0){
                System.out.println("Guardado");
            }
         } catch (SQLException ex) {
             Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error en SQLException: "+ex.getMessage());
         }
        
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -119,6 +135,22 @@ public class prueba extends javax.swing.JFrame {
     private void diaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_diaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_diaActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        ConexionConMariaDB conectar = new ConexionConMariaDB("prueba", "usuario", "usuario");
+        Connection conexion = conectar.getConexion();
+        ResultSet resultado = null;
+        try {
+            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            resultado = sentencia.executeQuery("SELECT * FROM Usuario");
+            System.out.println("Id:\tUsuario:\tContraseña:");
+            while (resultado.next()) {
+                System.out.println(""+resultado.getBigDecimal("Id")+"\t"+resultado.getString("NombreUsuario")+"\t"+resultado.getString("Contrasenia"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -160,6 +192,7 @@ public class prueba extends javax.swing.JFrame {
     private javax.swing.JTextField descripcion;
     private javax.swing.JTextField dia;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JTextField mes;
     // End of variables declaration//GEN-END:variables
 }
