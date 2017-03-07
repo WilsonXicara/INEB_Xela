@@ -20,7 +20,7 @@ public class ConexionConMariaDB {
      * en los registros de usuarios de MariaDB). Si la conexión es exitosa, se inicializa 'conexion' como el objeto que
      * permitirá la conexión; de lo contrario, 'conexion' queda nulo.
      * 
-     * ¡OJO!
+     * ¡NOTA!
      * Para poder realizar la conexión entre MariaDB y Java se necesita hacer lo siguiente:
      * -> Añadir como librería (Add Library...) el archivo 'C:\Program Files\NetBeans 8.1\ide\modules\ext\mysql-connector-java-5.1.23-bin.jar'
      * 
