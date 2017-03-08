@@ -6,6 +6,8 @@
 package Ventanas;
 
 import java.sql.Connection;
+import javax.swing.JOptionPane;
+import java.util.Calendar;
 
 /**
  *
@@ -16,12 +18,14 @@ public class ModuloPrestamo extends javax.swing.JFrame {
     /**
      * Creates new form ModuloPrestamo
      */
+    Connection conexcion;
     public ModuloPrestamo() {
         initComponents();
     }
     
     public ModuloPrestamo(Connection conec){
         initComponents();
+        conexcion = conec;
     }
 
     /**
@@ -100,18 +104,38 @@ public class ModuloPrestamo extends javax.swing.JFrame {
 
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jButton1.setText("Prestamo");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jButton2.setText("Cancelar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jButton3.setText("Crear Nuevo Paquete");
 
         jButton4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jButton4.setText("Listado de Prestamos");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jButton5.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jButton5.setText("Listado Paquetes");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jLabel10.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel10.setText("Fecha de Pago");
@@ -222,6 +246,51 @@ public class ModuloPrestamo extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        new ListadoPaquetes(conexcion).setVisible(true);                    //Despliega la ventana ListadoPaquetes
+        //Cerrar o minimizar ventana ModuloPrestamos
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        new ListadoPrestamos(conexcion).setVisible(true);                   //Despliega la ventana ListadoPrestamos
+        //Cerrar o minimizar ventana ModuloPrestamos
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        NoFactura.setText("");
+        CodigoPaquete.setText("");
+        CodigoEstudiante.setText("");
+        NombreEstudiante.setText("");
+        ApellidosEstudiante.setText("");
+        Grado.setText("");
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String NoFac, CodPack, CodEst, NomEst, ApeEst, Grad, Fech, Instruccion = "";
+        if((NoFactura.getText().equals(""))||(CodigoPaquete.getText().equals(""))||(CodigoEstudiante.getText().equals(""))||(NombreEstudiante.getText().equals(""))||(ApellidosEstudiante.getText().equals(""))||(Grado.getText().equals(""))){
+            JOptionPane.showMessageDialog(null, "¡Hay Campos Vacios!");
+        }
+        else{
+            NoFac = NoFactura.getText();
+            CodPack = CodigoPaquete.getText();
+            CodEst = CodigoEstudiante.getText();
+            NomEst = NombreEstudiante.getText();
+            ApeEst = ApellidosEstudiante.getText();
+            Grad = Grado.getText();
+            Calendar fechita = Calendar.getInstance();
+            Fech = fechita.get(Calendar.YEAR) + "/" + fechita.get(Calendar.MONTH) + "/" + fechita.get(Calendar.DATE);
+            //Condicion que si el CodigoEstudiante no existe en la base arrojar un mensaje
+            //Insertamos en la base
+            //Instruccion = "INSERT INTO estudiante(Nombre,Apellido,Telefono) VALUES ('Gordito', 'Gordito','54979898')";
+            
+            
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
