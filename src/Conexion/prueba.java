@@ -145,17 +145,7 @@ public class prueba extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         ConexionConMariaDB conectar = new ConexionConMariaDB();
         Connection conexion = conectar.getConexion();
-        ResultSet resultado = null;
-        try {
-            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            resultado = sentencia.executeQuery("SELECT * FROM estudiante");
-            System.out.println("ID:\tNombre:\tApellidos:\t:Telefono");
-            while (resultado.next()) {
-                System.out.println(""+resultado.getBigDecimal("Id")+"\t"+resultado.getString("Nombre")+"\t"+resultado.getString("Apellido")+"\t"+resultado.getString("Telefono"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        new Prueba2(conexion).setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**

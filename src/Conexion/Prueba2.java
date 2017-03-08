@@ -5,6 +5,12 @@
  */
 package Conexion;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.sql.*;
+
 /**
  *
  * @author SERGIO
@@ -14,10 +20,26 @@ public class Prueba2 extends javax.swing.JFrame {
     /**
      * Creates new form Prueba2
      */
+    Connection conexcion;
+    
     public Prueba2() {
         initComponents();
     }
-
+    public Prueba2(Connection conec){
+        initComponents();
+        conexcion = conec;
+        ResultSet resultado = null;
+        try {
+            Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            resultado = sentencia.executeQuery("SELECT * FROM estudiante");
+            System.out.println("ID:\tNombre:\tApellidos:\t:Telefono");
+            while (resultado.next()) {
+                System.out.println(""+resultado.getString("Nombre")+"\t"+resultado.getString("Apellido")+"\t"+resultado.getString("Telefono"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
