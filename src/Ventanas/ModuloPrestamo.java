@@ -326,7 +326,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             Hora = fechita.get(Calendar.HOUR) +":" + fechita.get(Calendar.MINUTE);
             //Condicion que si el CodigoEstudiante no existe en la base arrojar un mensaje
             //Insertamos en la base
-            Instruccion = "INSERT INTO paquetelibro(Codigo,Descripcion) VALUES (" + CodPack + "," + Desc + ");" ; //Insercion a la Tabla PaqueteLibro
+            //Instruccion = "INSERT INTO paquetelibro(Codigo,Descripcion) VALUES (" + CodPack + "," + Desc + ");" ; //Insercion a la Tabla PaqueteLibro
             Instruccion2 = "INSERT INTO prestamo(PaqueteLibro_ID,Estudiante_ID,CodigoBoleta,FechaPago,Monto) VALUES (Estudiante_ID" + NoFac + "," + Fech + " " + Hora + "," + Efectivo + ");"; //Insercion a la Tabla Prestamos
             try {
                 PreparedStatement  pst = conexcion.prepareStatement(Instruccion);
