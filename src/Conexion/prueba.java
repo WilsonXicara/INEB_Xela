@@ -145,7 +145,13 @@ public class prueba extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         ConexionConMariaDB conectar = new ConexionConMariaDB();
         Connection conexion = conectar.getConexion();
-        new Prueba2(conexion).setVisible(true);
+        /*
+        Se instancia el objeto que es Prueba2 la cual es un objeto de tipo ventana. Se le manda como parametro el objeto de tipo Connection el cual es la conexcion
+        a la base de datos.
+        El .setVisible(true) es para que esa ventana se muestre visible.
+        Nota: Ver constructor de la Ventana Prueba2
+        */
+        new Prueba2(conexion).setVisible(true);                                
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
