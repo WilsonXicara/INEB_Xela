@@ -5,9 +5,14 @@
  */
 package Ventanas;
 
+import Conexion.prueba;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -60,6 +65,10 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
         FechaPago = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        Descripcion = new javax.swing.JTextField();
+        jLabel12 = new javax.swing.JLabel();
+        Monto = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -143,14 +152,29 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         FechaPago.setEditable(false);
         FechaPago.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
+        jLabel11.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel11.setText("Descripción del Paquete");
+
+        Descripcion.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
+        jLabel12.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel12.setText("Monto (Q)");
+
+        Monto.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap(94, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(95, 95, 95)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(36, 36, 36)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(206, 206, 206))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel7)
@@ -162,7 +186,9 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                                     .addComponent(jLabel3)
                                     .addComponent(jLabel5)
                                     .addComponent(jLabel6)))
-                            .addComponent(jLabel10))
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel11)
+                            .addComponent(jLabel12))
                         .addGap(29, 29, 29)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(CodigoPaquete)
@@ -172,14 +198,10 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                             .addComponent(ApellidosEstudiante)
                             .addComponent(Grado)
                             .addComponent(jSeparator1)
-                            .addComponent(FechaPago, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(161, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(36, 36, 36)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(206, 206, 206)))
+                            .addComponent(FechaPago, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                            .addComponent(Descripcion)
+                            .addComponent(Monto))
+                        .addGap(89, 89, 89)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -204,19 +226,27 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                         .addGap(88, 88, 88)
                         .addComponent(jLabel9))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(96, 96, 96)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(NoFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton3))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(96, 96, 96)
+                                .addComponent(jButton3))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(54, 54, 54)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel2)
+                                    .addComponent(NoFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel7)
+                                    .addComponent(CodigoPaquete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel10)
+                                    .addComponent(FechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addComponent(CodigoPaquete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel10)
-                            .addComponent(FechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel12)
+                            .addComponent(Monto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel8)
@@ -237,11 +267,15 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(Grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel6))
-                        .addGap(59, 59, 59)
+                        .addGap(21, 21, 21)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(Descripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(35, 35, 35)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton1)
                             .addComponent(jButton2))
-                        .addGap(0, 62, Short.MAX_VALUE))))
+                        .addGap(0, 36, Short.MAX_VALUE))))
         );
 
         pack();
@@ -267,12 +301,15 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         NombreEstudiante.setText("");
         ApellidosEstudiante.setText("");
         Grado.setText("");
+        Descripcion.setText("");
+        Monto.setText("");
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        String NoFac, CodPack, CodEst, NomEst, ApeEst, Grad, Fech, Instruccion = "";
-        if((NoFactura.getText().equals(""))||(CodigoPaquete.getText().equals(""))||(CodigoEstudiante.getText().equals(""))||(NombreEstudiante.getText().equals(""))||(ApellidosEstudiante.getText().equals(""))||(Grado.getText().equals(""))){
+        String NoFac, CodPack, CodEst, NomEst, ApeEst, Grad, Fech, Hora,Desc, Instruccion = "", Instruccion2 = "";
+        float Efectivo;
+        if((NoFactura.getText().equals(""))||(CodigoPaquete.getText().equals(""))||(CodigoEstudiante.getText().equals(""))||(NombreEstudiante.getText().equals(""))||(ApellidosEstudiante.getText().equals(""))||(Grado.getText().equals(""))||(Monto.getText().equals(""))){
             JOptionPane.showMessageDialog(null, "¡Hay Campos Vacios!");
         }
         else{
@@ -283,10 +320,26 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             ApeEst = ApellidosEstudiante.getText();
             Grad = Grado.getText();
             Calendar fechita = Calendar.getInstance();
+            Desc = Descripcion.getText();
             Fech = fechita.get(Calendar.YEAR) + "/" + fechita.get(Calendar.MONTH) + "/" + fechita.get(Calendar.DATE);
+            Efectivo = Float.parseFloat(Monto.getText());
+            Hora = fechita.get(Calendar.HOUR) +":" + fechita.get(Calendar.MINUTE);
             //Condicion que si el CodigoEstudiante no existe en la base arrojar un mensaje
             //Insertamos en la base
-            //Instruccion = "INSERT INTO estudiante(Nombre,Apellido,Telefono) VALUES ('Gordito', 'Gordito','54979898')";
+            Instruccion = "INSERT INTO paquetelibro(Codigo,Descripcion) VALUES (" + CodPack + "," + Desc + ");" ; //Insercion a la Tabla PaqueteLibro
+            Instruccion2 = "INSERT INTO prestamo(PaqueteLibro_ID,Estudiante_ID,CodigoBoleta,FechaPago,Monto) VALUES (Estudiante_ID" + NoFac + "," + Fech + " " + Hora + "," + Efectivo + ");"; //Insercion a la Tabla Prestamos
+            try {
+                PreparedStatement  pst = conexcion.prepareStatement(Instruccion);
+                int a = pst.executeUpdate();
+                pst.close();
+           if (a>0){
+               System.out.println("Guardado");
+               JOptionPane.showMessageDialog(null, "¡Se ha compleado el Prestamo Exitosamente!");
+           }
+        } catch (SQLException ex) {
+            Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error en SQLException: "+ex.getMessage());
+        }
             
             
         }
@@ -331,8 +384,10 @@ public class ModuloPrestamo extends javax.swing.JFrame {
     private javax.swing.JTextField ApellidosEstudiante;
     private javax.swing.JTextField CodigoEstudiante;
     private javax.swing.JTextField CodigoPaquete;
+    private javax.swing.JTextField Descripcion;
     private javax.swing.JTextField FechaPago;
     private javax.swing.JTextField Grado;
+    private javax.swing.JTextField Monto;
     private javax.swing.JTextField NoFactura;
     private javax.swing.JTextField NombreEstudiante;
     private javax.swing.JButton jButton1;
@@ -342,6 +397,8 @@ public class ModuloPrestamo extends javax.swing.JFrame {
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
