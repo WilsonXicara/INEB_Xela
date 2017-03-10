@@ -80,10 +80,11 @@ public class prueba extends javax.swing.JFrame {
                 .addGap(65, 65, 65)
                 .addComponent(descripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(año, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(dia, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(año, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(mes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(16, 16, 16)
                 .addComponent(jButton1)
                 .addContainerGap(138, Short.MAX_VALUE))
@@ -94,7 +95,7 @@ public class prueba extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
        conexion conectar = new conexion();
-       Connection conexion = conectar.Conectar();
+       Connection conexion = conectar.Conectar(this);
        String contenido = descripcion.getText();
        String año = this.año.getText();
        String mes = this.mes.getText();
@@ -105,7 +106,7 @@ public class prueba extends javax.swing.JFrame {
        instruccion = "INSERT INTO telefono(Numero) VALUES ('77848372')";
         try {
            PreparedStatement  pst = conexion.prepareStatement(instruccion);
-           
+           pst.executeUpdate();
            int a = pst.executeUpdate();
            if (a>0){
                System.out.println("Guardado");
