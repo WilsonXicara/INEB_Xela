@@ -28,11 +28,11 @@ public class ConexionConMariaDB {
      * @param nombreUsuario nombre de usuario que tiene permiso de acceder a la Base de Datos 'nombreDB'
      * @param contraseñaUsuario  contraseña de 'nombreUsuario'
      */
-    public ConexionConMariaDB(String nombreBD, String nombreUsuario, String contraseñaUsuario) {
+    public ConexionConMariaDB() {
         conexion = null;
         try {
             Class.forName("org.gjt.mm.mysql.Driver");
-            conexion = DriverManager.getConnection("jdbc:mysql://localhost/"+nombreBD, nombreUsuario, contraseñaUsuario);
+            conexion = DriverManager.getConnection("jdbc:mysql://localhost/"+ "ejemplo", "root", "sergio2710");
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println("Fallo. Error en: "+e.getMessage());
         }
