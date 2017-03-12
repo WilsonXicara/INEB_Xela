@@ -34,6 +34,7 @@ public class Principal extends javax.swing.JFrame {
      * Creates new form Principal
      */
     Connection conexion;
+    Ciclo_Escolar ciclo;
     public static final String SEPARADOR = System.getProperty("file.separator");
     public static final String CARPETA_PRINCIPAL =  System.getProperty("user.home")+ SEPARADOR +"BD";
     public static final String archivo = CARPETA_PRINCIPAL+SEPARADOR+"datos";
@@ -182,12 +183,19 @@ public class Principal extends javax.swing.JFrame {
             String usuario_entrada = this.usuario.getText();
             String contraseña;
             String tipo;
-            ResultSet b = a.executeQuery("SELECT Nombre, Contraseña, Tipo FROM usuarios WHERE Nombre = '"+usuario_entrada+"'");
+            ResultSet b = a.executeQuery("SELECT* FROM usuarios WHERE NombreUsuario = '"+ usuario_entrada+"'");
             if(b.next()){
-            contraseña = b.getString(2);
-            tipo = b.getString(3);
-            if(contraseña_entrada.equals(contraseña)) JOptionPane.showMessageDialog(this, "Datos correctos", "Correcto", JOptionPane.INFORMATION_MESSAGE, null);
-            else JOptionPane.showMessageDialog(this, "Contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE, null);
+            contraseña = b.getString(3);
+            tipo = b.getString(4);
+            if(contraseña_entrada.equals(contraseña)){
+                ciclo = new Ciclo_Escolar(conexion);
+                ciclo.setVisible(true);
+            }
+            else {
+                JOptionPane.showMessageDialog(this, "Contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE, null);
+                this.contraseña.setText("");
+                this.usuario.setText("");
+            }
             }
             else{
                   JOptionPane.showMessageDialog(this, "El usuario no existe", "Error", JOptionPane.ERROR_MESSAGE, null);
