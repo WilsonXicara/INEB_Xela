@@ -5,6 +5,9 @@
  */
 package Modulos;
 
+import Tipos_tablas.No_editable;
+import Ventanas_Modulo_Ciclo_Escolar.Crear_Grados;
+import java.awt.Frame;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,6 +52,7 @@ public class Ciclo_Escolar extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenuItem4 = new javax.swing.JMenuItem();
         jLabel1 = new javax.swing.JLabel();
         ciclo = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
@@ -62,6 +66,12 @@ public class Ciclo_Escolar extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
+
+        jMenuItem4.setText("jMenuItem4");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -90,6 +100,11 @@ public class Ciclo_Escolar extends javax.swing.JFrame {
 
             }
         ));
+        Cursos.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                CursosKeyTyped(evt);
+            }
+        });
         jScrollPane4.setViewportView(Cursos);
 
         Grados.setModel(new javax.swing.table.DefaultTableModel(
@@ -103,6 +118,11 @@ public class Ciclo_Escolar extends javax.swing.JFrame {
 
             }
         ));
+        Grados.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                GradosKeyPressed(evt);
+            }
+        });
         jScrollPane3.setViewportView(Grados);
 
         Menu_crear.setText("Crear");
@@ -111,12 +131,35 @@ public class Ciclo_Escolar extends javax.swing.JFrame {
         Menu_crear.add(jMenuItem1);
 
         jMenuItem2.setText("Grado");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         Menu_crear.add(jMenuItem2);
 
         jMenuItem3.setText("Curso");
         Menu_crear.add(jMenuItem3);
 
         jMenuBar2.add(Menu_crear);
+
+        jMenu1.setText("Modificar");
+
+        jMenuItem5.setText("Ciclo Escolar");
+        jMenu1.add(jMenuItem5);
+
+        jMenuItem6.setText("Grado");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem6);
+
+        jMenuItem7.setText("Curso");
+        jMenu1.add(jMenuItem7);
+
+        jMenuBar2.add(jMenu1);
 
         setJMenuBar(jMenuBar2);
 
@@ -127,11 +170,11 @@ public class Ciclo_Escolar extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(97, 97, 97)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(130, 130, 130)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 160, Short.MAX_VALUE)
@@ -192,6 +235,25 @@ public class Ciclo_Escolar extends javax.swing.JFrame {
         
     }//GEN-LAST:event_cicloItemStateChanged
 
+    private void CursosKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CursosKeyTyped
+        evt.consume();
+    }//GEN-LAST:event_CursosKeyTyped
+
+    private void GradosKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_GradosKeyPressed
+        evt.consume();
+    }//GEN-LAST:event_GradosKeyPressed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        this.setVisible(false);
+        Crear_Grados a = new Crear_Grados(new Frame(),true,base);
+        a.setVisible(true);
+        this.setVisible(true);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -243,7 +305,7 @@ public class Ciclo_Escolar extends javax.swing.JFrame {
         }
     }
     public void Tabla_Grados(ResultSet consulta) throws SQLException{
-        DefaultTableModel tabla = new DefaultTableModel();
+        No_editable tabla = new No_editable();
         tabla.addColumn("Nombre");
         tabla.addColumn("Sección");
         String[] fila = new String[2];
@@ -255,12 +317,13 @@ public class Ciclo_Escolar extends javax.swing.JFrame {
             fila[1] = consulta.getString(2);
             tabla.addRow(fila);
         }
+        tabla.isCellEditable(0, 0);
         Grados.setModel(tabla);
     }
     
     public void Tabla_cursos(ResultSet consulta) throws SQLException{
         Statement a = base.createStatement();
-        DefaultTableModel tabla = new DefaultTableModel();
+        No_editable tabla = new No_editable();
         String[] fila = new String[2];
         String catedratico;
         // Se ingresa la primera fila ya que consulta si contiene algo
@@ -304,10 +367,15 @@ public class Ciclo_Escolar extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     // End of variables declaration//GEN-END:variables
