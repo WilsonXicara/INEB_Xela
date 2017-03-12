@@ -2,16 +2,11 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-<<<<<<< HEAD
         <group>
-            <file>file:/C:/Users/SERGIO/Documents/GitHub/INEB_Xela/src/Ventanas/ListadoPrestamos.java</file>
-            <file>file:/C:/Users/SERGIO/Documents/GitHub/INEB_Xela/src/Ventanas/ModuloPrestamo.java</file>
-            <file>file:/C:/Users/SERGIO/Documents/GitHub/INEB_Xela/src/Ventanas/ModuloPaquetes.java</file>
             <file>file:/C:/Users/SERGIO/Documents/GitHub/INEB_Xela/src/Conexion/prueba.java</file>
+            <file>file:/C:/Users/SERGIO/Documents/GitHub/INEB_Xela/src/Ventanas/ListadoPrestamos.java</file>
             <file>file:/C:/Users/SERGIO/Documents/GitHub/INEB_Xela/src/Ventanas/ListadoPaquetes.java</file>
+            <file>file:/C:/Users/SERGIO/Documents/GitHub/INEB_Xela/src/Ventanas/ModuloPrestamo.java</file>
         </group>
-=======
-        <group/>
->>>>>>> origin/Sergio
     </open-files>
 </project-private>
