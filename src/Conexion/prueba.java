@@ -105,6 +105,7 @@ public class prueba extends javax.swing.JFrame {
                     .addComponent(jLabel1))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+
                     .addComponent(jLabel2)
                     .addComponent(apellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(20, 20, 20)
@@ -112,24 +113,27 @@ public class prueba extends javax.swing.JFrame {
                     .addComponent(jLabel4)
                     .addComponent(telefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(126, 126, 126))
+
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+
        ConexionConMariaDB conectar = new ConexionConMariaDB();
        Connection conexion = conectar.getConexion();
         System.out.println("Conexion = "+conexion);
        String apellidos = apellido.getText();
        String nombres = this.nombre.getText();
        String telefonos = this.telefono.getText();
+
        String instruccion = "";
        
        instruccion = "INSERT INTO estudiante(Nombre,Apellido,Telefono) VALUES ('Gordito', 'Gordito','54979898')";
         try {
            PreparedStatement  pst = conexion.prepareStatement(instruccion);
-           
+           pst.executeUpdate();
            int a = pst.executeUpdate();
            pst.close();
            if (a>0){
