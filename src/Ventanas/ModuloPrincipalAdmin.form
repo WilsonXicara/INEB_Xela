@@ -110,12 +110,12 @@
               </Group>
               <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="Usuario" alignment="0" max="32767" attributes="0"/>
                   <Component id="Nombre" alignment="0" max="32767" attributes="0"/>
                   <Component id="Direccion" alignment="0" max="32767" attributes="0"/>
                   <Component id="DPI" alignment="0" pref="280" max="32767" attributes="0"/>
+                  <Component id="Usuario" alignment="0" max="32767" attributes="0"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="36" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jLabel7" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -124,10 +124,10 @@
               </Group>
               <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="Sexo" max="32767" attributes="0"/>
                   <Component id="Municipio" alignment="0" max="32767" attributes="0"/>
                   <Component id="Telefono" alignment="0" max="32767" attributes="0"/>
                   <Component id="Tipo" alignment="0" pref="280" max="32767" attributes="0"/>
+                  <Component id="Sexo" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
           </Group>
@@ -137,7 +137,7 @@
               <EmptySpace max="-2" attributes="0"/>
           </Group>
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="304" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
