@@ -293,7 +293,6 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         NombreEstudiante.setText("");
         ApellidosEstudiante.setText("");
         Grado.setText("");
-        Descripcion.setText("");
         Monto.setText("");
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -312,7 +311,6 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             ApeEst = ApellidosEstudiante.getText();
             Grad = Grado.getText();
             Calendar fechita = Calendar.getInstance();
-            Desc = Descripcion.getText();
             Fech = fechita.get(Calendar.YEAR) + "/" + fechita.get(Calendar.MONTH) + "/" + fechita.get(Calendar.DATE);
             Efectivo = Float.parseFloat(Monto.getText());
             Hora = fechita.get(Calendar.HOUR) +":" + fechita.get(Calendar.MINUTE);
