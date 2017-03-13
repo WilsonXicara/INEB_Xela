@@ -25,6 +25,12 @@ public class Prueba2 extends javax.swing.JFrame {
     public Prueba2() {
         initComponents();
     }
+    /*
+    Constructor que debemos crear, este constructor recibe como parametro un objeto que tiene la conexcion con la base de datos.
+    El initComponents es para iniciar todos los componentes de esta ventana.
+    Para trabajar con el objeto se debe llamar a este constructor y no al otro (El que no tiene parametros).
+    Nota: Ver boton en Ventana prueba donde se llama a este constructor.
+    */
     public Prueba2(Connection conec){
         initComponents();
         conexcion = conec;
