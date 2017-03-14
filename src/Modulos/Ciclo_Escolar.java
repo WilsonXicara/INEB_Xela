@@ -252,6 +252,7 @@ public class Ciclo_Escolar extends javax.swing.JFrame {
         Crear_Grados a = new Crear_Grados(new Frame(),true,base);
         a.setVisible(true);
         this.setVisible(true);
+        System.out.println("hola");
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**
