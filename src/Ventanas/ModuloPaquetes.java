@@ -302,15 +302,18 @@ public class ModuloPaquetes extends javax.swing.JFrame {
                 if(resultado.next()==false){
                     JOptionPane.showMessageDialog(null, "¡El paquete " + CodPack + " No Existe!");
                 }
-                else if (resultado2.next() == false){
-                    JOptionPane.showMessageDialog(null, "¡El paquete " + CodPack + " No Existe!");
+                //Condicion para verificar que un libro sea nuevo o no
+                else if (resultado2.next() != false){
+                    JOptionPane.showMessageDialog(null, "¡El Libro " + CodLibro + " Ya Existe!");
                 }
+                //Si ninguna de las dos se cumple, el paquete existe y el libro es nuevo
                 else{
-                    if(CantLibros < 5){
-                        
+                    //Condicion para verificar que un libro aun pueda contener libros
+                    if(CantLibros < 4){
+                        Instruccion = "INSERT INTO Libro (Codigo,Nombre,Autor,Editorial,Estado,PaqueteLibro_Codigo) VALUES (" + "'" + CodLibro + "'" + "," + "'" + Nom + "'" + "," + "'" + Aut + "'" + "," + "'" + Edit + "'" + "," + "'" + EstadoL + "'" + "," + "'" + CodPack + ");";
                     }
                     else{
-                      JOptionPane.showMessageDialog(null, "¡El paquete " + CodPack + " No Existe!");  
+                      JOptionPane.showMessageDialog(null, "¡El paquete ya contiene los 4 libros!");  
                     }
                 }
             } catch (SQLException e) {
@@ -330,7 +333,7 @@ public class ModuloPaquetes extends javax.swing.JFrame {
             resultado = sentencia.executeQuery("SELECT * FROM PaqueteLibro WHERE Codigo = " + CodPack + ";");
             //Condicion que me verifica si no existe un paquete libro con el mismo codigo
             if(resultado.next() == false){  //Si no existe entonces creará un paquete con ese codigo
-                Instruccion = "INSERT INTO PaqueteLibro (Codigo, Descripcion) VALUES (" + CodPack + "," + Descrip + ");";
+                Instruccion = "INSERT INTO PaqueteLibro (Codigo, Descripcion) VALUES (" + "'" + CodPack + "'"+ "," + "'" + Descrip + "'" + ");";
                 try {
                     PreparedStatement  pst = conexcion.prepareStatement(Instruccion);
                     int a = pst.executeUpdate();

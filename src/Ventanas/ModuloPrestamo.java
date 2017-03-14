@@ -333,7 +333,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                 }
                 else{
                     //Concatenamos la instrucción para insertar a la tabla prestamo.
-                    Instruccion = "INSERT INTO prestamo(PaqueteLibro_ID,Estudiante_ID,CodigoBoleta,FechaPago,Monto) VALUES ("+ CodPack + ","+ CodEst+ "," + NoFac + "," + Fech + " " + Hora + "," + Efectivo + ");"; //Insercion a la Tabla Prestamos
+                    Instruccion = "INSERT INTO prestamo(PaqueteLibro_ID,Estudiante_ID,CodigoBoleta,FechaPago,Monto) VALUES ("+ CodPack + "," + CodEst +  "," + "'" + NoFac + "'" + "," + "'" + Fech + " " + Hora + "'" + "," + Efectivo + ");"; //Insercion a la Tabla Prestamos
                      //Insertamos en la base
                     try {
                         PreparedStatement  pst = conexcion.prepareStatement(Instruccion);
