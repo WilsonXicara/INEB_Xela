@@ -326,14 +326,14 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                 Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 resultado = sentencia.executeQuery("SELECT * FROM prestamo WHERE PaqueteLibro_ID = " + CodPack + ";");
                 resultado2 = sentencia.executeQuery("SELECT * FROM estudiante WHERE CodigoPersonal = " + CodEst + ";");
-                resultado.next();//Pendiente
-                resultado2.next();//pendiente
-                if((resultado == null)||(resultado2 == null)){
+                //Condicion que si el CodigoEstudiante no existe en la base arrojar un mensaje
+                //Condicion si el CodigoPaquete no existe
+                if((resultado.next() == false)||(resultado2.next() == false)){
                     JOptionPane.showMessageDialog(null, "Hay Datos incorrectos");
                 }
                 else{
                     //Concatenamos la instrucción para insertar a la tabla prestamo.
-                    Instruccion = "INSERT INTO prestamo(PaqueteLibro_ID,Estudiante_ID,CodigoBoleta,FechaPago,Monto) VALUES ("+ resultado2.getInt("CodigoPersonal")+ "," + NoFac + "," + Fech + " " + Hora + "," + Efectivo + ");"; //Insercion a la Tabla Prestamos
+                    Instruccion = "INSERT INTO prestamo(PaqueteLibro_ID,Estudiante_ID,CodigoBoleta,FechaPago,Monto) VALUES ("+ CodPack + ","+ CodEst+ "," + NoFac + "," + Fech + " " + Hora + "," + Efectivo + ");"; //Insercion a la Tabla Prestamos
                      //Insertamos en la base
                     try {
                         PreparedStatement  pst = conexcion.prepareStatement(Instruccion);
@@ -341,7 +341,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                         pst.close();
                         if (a>0){
                             System.out.println("Guardado");
-                            JOptionPane.showMessageDialog(null, "¡Se ha compleado el Prestamo Exitosamente!");
+                            JOptionPane.showMessageDialog(null, "¡Se ha compleado el Prestamo del libro " + CodPack + " Exitosamente!");
                         }
                     } catch (SQLException ex) {
                         Logger.getLogger(ModuloPrestamo.class.getName()).log(Level.SEVERE, null, ex);

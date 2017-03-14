@@ -21,8 +21,7 @@ public class ModuloPaquetes extends javax.swing.JFrame {
      * Creates new form ModuloPaquetes
      */
     Connection conexcion;
-    String Libros[][] = new String [4][5]; //Matriz que guardará los libros de un paquete
-    int CantLibros = 0; //Contador que servirá para saber cuantos libros lleva ingresando al paquete
+  
     public ModuloPaquetes() {
         initComponents();
     }
@@ -65,7 +64,7 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jLabel11 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        CodigoPaquete2 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -149,7 +148,7 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         jLabel11.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel11.setText("Codigo del Paquete");
 
-        jTextField1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        CodigoPaquete2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -190,7 +189,7 @@ public class ModuloPaquetes extends javax.swing.JFrame {
                     .addComponent(Estado)
                     .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
                     .addComponent(jSeparator2)
-                    .addComponent(jTextField1))
+                    .addComponent(CodigoPaquete2))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(42, 42, 42)
@@ -219,7 +218,6 @@ public class ModuloPaquetes extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(8, 8, 8)))
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(CodigoPaquete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -236,7 +234,7 @@ public class ModuloPaquetes extends javax.swing.JFrame {
                 .addGap(24, 24, 24)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel11)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CodigoPaquete2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
@@ -271,25 +269,53 @@ public class ModuloPaquetes extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-        
+        CodigoPaquete.setText("");
+        Descripcion.setText("");
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        int CantLibros = 0; //Contador que servirá para saber cuantos libros tiene un paquete
+        String CodPack, CodLibro, Nom, Aut, Edit, EstadoL;
         String Instruccion = "";
-        if(CantLibros < 4){
-            Libros[CantLibros][0] = CodigoLibro.getText();
-            Libros[CantLibros][1] = Nombre.getText();
-            Libros[CantLibros][0] = Autor.getText();
-            Libros[CantLibros][0] = Editorial.getText();
-            Libros[CantLibros][0] = Estado.getText();
-            CantLibros++;
+        ResultSet resultado = null, resultado2 = null;
+        if((CodigoPaquete2.getText().equals(""))||(CodigoLibro.getText().equals(""))||(Nombre.getText().equals(""))||(Autor.getText().equals(""))||(Editorial.getText().equals(""))||(Estado.getText().equals(""))){
+            JOptionPane.showMessageDialog(null, "¡Hay Campos Vacios!");
         }
-        if(CantLibros == 4){                        //Si se han ingresado ya 4 libros se habilitara la opcion de crear un paquete
-            //odigoPaquete.setEditable(true);
-            //Descripcion.setEditable(true);
-            jButton1.setEnabled(true);
-            
+        else{
+            CodPack = CodigoPaquete2.getText();
+            CodLibro = CodigoLibro.getText();
+            Nom = Nombre.getText();
+            Aut = Autor.getText();
+            Edit = Editorial.getText();
+            EstadoL = Estado.getText();
+            try {
+                Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                resultado = sentencia.executeQuery("SELECT * FROM PaqueteLibro WHERE Codigo = " + CodPack + ";");
+                resultado2 = sentencia.executeQuery("SELECT * FROM Libro WHERE Codigo = " + CodLibro + ";");
+                //Ciclo que cuenta el total de libros para un paquete
+                //Esto ayudará para saber si un paquete le pueden ingresar o no libros. 4 libros por paquete
+                while(resultado2.next() != false){
+                    CantLibros++;
+                }
+                //Condicion que verifica si existe el paquete que se desea agregar un libro
+                if(resultado.next()==false){
+                    JOptionPane.showMessageDialog(null, "¡El paquete " + CodPack + " No Existe!");
+                }
+                else if (resultado2.next() == false){
+                    JOptionPane.showMessageDialog(null, "¡El paquete " + CodPack + " No Existe!");
+                }
+                else{
+                    if(CantLibros < 5){
+                        
+                    }
+                    else{
+                      JOptionPane.showMessageDialog(null, "¡El paquete " + CodPack + " No Existe!");  
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+        }
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -298,19 +324,30 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         String CodPack, Descrip, Instruccion = "";
         CodPack = CodigoPaquete.getText();
         Descrip = Descripcion.getText();
-        Instruccion = "INSERT INTO PaqueteLibro (Codigo, Descripcion) VALUES (" + CodPack + "," + Descrip + ");";
+        ResultSet resultado = null;
         try {
-            PreparedStatement  pst = conexcion.prepareStatement(Instruccion);
-            int a = pst.executeUpdate();
-            pst.close();
-            if (a>0){
-                System.out.println("Guardado");
-                JOptionPane.showMessageDialog(null, "¡Se ha Creado el paquete " + CodPack + " Exitosamente!");
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ModuloPaquetes.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Error en SQLException: "+ex.getMessage());
+            Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            resultado = sentencia.executeQuery("SELECT * FROM PaqueteLibro WHERE Codigo = " + CodPack + ";");
+            //Condicion que me verifica si no existe un paquete libro con el mismo codigo
+            if(resultado.next() == false){  //Si no existe entonces creará un paquete con ese codigo
+                Instruccion = "INSERT INTO PaqueteLibro (Codigo, Descripcion) VALUES (" + CodPack + "," + Descrip + ");";
+                try {
+                    PreparedStatement  pst = conexcion.prepareStatement(Instruccion);
+                    int a = pst.executeUpdate();
+                    pst.close();
+                    if (a>0){
+                        System.out.println("Guardado");
+                        JOptionPane.showMessageDialog(null, "¡Se ha Creado el paquete " + CodPack + " Exitosamente!");
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(ModuloPaquetes.class.getName()).log(Level.SEVERE, null, ex);
+                    System.out.println("Error en SQLException: "+ex.getMessage());
+                }
+            }  
+        } catch (SQLException e) {
+                e.printStackTrace();
         }
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -352,6 +389,7 @@ public class ModuloPaquetes extends javax.swing.JFrame {
     private javax.swing.JTextField Autor;
     private javax.swing.JTextField CodigoLibro;
     private javax.swing.JTextField CodigoPaquete;
+    private javax.swing.JTextField CodigoPaquete2;
     private javax.swing.JTextField Descripcion;
     private javax.swing.JTextField Editorial;
     private javax.swing.JTextField Estado;
@@ -373,6 +411,5 @@ public class ModuloPaquetes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
