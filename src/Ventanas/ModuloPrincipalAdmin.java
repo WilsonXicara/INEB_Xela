@@ -4,11 +4,15 @@
  * and open the template in the editor.
  */
 package Ventanas;
+import Catedratico.Catedraticos;
+import Catedratico.Datos_Catedraticos;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.*;
+import javax.swing.JOptionPane;
 /**
  *
  * @author SERGIO MALDONADO
@@ -19,13 +23,16 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
      * Creates new form ModuloPrincipalAdmin
      */
     Connection conexcion;
+    ResultSet User;
     public ModuloPrincipalAdmin() {
         initComponents();
     }
     
-    public ModuloPrincipalAdmin(Connection conec, Statement tabla){
+    public ModuloPrincipalAdmin(Connection conec, ResultSet admin){
         initComponents();
         conexcion = conec;
+        User = admin;
+        //Desplegar informacion
     }
 
     /**
@@ -131,18 +138,33 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         Tipo.setEditable(false);
         Tipo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
-        jButton4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jButton4.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jButton4.setText("Asignaciones");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jButton1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jButton1.setText("Cerrar Sesión");
         jButton1.setToolTipText("");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jLabel12.setIcon(new javax.swing.ImageIcon("C:\\Users\\SERGIO MALDONADO\\Documents\\GitHub\\INEB_Xela\\login_icon.png")); // NOI18N
 
         jMenu1.setText("Crear");
 
         jMenuItem6.setText("Ciclo Escolar");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem6);
 
         jMenuItem1.setText("Administrador");
@@ -154,9 +176,19 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jMenu1.add(jMenuItem1);
 
         jMenuItem2.setText("Catedrático");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem2);
 
         jMenuItem3.setText("Alumno");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem3);
 
         jMenuBar1.add(jMenu1);
@@ -164,6 +196,11 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jMenu2.setText("Ver");
 
         jMenuItem4.setText("Modulo Catedráticos");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem4);
 
         jMenuItem5.setText("Modulo Alumnos");
@@ -175,6 +212,11 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jMenu2.add(jMenuItem5);
 
         jMenuItem7.setText("Modulo Prestamos");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem7);
 
         jMenuItem8.setText("Modulo Cursos");
@@ -226,18 +268,16 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 .addComponent(jSeparator2)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(354, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel11)
-                        .addContainerGap())
+                    .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1)
-                            .addComponent(jButton4))
-                        .addGap(260, 260, 260)
-                        .addComponent(jLabel12)
-                        .addContainerGap())))
+                            .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1))
+                        .addGap(203, 203, 203)
+                        .addComponent(jLabel12)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -283,10 +323,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                         .addComponent(jLabel11))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(109, 109, 109)
-                        .addComponent(jButton4)
-                        .addGap(56, 56, 56)
-                        .addComponent(jButton1)
+                        .addGap(64, 64, 64)
+                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(54, 54, 54)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -301,6 +341,67 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem5ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        try {
+            // TODO add your handling code here:
+            String tipo = User.getString("Tipo");
+            if(tipo.equals("1")){
+                new Ciclo_Escolar(conexcion).setVisible(true);
+                this.setVisible(false);
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        // TODO add your handling code here:
+        try {
+            // TODO add your handling code here:
+            String tipo = User.getString("Tipo");
+            if(tipo.equals("1")){
+                new ModuloPrestamo(conexcion).setVisible(true);
+                this.setVisible(false);
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        // TODO add your handling code here:
+        new Catedraticos().setVisible(true);
+        this.setVisible(false);
+        
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        JOptionPane.showConfirmDialog(null, "¿Cerrar Sesión?", "Confirme", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        new Principal().setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        // TODO add your handling code here:
+        new Datos_Catedraticos().setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
      * @param args the command line arguments
