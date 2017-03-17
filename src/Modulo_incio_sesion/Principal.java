@@ -5,9 +5,11 @@
  */
 package Modulo_incio_sesion;
 
+import Catedratico.Principal_catedratico;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
 import Conexion.Conec_BD;
 import Conexion.conexion;
+import Ventanas.ModuloPrincipalAdmin;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -197,8 +199,15 @@ public class Principal extends javax.swing.JFrame {
             contraseña = b.getString(3);
             tipo = b.getString(4);
             if(contraseña_entrada.equals(contraseña)){
-                ciclo = new Ciclo_Escolar(this,true,conexion);
-                ciclo.setVisible(true);
+                if(tipo.equals("3")){
+                    Principal_catedratico s = new Principal_catedratico();
+                    s.setVisible(true);
+                }
+                else{
+                    ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, b);
+                    s.setVisible(true);
+                }
+                
             }
             else {
                 JOptionPane.showMessageDialog(this, "Contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE, null);

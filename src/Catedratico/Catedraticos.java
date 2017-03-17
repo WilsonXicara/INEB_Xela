@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -26,10 +27,20 @@ public class Catedraticos extends javax.swing.JFrame {
     Connection con = null;
     Statement stmt = null;
     String var, var2;
+    JFrame padre;
     public Catedraticos() {
         initComponents();
         this.setTitle("Módulo administrador-catedrático");
         this.setLocation(335, 220);
+    }
+    
+    public Catedraticos(Connection a, JFrame papi) {
+        initComponents();
+        this.setTitle("Módulo administrador-catedrático");
+        this.setLocation(335, 220);
+        con = a;
+        padre = papi;
+        padre.setVisible(false);
     }
 
     /**
