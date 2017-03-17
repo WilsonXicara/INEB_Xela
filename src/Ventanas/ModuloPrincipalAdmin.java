@@ -347,7 +347,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             // TODO add your handling code here:
             String tipo = User.getString("Tipo");
             if(tipo.equals("1")){
-                new Ciclo_Escolar(conexcion).setVisible(true);
+    //            new Ciclo_Escolar(conexcion).setVisible(true);
                 this.setVisible(false);
             }
             else{
@@ -384,7 +384,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         JOptionPane.showConfirmDialog(null, "¿Cerrar Sesión?", "Confirme", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        new Principal().setVisible(true);
+    //    new Principal().setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 

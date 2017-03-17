@@ -104,7 +104,7 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
     }//GEN-LAST:event_ver_estudianteActionPerformed
 
     private void asignar_estudianteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_asignar_estudianteActionPerformed
-        AsignarEstudiante nueva_ventana = new AsignarEstudiante(conexion);
+        AsignarEstudiante nueva_ventana = new AsignarEstudiante(conexion,2);
         nueva_ventana.setVisible(true);
     }//GEN-LAST:event_asignar_estudianteActionPerformed
 
