@@ -5,6 +5,7 @@
  */
 package ModuloEstudiante;
 
+import ModuloAsignacion.*;
 import java.sql.Connection;
 
 /**
@@ -35,6 +36,7 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
 
         crear_estudiante = new javax.swing.JButton();
         ver_estudiante = new javax.swing.JButton();
+        asignar_estudiante = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Módulo Estudiante");
@@ -55,6 +57,14 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
             }
         });
 
+        asignar_estudiante.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        asignar_estudiante.setText("Asignar Estudiante");
+        asignar_estudiante.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                asignar_estudianteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -63,7 +73,9 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(crear_estudiante, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(ver_estudiante))
+                    .addComponent(ver_estudiante, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(asignar_estudiante, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -73,6 +85,8 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
                 .addComponent(crear_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ver_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(asignar_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -88,6 +102,11 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
         InformacionEstudiante nueva_ventana = new InformacionEstudiante(conexion);
         nueva_ventana.setVisible(true);
     }//GEN-LAST:event_ver_estudianteActionPerformed
+
+    private void asignar_estudianteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_asignar_estudianteActionPerformed
+        AsignarEstudiante nueva_ventana = new AsignarEstudiante(conexion);
+        nueva_ventana.setVisible(true);
+    }//GEN-LAST:event_asignar_estudianteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -125,6 +144,7 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton asignar_estudiante;
     private javax.swing.JButton crear_estudiante;
     private javax.swing.JButton ver_estudiante;
     // End of variables declaration//GEN-END:variables

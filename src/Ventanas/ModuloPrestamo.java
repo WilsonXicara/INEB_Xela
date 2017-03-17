@@ -5,10 +5,11 @@
  */
 package Ventanas;
 
-import Conexion.prueba;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.JOptionPane;
 import java.util.Calendar;
 import java.util.logging.Level;
@@ -233,9 +234,13 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel12)
-                            .addComponent(Monto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(13, 13, 13)
+                                .addComponent(Monto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addComponent(jLabel12)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel8)
                             .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -255,11 +260,11 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
                             .addComponent(Grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(90, 90, 90)
+                        .addGap(48, 48, 48)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton1)
                             .addComponent(jButton2))
-                        .addGap(0, 57, Short.MAX_VALUE))
+                        .addGap(0, 97, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(jButton3)
@@ -298,8 +303,9 @@ public class ModuloPrestamo extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        String NoFac, CodPack, CodEst, NomEst, ApeEst, Grad, Fech, Hora,Desc, Instruccion = "", Instruccion2 = "";
+        String NoFac, CodPack, CodEst, NomEst, ApeEst, Grad, Fech, Hora,Desc, Instruccion = "";
         float Efectivo;
+        ResultSet resultado = null,resultado2 = null;
         if((NoFactura.getText().equals(""))||(CodigoPaquete.getText().equals(""))||(CodigoEstudiante.getText().equals(""))||(NombreEstudiante.getText().equals(""))||(ApellidosEstudiante.getText().equals(""))||(Grado.getText().equals(""))||(Monto.getText().equals(""))){
             JOptionPane.showMessageDialog(null, "¡Hay Campos Vacios!");
         }
@@ -315,23 +321,37 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             Efectivo = Float.parseFloat(Monto.getText());
             Hora = fechita.get(Calendar.HOUR) +":" + fechita.get(Calendar.MINUTE);
             //Condicion que si el CodigoEstudiante no existe en la base arrojar un mensaje
-            //Insertamos en la base
-            //Instruccion = "INSERT INTO paquetelibro(Codigo,Descripcion) VALUES (" + CodPack + "," + Desc + ");" ; //Insercion a la Tabla PaqueteLibro
-            Instruccion2 = "INSERT INTO prestamo(PaqueteLibro_ID,Estudiante_ID,CodigoBoleta,FechaPago,Monto) VALUES (Estudiante_ID" + NoFac + "," + Fech + " " + Hora + "," + Efectivo + ");"; //Insercion a la Tabla Prestamos
+            //Condicion si el CodigoPaquete no existe
             try {
-                PreparedStatement  pst = conexcion.prepareStatement(Instruccion);
-                int a = pst.executeUpdate();
-                pst.close();
-           if (a>0){
-               System.out.println("Guardado");
-               JOptionPane.showMessageDialog(null, "¡Se ha compleado el Prestamo Exitosamente!");
-           }
-        } catch (SQLException ex) {
-            Logger.getLogger(prueba.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Error en SQLException: "+ex.getMessage());
-        }
-            
-            
+                Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                resultado = sentencia.executeQuery("SELECT * FROM prestamo WHERE PaqueteLibro_ID = " + CodPack + ";");
+                resultado2 = sentencia.executeQuery("SELECT * FROM estudiante WHERE CodigoPersonal = " + CodEst + ";");
+                //Condicion que si el CodigoEstudiante no existe en la base arrojar un mensaje
+                //Condicion si el CodigoPaquete no existe
+                if((resultado.next() == false)||(resultado2.next() == false)){
+                    JOptionPane.showMessageDialog(null, "Hay Datos incorrectos");
+                }
+                else{
+                    //Concatenamos la instrucción para insertar a la tabla prestamo.
+                    Instruccion = "INSERT INTO prestamo(PaqueteLibro_ID,Estudiante_ID,CodigoBoleta,FechaPago,Monto) VALUES ("+ CodPack + "," + CodEst +  "," + "'" + NoFac + "'" + "," + "'" + Fech + " " + Hora + "'" + "," + Efectivo + ");"; //Insercion a la Tabla Prestamos
+                     //Insertamos en la base
+                    try {
+                        PreparedStatement  pst = conexcion.prepareStatement(Instruccion);
+                        int a = pst.executeUpdate();
+                        pst.close();
+                        if (a>0){
+                            System.out.println("Guardado");
+                            JOptionPane.showMessageDialog(null, "¡Se ha compleado el Prestamo del libro " + CodPack + " Exitosamente!");
+                        }
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ModuloPrestamo.class.getName()).log(Level.SEVERE, null, ex);
+                        System.out.println("Error en SQLException: "+ex.getMessage());
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+           
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

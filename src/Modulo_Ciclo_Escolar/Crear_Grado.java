@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Ventanas_Modulo_Ciclo_Escolar;
+package Modulo_Ciclo_Escolar;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -16,19 +18,21 @@ import javax.swing.JOptionPane;
  *
  * @author USUARIO
  */
-public class Crear_Grados extends javax.swing.JDialog {
+public class Crear_Grado extends javax.swing.JDialog {
     Connection base;
+    String año;
     /**
      * Creates new form Crear_Grados
      */
-    public Crear_Grados(java.awt.Frame parent, boolean modal) {
+    public Crear_Grado(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
-    public Crear_Grados(java.awt.Frame parent, boolean modal,Connection base) {
+    public Crear_Grado(java.awt.Frame parent, boolean modal,Connection base,String ciclo) {
         super(parent, modal);
         initComponents();
         this.base = base;
+        año = ciclo;
     }
 
     /**
@@ -114,20 +118,31 @@ public class Crear_Grados extends javax.swing.JDialog {
         String Seccion = T_seccion.getText();
 
         if(Nombre.length()!=0 && Seccion.length()!=0){
-            String instruccion = "INSERT INTO grado(Nombre,Seccion) VALUES('"+Nombre+"','"+Seccion+"');";
-           
+            String instruccion_grado = "INSERT INTO grado(Nombre,Seccion) VALUES('"+Nombre+"','"+Seccion+"');";
+
                 
             try {
-                PreparedStatement pst = base.prepareStatement(instruccion);
+                PreparedStatement pst = base.prepareStatement(instruccion_grado);
                 int a = pst.executeUpdate();
                 if (a>0){
                     System.out.println("Guardado");
                 }
                 this.dispose();
             } catch (SQLException ex) {
-                Logger.getLogger(Crear_Grados.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Crear_Grado.class.getName()).log(Level.SEVERE, null, ex);
             }
-                
+           Statement a;
+            try {
+                a = base.createStatement();
+                ResultSet consulta = a.executeQuery("SELECT Id FROM grado WHERE grado.Nombre = '"+Nombre+"' AND grado.Seccion = '"+Seccion+"';");
+                if(consulta.next()){
+                String instruccion_AsigAño = "INSERT INTO AsignacionCAT(CicloEscolar_Id,Grado_Id) VALUES("+año+","+consulta.getString(1)+");";
+                PreparedStatement pst = base.prepareStatement(instruccion_grado);
+                pst.executeQuery();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Crear_Grado.class.getName()).log(Level.SEVERE, null, ex);
+            }
            
 
         }
@@ -157,20 +172,21 @@ public class Crear_Grados extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Crear_Grados.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Crear_Grado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Crear_Grados.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Crear_Grado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Crear_Grados.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Crear_Grado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Crear_Grados.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Crear_Grado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Crear_Grados dialog = new Crear_Grados(new javax.swing.JFrame(), true);
+                Crear_Grado dialog = new Crear_Grado(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

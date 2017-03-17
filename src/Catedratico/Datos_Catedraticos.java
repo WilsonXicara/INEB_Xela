@@ -124,7 +124,7 @@ public class Datos_Catedraticos extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(Tabla);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 870, 330));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 870, 330));
 
         Menu_Archivo.setText("Archivo");
 
