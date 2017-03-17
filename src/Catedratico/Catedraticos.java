@@ -28,7 +28,7 @@ public class Catedraticos extends javax.swing.JFrame {
     String var, var2;
     public Catedraticos() {
         initComponents();
-        this.setTitle("Módulo catedrático");
+        this.setTitle("Módulo administrador-catedrático");
         this.setLocation(335, 220);
     }
 
@@ -53,7 +53,7 @@ public class Catedraticos extends javax.swing.JFrame {
         Campo_Apellidos = new javax.swing.JTextField();
         Campo_Direccion = new javax.swing.JTextField();
         Campo_Telefono = new javax.swing.JTextField();
-        Campo_Fecha = new javax.swing.JTextField();
+        Campo_DPI = new javax.swing.JTextField();
         Campo_Sexo = new javax.swing.JComboBox<>();
         Campo_Etnia = new javax.swing.JComboBox<>();
         Boton_Aceptar = new javax.swing.JButton();
@@ -135,7 +135,7 @@ public class Catedraticos extends javax.swing.JFrame {
             }
         });
         getContentPane().add(Campo_Telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 270, 190, -1));
-        getContentPane().add(Campo_Fecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 120, 170, -1));
+        getContentPane().add(Campo_DPI, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 120, 170, -1));
 
         Campo_Sexo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "F", "M" }));
         getContentPane().add(Campo_Sexo, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 170, 170, -1));
@@ -190,26 +190,27 @@ public class Catedraticos extends javax.swing.JFrame {
         Campo8.setText("Municipio:");
         getContentPane().add(Campo8, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 270, -1, -1));
 
-        Campo_Municipio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Quetzaltenango" }));
+        Campo_Municipio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Quetzaltenango", "Almolonga", "Cabricán", "Cajolá", "Cantel", "Coatepeque", "Colomba Costa Cuca", "Concepción Chiquirichapa", "El Palmar", "Flores Costa Cuca", "Génova", "Huitán", "La Esperanza", "Olintepeque", "Palestina de Los Altos", "Salcajá", "San Juan Ostuncalco", "San Carlos Sija", "San Francisco La Unión", "San Martín Sacatepéquez", "San Mateo", "San Miguel Sigüilá", "Sibilia", "Zunil" }));
         getContentPane().add(Campo_Municipio, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 270, 170, -1));
 
         Fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Catedratico/Imagenes/pizarra.png"))); // NOI18N
-        getContentPane().add(Fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -11, 800, 450));
+        getContentPane().add(Fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 450));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
     public void actualizar() {
         
-        String cadena1,cadena2,cadena3,cadena4,cadena5,cadena6,cadena7, cadena8;
+        String cadena1,cadena2,cadena3,cadena4,cadena5,cadena6,cadena7, cadena8, cadena9;
      
        cadena1 = Campo_Id.getText();
        cadena2 = Campo_Nombre.getText();
        cadena3 = Campo_Apellidos.getText();
        cadena4 = Campo_Direccion.getText();
        cadena5 = Campo_Telefono.getText();
-       cadena6 = Campo_Fecha.getText();
+       cadena6 = Campo_DPI.getText();
        cadena7 = Campo_Sexo.getSelectedItem().toString();
        cadena8 = Campo_Etnia.getSelectedItem().toString();
+       cadena9 = Campo_Municipio.getSelectedItem().toString();
      
     
      if (Campo_Nombre.getText().equals("")) {
@@ -219,20 +220,20 @@ public class Catedraticos extends javax.swing.JFrame {
      else {   
      
      try { 
-                  String url = "jdbc:mysql://localhost:3306/mydb"; 
+                  String url = "jdbc:mysql://localhost:3306/sbd_inebxela"; 
                   String usuario = "root"; 
                   String contraseña = "6148"; 
                   
                   Class.forName("com.mysql.jdbc.Driver").newInstance(); 
                   con = DriverManager.getConnection(url,usuario,contraseña); 
                   if ( con != null ) 
-                    System.out.println("Se ha establecido una conexión a la base de datos " +  
-                                       "\n " + url ); 
+                   // System.out.println("Se ha establecido una conexión a la base de datos " +  
+                   //                    "\n " + url ); 
   
                   stmt = con.createStatement(); 
-                  stmt.executeUpdate("update ignore catedratico set IdCatedratico= '"+cadena1+"' , Nombres = '"+cadena2+"',Apellidos = '"+cadena3+"',Direccion = '"+cadena4+"', Telefono = '"+cadena5+"', Nacimiento = '"+cadena6+"', Sexo = '"+cadena7+ "' , Etnia = '"+cadena8+
-                          "' where IdCatedratico = '"+Campo_Id.getText()+"' || Nombres = '"+Campo_Nombre.getText()+"' || Apellidos = '"+Campo_Apellidos.getText()+"' || Direccion = '"+Campo_Direccion.getText()+"' || Telefono = '"+Campo_Telefono.getText()+"' || Nacimiento = '"+Campo_Fecha.getText()+"' || Sexo = '"+Campo_Sexo.getSelectedItem()+"' || Etnia = '"+Campo_Etnia.getSelectedItem()+"'"); 
-                  System.out.println("Los valores han sido Actualizados"); 
+                  stmt.executeUpdate("update ignore catedratico set Id= '"+cadena1+"' , Nombres = '"+cadena2+"',Apellidos = '"+cadena3+"',Direccion = '"+cadena4+"', DPI = '"+cadena6+"', Sexo = '"+cadena7+ "' , Etnia = '"+cadena8+
+                          "' where Id = '"+Campo_Id.getText()+"' || Nombres = '"+Campo_Nombre.getText()+"' || Apellidos = '"+Campo_Apellidos.getText()+"' || Direccion = '"+Campo_Direccion.getText()+"' || DPI = '"+Campo_DPI.getText()+"' || Sexo = '"+Campo_Sexo.getSelectedItem()+"' || Etnia = '"+Campo_Etnia.getSelectedItem()+"'"); 
+                  //System.out.println("Los valores han sido Actualizados"); 
                   } 
                   catch( SQLException e ) { 
                       e.printStackTrace(); 
@@ -261,7 +262,7 @@ public class Catedraticos extends javax.swing.JFrame {
         this.Campo_Apellidos.setText("");
         this.Campo_Telefono.setText("");
         this.Campo_Direccion.setText("");
-        this.Campo_Fecha.setText("");
+        this.Campo_DPI.setText("");
     }
 
     
@@ -269,11 +270,11 @@ public class Catedraticos extends javax.swing.JFrame {
         String cap="";
         ResultSet rs = null;
         var2 = var;
-        String sql2="Select idCatedratico, Nombres, Apellidos, Direccion, Telefono, Nacimiento, Sexo, Etnia FROM catedratico where Nombres = '"+var2+"'";
+        String sql2="Select Id, Nombres, Apellidos, Direccion, DPI, Sexo, Etnia FROM catedratico where Nombres = '"+var2+"'";
             
    try { 
        
-                  String url = "jdbc:mysql://localhost:3306/mydb"; 
+                  String url = "jdbc:mysql://localhost:3306/sbd_inebxela"; 
                   String usuario = "root"; 
                   String contraseña = "6148";
                   
@@ -283,8 +284,8 @@ public class Catedraticos extends javax.swing.JFrame {
      con = DriverManager.getConnection(url,usuario,contraseña); 
 
      if ( con != null ) 
-	   System.out.println("Se ha establecido una conexión a la base de datos " + 
-	                                       "\n " + url ); 
+	   //System.out.println("Se ha establecido una conexión a la base de datos " + 
+	       //                                "\n " + url ); 
 	  
 	stmt = con.createStatement(); 
 	rs = stmt.executeQuery(sql2); 
@@ -292,12 +293,12 @@ public class Catedraticos extends javax.swing.JFrame {
 	int i=1; 
 	   while ( rs.next() ) { 
                
-	           String id = rs.getString("IdCatedratico");
+	           String id = rs.getString("Id");
 	           String nombre = rs.getString("Nombres"); 
 	           String apellidos = rs.getString("Apellidos"); 
                    String direccion = rs.getString("Direccion"); 
-                   String telefono = rs.getString("Telefono"); 
-                   String nacimiento = rs.getString("Nacimiento");
+                  // String telefono = rs.getString("Telefono"); 
+                   String depei = rs.getString("DPI");
                    String sexo = rs.getString("Sexo");
                    String etnia = rs.getString("Etnia"); 
 	           /*System.out.println("Sitio Web "+ (i++) + ":\n" 
@@ -313,8 +314,8 @@ public class Catedraticos extends javax.swing.JFrame {
                    Campo_Nombre.setText(nombre);
                    Campo_Apellidos.setText(apellidos);
                    Campo_Direccion.setText(direccion);
-                   Campo_Telefono.setText(telefono);
-                   Campo_Fecha.setText(nacimiento);
+                   //Campo_Telefono.setText(telefono);
+                   Campo_DPI.setText(depei);
                   // Campo_Sexo.setText(sexo);
                    //Campo_Etnia.setText(etnia);
                    Campo_Sexo.setSelectedItem(sexo);
@@ -381,23 +382,18 @@ public class Catedraticos extends javax.swing.JFrame {
     }//GEN-LAST:event_Campo_TelefonoKeyTyped
 
     private void Boton_AceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Boton_AceptarActionPerformed
-        String cadena2,cadena3,cadena4,cadena5,cadena6,cadena7,cadena8;
+        String cadena2,cadena3,cadena4,cadena5,cadena6,cadena7,cadena8,cadena9;
         
         cadena2 = Campo_Nombre.getText();
         cadena3 = Campo_Apellidos.getText();
         cadena4 = Campo_Direccion.getText();
         cadena5 = Campo_Telefono.getText();
-        cadena6 = Campo_Fecha.getText();
+        cadena6 = Campo_DPI.getText();
         cadena7 = Campo_Sexo.getSelectedItem().toString();
         cadena8 = Campo_Etnia.getSelectedItem().toString();
+        cadena9 = Campo_Municipio.getSelectedItem().toString();
         //---------------------------------------------------------------------------------------------------------------------------------
-        if (Campo_Nombre.getText().equals("") || (Campo_Apellidos.getText().equals("")) || (Campo_Direccion.getText().equals("")) || (Campo_Fecha.getText().equals(""))
-           || (Campo_Telefono.getText().equals("")) || (Campo_Sexo.getSelectedItem().equals(null)) || (Campo_Etnia.getSelectedItem().equals(null)) ) {
-            
-            javax.swing.JOptionPane.showMessageDialog(this,"Debe llenar todos los campos \n","ERROR",javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            Campo_Nombre.requestFocus();
-        }
-                else {
+       
         try {
            
             String url = "jdbc:mysql://localhost:3306/sbd_inebxela"/*?zeroDateTimeBehavior=convertToNull"*/;
@@ -409,10 +405,15 @@ public class Catedraticos extends javax.swing.JFrame {
              if ( con != null ) 
                     System.out.println("Se ha establecido una conexión a la base de datos " +  
                                        "\n " + url ); 
-             
+                                       
                   stmt = con.createStatement();
-                   
-                  stmt.executeUpdate("INSERT INTO catedratico (Nombres,Apellidos,Direccion,DPI, Sexo, Etnia) VALUES('"+cadena2+"','"+cadena3+"','"+cadena4+"','"+cadena6+"','"+cadena7+"','"+cadena8+"')");
+                  
+                  stmt.executeUpdate("INSERT INTO municipio (Nombre) VALUES('"+cadena9+"')");
+                  int sql= stmt.executeUpdate("SELECT LAST_INSERT_ID() FROM municipio") /*"SELECT LAST_INSERT_ID() FROM municipio"*/;
+                  
+                  stmt.executeUpdate("INSERT INTO catedratico (Nombres,Apellidos,Direccion,DPI, Sexo, Etnia,Municipio_Id) "
+                          + "VALUES('"+cadena2+"','"+cadena3+"','"+cadena4+"','"+cadena6+"','"+cadena7+"','"+cadena8+ "','" + sql+"')");
+                  
                   System.out.println("Los valores han sido agregados a la base de datos ");
                  
                    
@@ -437,13 +438,13 @@ public class Catedraticos extends javax.swing.JFrame {
             }
         }
          javax.swing.JOptionPane.showMessageDialog(this,"Registro exitoso! \n","AVISO!",javax.swing.JOptionPane.INFORMATION_MESSAGE);
-        }
+        
         this.Campo_Id.setText("");
         this.Campo_Nombre.setText("");
         this.Campo_Apellidos.setText("");
         this.Campo_Direccion.setText("");
         this.Campo_Telefono.setText("");
-        this.Campo_Fecha.setText("");  
+        this.Campo_DPI.setText("");  
 
 
     }//GEN-LAST:event_Boton_AceptarActionPerformed
@@ -470,15 +471,15 @@ public class Catedraticos extends javax.swing.JFrame {
          else {
         try {
             
-            String url = "jdbc:mysql://localhost:3306/mydb";
+            String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
             String usuario = "root";
             String contraseña = "6148";
             
              Class.forName("com.mysql.jdbc.Driver").newInstance(); 
              con = DriverManager.getConnection(url,usuario,contraseña); 
              if ( con != null ) 
-                    System.out.println("Se ha establecido una conexión a la base de datos " +  
-                                       "\n " + url ); 
+                    //System.out.println("Se ha establecido una conexión a la base de datos " +  
+                    //                   "\n " + url ); 
   
                   stmt = con.createStatement(); 
                   rs = stmt.executeQuery(sql);
@@ -570,9 +571,9 @@ public class Catedraticos extends javax.swing.JFrame {
     private javax.swing.JLabel Campo7;
     private javax.swing.JLabel Campo8;
     private javax.swing.JTextField Campo_Apellidos;
+    private javax.swing.JTextField Campo_DPI;
     private javax.swing.JTextField Campo_Direccion;
     private javax.swing.JComboBox<String> Campo_Etnia;
-    private javax.swing.JTextField Campo_Fecha;
     private javax.swing.JTextField Campo_Id;
     private javax.swing.JComboBox<String> Campo_Municipio;
     private javax.swing.JTextField Campo_Nombre;
