@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Modulos;
+package Modulo_incio_sesion;
 
+import Modulo_Ciclo_Escolar.Ciclo_Escolar;
 import Conexion.Conec_BD;
 import Conexion.conexion;
 import java.io.BufferedReader;
@@ -126,6 +127,14 @@ public class Principal extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
+        jButton1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jButton1KeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jButton1KeyTyped(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -188,7 +197,7 @@ public class Principal extends javax.swing.JFrame {
             contraseña = b.getString(3);
             tipo = b.getString(4);
             if(contraseña_entrada.equals(contraseña)){
-                ciclo = new Ciclo_Escolar(conexion);
+                ciclo = new Ciclo_Escolar(this,true,conexion);
                 ciclo.setVisible(true);
             }
             else {
@@ -206,6 +215,44 @@ public class Principal extends javax.swing.JFrame {
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButton1KeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1KeyPressed
+
+    private void jButton1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButton1KeyTyped
+        char code = evt.getKeyChar(); 
+        if(code == '\n'){
+              try {
+            Statement a  = conexion.createStatement();
+            String contraseña_entrada = this.contraseña.getText();
+            String usuario_entrada = this.usuario.getText();
+            String contraseña;
+            String tipo;
+            ResultSet b = a.executeQuery("SELECT* FROM usuarios WHERE NombreUsuario = '"+ usuario_entrada+"'");
+            if(b.next()){
+            contraseña = b.getString(3);
+            tipo = b.getString(4);
+            if(contraseña_entrada.equals(contraseña)){
+                ciclo = new Ciclo_Escolar(this,true,conexion);
+                ciclo.setVisible(true);
+            }
+            else {
+                JOptionPane.showMessageDialog(this, "Contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE, null);
+                this.contraseña.setText("");
+                this.usuario.setText("");
+            }
+            }
+            else{
+                  JOptionPane.showMessageDialog(this, "El usuario no existe", "Error", JOptionPane.ERROR_MESSAGE, null);
+            }
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        }
+    }//GEN-LAST:event_jButton1KeyTyped
 
     /**
      * @param args the command line arguments
