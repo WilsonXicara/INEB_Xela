@@ -6,8 +6,6 @@
 package Ventanas;
 import Catedratico.Catedraticos;
 import Catedratico.Datos_Catedraticos;
-import Modulos.Ciclo_Escolar;
-import Modulos.Principal;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -385,14 +383,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
-            // TODO add your handling code here:
-            JOptionPane.showConfirmDialog(null, "¿Cerrar Sesión?", "Confirme", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            new Principal().setVisible(true);
-            this.setVisible(false);
-        } catch (IOException ex) {
-            Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        JOptionPane.showConfirmDialog(null, "¿Cerrar Sesión?", "Confirme", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        new Principal().setVisible(true);
+        this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
