@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Ventanas_Modulo_Ciclo_Escolar;
+package Modulo_Ciclo_Escolar;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,43 +19,46 @@ import javax.swing.JOptionPane;
  *
  * @author USUARIO
  */
-public class Modificar_Curso extends javax.swing.JDialog {
+public class Crear_Curso extends javax.swing.JDialog {
     Connection base;
     ArrayList<String> Id_catedratico;
-    ArrayList<String> Id_curso;
-    int posicion,posicion_curso;
+    ArrayList<String> Id_grado;
+    int posicion_cat =0,posicion_grado =0;
+    String ciclo;
     /**
-     * Creates new form Modificar_Curso
+     * Creates new form Crear_Curso
      */
-    public Modificar_Curso(java.awt.Frame parent, boolean modal) {
+    public Crear_Curso(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
-    
-    public Modificar_Curso(java.awt.Frame parent, boolean modal,Connection base) throws SQLException {
+    public Crear_Curso(java.awt.Frame parent, boolean modal,Connection base, String ciclo) throws SQLException {
         super(parent, modal);
         initComponents();
         this.base = base;
-        posicion =0;
-        posicion_curso =0;
+        this.ciclo = ciclo;
         Id_catedratico = new ArrayList<String>();
+        Id_grado = new ArrayList<String>();
         Statement a  = base.createStatement();
         ResultSet consulta = a.executeQuery("SELECT Id, Nombres, Apellidos FROM catedratico");
-        Id_catedratico.add("0");
-        if(consulta.next()){
+        int s =1;
+        while(consulta.next()){
             String Id = consulta.getString(1);
-            String Nombre = consulta.getString(2)+" "+consulta.getString(3);
+            String Nombre = consulta.getString(2);
+            if(Nombre.equals("NO")) Nombre = "No asignar";
+            else Nombre = Nombre+" "+ consulta.getString(3);
             Id_catedratico.add(Id);
             tx_catedratico.addItem(Nombre);   
         }
-        a  = base.createStatement();
-        consulta = a.executeQuery("Id, Nombre FROM curso");
-        if(consulta.next()){
+        a = base.createStatement();
+        consulta = a.executeQuery("SELECT grado.* FROM AsignacionCAT INNER JOIN grado ON AsignacionCAT.Grado_Id = grado.Id WHERE AsignacionCAT.CicloEscolar_Id ="+ciclo+" GROUP BY grado.Id;");
+        while(consulta.next()){
             String Id = consulta.getString(1);
-            String Nombre = consulta.getString(2);
-            Id_curso.add(Id);
-            tx_curso.addItem(Nombre);   
+            String Nombre = consulta.getString(2)+" "+consulta.getString(3);
+            Id_grado.add(Id);
+            tx_grado.addItem(Nombre);   
         }
+        
         
     }
 
@@ -75,7 +78,7 @@ public class Modificar_Curso extends javax.swing.JDialog {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
-        tx_curso = new javax.swing.JComboBox<>();
+        tx_grado = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -83,14 +86,13 @@ public class Modificar_Curso extends javax.swing.JDialog {
 
         jLabel2.setText("Asignar Catedratico: ");
 
-        tx_catedratico.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No asignar" }));
         tx_catedratico.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 tx_catedraticoItemStateChanged(evt);
             }
         });
 
-        jButton1.setText("Modificar");
+        jButton1.setText("Crear");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -104,11 +106,11 @@ public class Modificar_Curso extends javax.swing.JDialog {
             }
         });
 
-        jLabel3.setText("Curso");
+        jLabel3.setText("Asignar Grado(*):");
 
-        tx_curso.addItemListener(new java.awt.event.ItemListener() {
+        tx_grado.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                tx_cursoItemStateChanged(evt);
+                tx_gradoItemStateChanged(evt);
             }
         });
 
@@ -117,43 +119,42 @@ public class Modificar_Curso extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(50, 50, 50)
-                        .addComponent(jLabel3)
+                        .addGap(68, 68, 68)
+                        .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tx_curso, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(Tx_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(81, 81, 81)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tx_catedratico, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(77, 77, 77)
                                 .addComponent(jButton1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton2)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(Tx_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
-                        .addComponent(tx_catedratico, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                                .addComponent(jButton2))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel3)
+                        .addGap(18, 18, 18)
+                        .addComponent(tx_grado, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(tx_curso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(Tx_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(12, 12, 12)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(tx_grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -162,35 +163,49 @@ public class Modificar_Curso extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
-                .addContainerGap())
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tx_catedraticoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_tx_catedraticoItemStateChanged
-        posicion = tx_catedratico.getSelectedIndex();
-    }//GEN-LAST:event_tx_catedraticoItemStateChanged
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String Nombre = Tx_Nombre.getText();
-        if(Nombre.length()!=0){
-            String instruccion;
-            if(posicion!=0){
-                instruccion = "INSERT INTO curso(Nombre,Catedrático_Id) VALUES('"+Nombre+"','"+Id_catedratico.get(posicion)+"');";
-            }
-            else{
-                instruccion = "INSERT INTO curso(Nombre,Catedrático_Id) VALUES('"+Nombre+"',null);";
-            }
+            String Nombre = Tx_Nombre.getText();
+            if(Nombre.length()!=0){
+                String instruccion_curso;
+                String instruccion_asig_cat;
+                String id_curso="";
+                //Primero hago la instruccion_curso para crear el registro en la tabla curso
+                  instruccion_curso = "INSERT INTO curso(Nombre) VALUES('"+Nombre+"');";
+                  
+                //Luego hago el componente que me vincula el curso al año y grado
+                Statement d;
+                try {
+                    d = base.createStatement();
+                    ResultSet consulta = d.executeQuery("SELECT Id FROM curso WHERE Nombre = '"+Nombre+"';");
+                    if(consulta.next()){
+                        id_curso = consulta.getString(1);
+                        System.out.println(id_curso);
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Crear_Curso.class.getName()).log(Level.SEVERE, null, ex);
+                }        
+                instruccion_asig_cat = "INSERT INTO AsignacionCAT(Curso_Id,CicloEscolar_Id,Grado_Id,Catedratico_Id) VALUES("+id_curso+","+ciclo+","+Id_grado.get(posicion_grado)+","+Id_catedratico.get(posicion_cat)+");";
+                
             try {
-                PreparedStatement pst = base.prepareStatement(instruccion);
+                PreparedStatement pst = base.prepareStatement(instruccion_curso);
                 int a = pst.executeUpdate();
+                if (a>0){
+                    System.out.println("Guardado");
+                }
+                PreparedStatement psta = base.prepareStatement(instruccion_asig_cat);
+                 a = psta.executeUpdate();
                 if (a>0){
                     System.out.println("Guardado");
                 }
                 this.dispose();
             } catch (SQLException ex) {
-                Logger.getLogger(Crear_Grados.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Crear_Grado.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         else{
@@ -198,26 +213,18 @@ public class Modificar_Curso extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void tx_catedraticoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_tx_catedraticoItemStateChanged
+        posicion_cat = tx_catedratico.getSelectedIndex();
+        System.out.println(posicion_cat);
+    }//GEN-LAST:event_tx_catedraticoItemStateChanged
+
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void tx_cursoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_tx_cursoItemStateChanged
-        posicion_curso = tx_curso.getSelectedIndex();
-        Statement a;
-        try {
-            a = base.createStatement();
-            ResultSet consulta = a.executeQuery("SELECT Nombre, catedratico.Nombres,catedratico.Apellidos FROM curso WHERE");
-            if(consulta.next()){
-                
-            }
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(Modificar_Curso.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        
-    }//GEN-LAST:event_tx_cursoItemStateChanged
+    private void tx_gradoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_tx_gradoItemStateChanged
+        posicion_grado = tx_grado.getSelectedIndex();
+    }//GEN-LAST:event_tx_gradoItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -236,20 +243,20 @@ public class Modificar_Curso extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Modificar_Curso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Crear_Curso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Modificar_Curso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Crear_Curso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Modificar_Curso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Crear_Curso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Modificar_Curso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Crear_Curso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Modificar_Curso dialog = new Modificar_Curso(new javax.swing.JFrame(), true);
+                Crear_Curso dialog = new Crear_Curso(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -269,6 +276,6 @@ public class Modificar_Curso extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JComboBox<String> tx_catedratico;
-    private javax.swing.JComboBox<String> tx_curso;
+    private javax.swing.JComboBox<String> tx_grado;
     // End of variables declaration//GEN-END:variables
 }

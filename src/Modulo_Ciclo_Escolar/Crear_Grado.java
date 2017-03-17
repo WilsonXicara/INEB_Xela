@@ -3,14 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Ventanas_Modulo_Ciclo_Escolar;
+package Modulo_Ciclo_Escolar;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -19,32 +18,21 @@ import javax.swing.JOptionPane;
  *
  * @author USUARIO
  */
-public class Crear_Curso extends javax.swing.JDialog {
+public class Crear_Grado extends javax.swing.JDialog {
     Connection base;
-    ArrayList<String> Id_catedratico;
-    int posicion =0;
+    String año;
     /**
-     * Creates new form Crear_Curso
+     * Creates new form Crear_Grados
      */
-    public Crear_Curso(java.awt.Frame parent, boolean modal) {
+    public Crear_Grado(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
-    public Crear_Curso(java.awt.Frame parent, boolean modal,Connection base) throws SQLException {
+    public Crear_Grado(java.awt.Frame parent, boolean modal,Connection base,String ciclo) {
         super(parent, modal);
         initComponents();
         this.base = base;
-        Id_catedratico = new ArrayList<String>();
-        Statement a  = base.createStatement();
-        ResultSet consulta = a.executeQuery("SELECT Id, Nombres, Apellidos FROM catedratico");
-        Id_catedratico.add("0");
-        if(consulta.next()){
-            String Id = consulta.getString(1);
-            String Nombre = consulta.getString(2)+" "+consulta.getString(3);
-            Id_catedratico.add(Id);
-            tx_catedratico.addItem(Nombre);   
-        }
-        
+        año = ciclo;
     }
 
     /**
@@ -56,25 +44,16 @@ public class Crear_Curso extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        Tx_Nombre = new javax.swing.JTextField();
-        tx_catedratico = new javax.swing.JComboBox<>();
+        T_nombre = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        T_seccion = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setText("Nombre: ");
-
-        jLabel2.setText("Asignar Catedratico: ");
-
-        tx_catedratico.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No asignar" }));
-        tx_catedratico.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                tx_catedraticoItemStateChanged(evt);
-            }
-        });
+        jLabel2.setText("Sección");
 
         jButton1.setText("Crear");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -90,80 +69,87 @@ public class Crear_Curso extends javax.swing.JDialog {
             }
         });
 
+        jLabel1.setText("Nombre");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(43, 43, 43)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(Tx_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tx_catedratico, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(87, 87, 87)
                         .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton2)))
-                .addContainerGap(22, Short.MAX_VALUE))
+                        .addGap(28, 28, 28)
+                        .addComponent(jButton2))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(T_nombre)
+                            .addComponent(T_seccion, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGap(39, 39, 39)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel1)
-                    .addComponent(Tx_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(T_nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(tx_catedratico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
+                    .addComponent(T_seccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(31, 31, 31)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addContainerGap(45, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-            String Nombre = Tx_Nombre.getText();
-            if(Nombre.length()!=0){
-                String instruccion;
-                if(posicion!=0){
-                  instruccion = "INSERT INTO curso(Nombre,Catedrático_Id) VALUES('"+Nombre+"','"+Id_catedratico.get(posicion)+"');";
-                }
-                else{
-                         instruccion = "INSERT INTO curso(Nombre,Catedrático_Id) VALUES('"+Nombre+"',null);";
-                }
+        String Nombre = T_nombre.getText();
+        String Seccion = T_seccion.getText();
+
+        if(Nombre.length()!=0 && Seccion.length()!=0){
+            String instruccion_grado = "INSERT INTO grado(Nombre,Seccion) VALUES('"+Nombre+"','"+Seccion+"');";
+
+                
             try {
-                PreparedStatement pst = base.prepareStatement(instruccion);
+                PreparedStatement pst = base.prepareStatement(instruccion_grado);
                 int a = pst.executeUpdate();
                 if (a>0){
                     System.out.println("Guardado");
                 }
                 this.dispose();
             } catch (SQLException ex) {
-                Logger.getLogger(Crear_Grados.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Crear_Grado.class.getName()).log(Level.SEVERE, null, ex);
             }
+           Statement a;
+            try {
+                a = base.createStatement();
+                ResultSet consulta = a.executeQuery("SELECT Id FROM grado WHERE grado.Nombre = '"+Nombre+"' AND grado.Seccion = '"+Seccion+"';");
+                if(consulta.next()){
+                String instruccion_AsigAño = "INSERT INTO AsignacionCAT(CicloEscolar_Id,Grado_Id) VALUES("+año+","+consulta.getString(1)+");";
+                PreparedStatement pst = base.prepareStatement(instruccion_grado);
+                pst.executeQuery();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Crear_Grado.class.getName()).log(Level.SEVERE, null, ex);
+            }
+           
+
         }
         else{
             JOptionPane.showMessageDialog(this, "Debe llenar todos los campos", "ERROR", JOptionPane.ERROR_MESSAGE, null);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void tx_catedraticoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_tx_catedraticoItemStateChanged
-        posicion = tx_catedratico.getSelectedIndex();
-    }//GEN-LAST:event_tx_catedraticoItemStateChanged
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         this.dispose();
@@ -186,20 +172,21 @@ public class Crear_Curso extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Crear_Curso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Crear_Grado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Crear_Curso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Crear_Grado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Crear_Curso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Crear_Grado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Crear_Curso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Crear_Grado.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Crear_Curso dialog = new Crear_Curso(new javax.swing.JFrame(), true);
+                Crear_Grado dialog = new Crear_Grado(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -212,11 +199,11 @@ public class Crear_Curso extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField Tx_Nombre;
+    private javax.swing.JTextField T_nombre;
+    private javax.swing.JTextField T_seccion;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JComboBox<String> tx_catedratico;
     // End of variables declaration//GEN-END:variables
 }
