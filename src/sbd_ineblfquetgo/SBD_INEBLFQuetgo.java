@@ -5,9 +5,12 @@
  */
 package sbd_ineblfquetgo;
 
+import ModuloEstudiante.PrincipalEstudiante;
+import Conexion.conexion;
+
 /**
  *
- * @author pc
+ * @author Wilson Xicará
  */
 public class SBD_INEBLFQuetgo {
 
@@ -15,7 +18,8 @@ public class SBD_INEBLFQuetgo {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        //PrincipalEstudiante principal = new PrincipalEstudiante(new conexion().Conectar());
+        //principal.setVisible(true);
     }
     
 }

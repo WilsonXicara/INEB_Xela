@@ -20,9 +20,7 @@ public class conexion {
     public Connection Conectar(JFrame ventana){
         try {
             Class.forName("org.gjt.mm.mysql.Driver");
-
-            conect = DriverManager.getConnection("jdbc:mysql://127.0.0.1/ejemplo","root","sergio2710");
-
+            conect = DriverManager.getConnection("jdbc:mysql://localhost/sbd_inebxela","usuario","usuario");
         } catch (Exception e) {
              String[] opciones = new String[1];
                       opciones[0] = "Aceptar";
@@ -34,5 +32,10 @@ public class conexion {
         
         return conect;
     }
-    
+
+    public Connection Conectar() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+   
 }
