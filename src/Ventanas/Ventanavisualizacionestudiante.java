@@ -156,7 +156,8 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
         // TODO add your handling code here:
         Pantalla a = new Pantalla();
         a.setVisible(true);
-        this.setVisible(false);
+        //this.setVisible(false);
+        this.dispose();
     }//GEN-LAST:event_VolverActionPerformed
 
     /**
