@@ -24,11 +24,12 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="crear_estudiante" max="32767" attributes="0"/>
-                  <Component id="ver_estudiante" min="-2" max="-2" attributes="0"/>
+                  <Component id="ver_estudiante" max="32767" attributes="0"/>
+                  <Component id="asignar_estudiante" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -41,6 +42,8 @@
               <Component id="crear_estudiante" min="-2" pref="65" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="ver_estudiante" min="-2" pref="65" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="asignar_estudiante" min="-2" pref="65" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -67,6 +70,17 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ver_estudianteActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="asignar_estudiante">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Tahoma" size="24" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Asignar Estudiante"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="asignar_estudianteActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
