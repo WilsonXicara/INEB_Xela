@@ -3,23 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sbd_ineblfquetgo;
-
-import ModuloEstudiante.PrincipalEstudiante;
-import Conexion.conexion;
+package prueba1bases;
 
 /**
  *
- * @author Wilson Xicará
+ * @author SERGIO
  */
-public class SBD_INEBLFQuetgo {
+public class Prueba1Bases {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        //PrincipalEstudiante principal = new PrincipalEstudiante(new conexion().Conectar());
-        //principal.setVisible(true);
+        // TODO code application logic here
     }
     
 }
