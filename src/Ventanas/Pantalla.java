@@ -34,7 +34,6 @@ public class Pantalla extends javax.swing.JFrame {
         deshabilitar();
         llenar("");
         cargar("");
-        calendario();
     }
     public Pantalla(Connection conex, int tipo) {
         initComponents();
@@ -44,7 +43,6 @@ public class Pantalla extends javax.swing.JFrame {
         deshabilitar();
         llenar("");
         cargar("");
-        calendario();
     }
     
     void validar(int tip)
@@ -520,7 +518,7 @@ public class Pantalla extends javax.swing.JFrame {
 
     private void modificacionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_modificacionMouseClicked
         // TODO add your handling code here:
-        if(evt.getButton()== 1)
+        if(evt.getButton() == 1)
         {
             int fila = modificacion.getSelectedRow();
             try {
