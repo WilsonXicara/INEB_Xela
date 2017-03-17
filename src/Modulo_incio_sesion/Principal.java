@@ -5,9 +5,11 @@
  */
 package Modulo_incio_sesion;
 
+import Catedratico.Principal_catedratico;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
 import Conexion.Conec_BD;
 import Conexion.conexion;
+import Ventanas.ModuloPrincipalAdmin;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -198,10 +200,12 @@ public class Principal extends javax.swing.JFrame {
             tipo = b.getString(4);
             if(contraseña_entrada.equals(contraseña)){
                 if(tipo.equals("3")){
-                    
+                    Principal_catedratico s = new Principal_catedratico();
+                    s.setVisible(true);
                 }
                 else{
-                    
+                    ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, b);
+                    s.setVisible(true);
                 }
                 
             }

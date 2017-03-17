@@ -6,6 +6,11 @@
 package Ventanas;
 import Catedratico.Catedraticos;
 import Catedratico.Datos_Catedraticos;
+import ModuloAsignacionEST.AsignarEstudiante;
+import ModuloEstudiante.CrearEstudiante;
+import ModuloEstudiante.PrincipalEstudiante;
+import Modulo_Ciclo_Escolar.Ciclo_Escolar;
+import java.awt.Frame;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -71,15 +76,15 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem10 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
-        jMenuItem8 = new javax.swing.JMenuItem();
+        jMenuItem9 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -155,17 +160,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             }
         });
 
-        jLabel12.setIcon(new javax.swing.ImageIcon("C:\\Users\\SERGIO MALDONADO\\Documents\\GitHub\\INEB_Xela\\login_icon.png")); // NOI18N
-
         jMenu1.setText("Crear");
-
-        jMenuItem6.setText("Ciclo Escolar");
-        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem6ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem6);
 
         jMenuItem1.setText("Administrador");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -183,7 +178,15 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem2);
 
-        jMenuItem3.setText("Alumno");
+        jMenuItem10.setText("Alumno");
+        jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem10ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem10);
+
+        jMenuItem3.setText("Ciclo Escolar");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem3ActionPerformed(evt);
@@ -195,7 +198,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
         jMenu2.setText("Ver");
 
-        jMenuItem4.setText("Modulo Catedráticos");
+        jMenuItem4.setText("Catedráticos");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem4ActionPerformed(evt);
@@ -203,7 +206,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         jMenu2.add(jMenuItem4);
 
-        jMenuItem5.setText("Modulo Alumnos");
+        jMenuItem5.setText("Alumnos");
         jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem5ActionPerformed(evt);
@@ -211,7 +214,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         jMenu2.add(jMenuItem5);
 
-        jMenuItem7.setText("Modulo Prestamos");
+        jMenuItem7.setText("Prestamos");
         jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem7ActionPerformed(evt);
@@ -219,8 +222,13 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         jMenu2.add(jMenuItem7);
 
-        jMenuItem8.setText("Modulo Cursos");
-        jMenu2.add(jMenuItem8);
+        jMenuItem9.setText("Ciclo Escolar");
+        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem9ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem9);
 
         jMenuBar1.add(jMenu2);
 
@@ -320,7 +328,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel11))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(64, 64, 64)
@@ -339,24 +347,11 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-        // TODO add your handling code here:
+        this.setVisible(false);
+        PrincipalEstudiante a = new PrincipalEstudiante(conexcion);
+        a.setVisible(true);
+        this.setVisible(true);
     }//GEN-LAST:event_jMenuItem5ActionPerformed
-
-    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-        try {
-            // TODO add your handling code here:
-            String tipo = User.getString("Tipo");
-            if(tipo.equals("1")){
-    //            new Ciclo_Escolar(conexcion).setVisible(true);
-                this.setVisible(false);
-            }
-            else{
-                JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
         // TODO add your handling code here:
@@ -390,17 +385,52 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here:
-        new Datos_Catedraticos().setVisible(true);
-        this.setVisible(false);
+        new Catedraticos(conexcion, this).setVisible(true);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
+        this.setVisible(false);
+        AsignarEstudiante a = new AsignarEstudiante(conexcion);
+        a.setVisible(true);
+        this.setVisible(true);
     }//GEN-LAST:event_jButton4ActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        // TODO add your handling code here:
+    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
+        try {
+            // TODO add your handling code here:
+            String tipo = User.getString("Tipo");
+            if(tipo.equals("1")){
+                this.setVisible(false);
+                new Ciclo_Escolar(new Frame(),true, conexcion).setVisible(true);
+                this.setVisible(true);
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jMenuItem9ActionPerformed
+
+    private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
+        this.setVisible(false);
+        CrearEstudiante s = new CrearEstudiante(conexcion);
+        s.setVisible(true);
+        this.setVisible(true);
         
+    }//GEN-LAST:event_jMenuItem10ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        this.setVisible(false);
+        Ciclo_Escolar a;
+        try {
+            a = new Ciclo_Escolar(new Frame(), true, conexcion);
+            a.setVisible(true);
+            this.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
@@ -466,13 +496,13 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     // End of variables declaration//GEN-END:variables
