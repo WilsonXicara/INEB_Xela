@@ -7,6 +7,7 @@ package Ventanas;
 
 import Ventanas.ModuloCurso;
 import java.sql.*;
+import java.util.Calendar;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 //import modulo.prestamo.libro.MóduloCurso;
@@ -28,10 +29,34 @@ public class Pantalla extends javax.swing.JFrame {
     public Pantalla() {
         initComponents();
         conexion = cn.Conectar();
+        //validar(tipo);
         limpiar();
         deshabilitar();
         llenar("");
         cargar("");
+        calendario();
+    }
+    public Pantalla(Connection conex, int tipo) {
+        initComponents();
+        conexion = cn.Conectar();
+        validar(tipo);
+        limpiar();
+        deshabilitar();
+        llenar("");
+        cargar("");
+        calendario();
+    }
+    
+    void validar(int tip)
+    {
+        if(tip == 1)
+        {
+            Modificar.setEnabled(false);
+        }
+        else
+        {
+            Modificar.setEnabled(true);
+        }
     }
 
     void limpiar() {
@@ -96,27 +121,36 @@ public class Pantalla extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
+    //funcion que obtiene el año del pc
+    int calendario()
+    {
+        String año;
+        Calendar c1 = Calendar.getInstance();
+        return c1.get(Calendar.YEAR);
+    }
     void cargar(String valor)
     {
         try {
+            String año = Integer.toString(calendario());
             conexion = cn.Conectar();
             String [] titulos={"ID (código)", "Nombre", "Código catedrático"};
             String [] fila = new String [3];
         
-            String sql = "SELECT *FROM Curso WHERE Nombre LIKE '%" + valor + "%'";
+            String sql = "SELECT curso.Id, curso.Nombre, asignacioncat.Catedratico_Id FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id WHERE cicloescolar.Anio = '" + año + "' AND Curso.Nombre LIKE '%" + valor + "%'";
         
             model = new DefaultTableModel(null, titulos);
             sent = conexion.createStatement();
             ResultSet rs = sent.executeQuery(sql);
             
             while (rs.next()) {
-                fila[0] = rs.getString("Id");
-                fila[1] = rs.getString("Nombre");
-                fila[2] = rs.getString("Catedrático_Id");
+                fila[0] = rs.getString("Curso.Id");
+                fila[1] = rs.getString("Curso.Nombre");
+                fila[2] = rs.getString("AsignacionCAT.Catedratico_Id");
 
                 model.addRow(fila);
             }
             Cursos.setModel(model);
+            
         } catch (Exception e) {
             e.printStackTrace();
         }  
@@ -552,7 +586,8 @@ public class Pantalla extends javax.swing.JFrame {
         // TODO add your handling code here:
         Ventanavisualizacionestudiante a = new Ventanavisualizacionestudiante();
         a.setVisible(true);
-        this.setVisible(false);
+        //this.setVisible(false);
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
