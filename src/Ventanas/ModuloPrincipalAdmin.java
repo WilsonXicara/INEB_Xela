@@ -5,6 +5,7 @@
  */
 package Ventanas;
 import Catedratico.Catedraticos;
+import Catedratico.Datos_Catedraticos;
 import Modulos.Ciclo_Escolar;
 import Modulos.Principal;
 import java.io.IOException;
@@ -187,6 +188,11 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jMenu2.setText("Ver");
 
         jMenuItem4.setText("Modulo Catedráticos");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem4);
 
         jMenuItem5.setText("Modulo Alumnos");
@@ -365,6 +371,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         // TODO add your handling code here:
         new Catedraticos().setVisible(true);
         this.setVisible(false);
+        
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -377,6 +384,12 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        // TODO add your handling code here:
+        new Datos_Catedraticos().setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     /**
      * @param args the command line arguments
