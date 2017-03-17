@@ -53,15 +53,6 @@ public class Modificar_Curso extends javax.swing.JDialog {
             tx_catedratico.addItem(Nombre);   
         }
         a  = base.createStatement();
-        consulta = a.executeQuery("SELECT grado.Id, grado.Nombre, grado.Seccion FROM asignacioncat INNER JOIN grado ON asignacioncat.Grado_Id = grado.Id WHERE asignacioncat.CicloEscolar_Id = "+Id_ciclo+";");
-        while(consulta.next()){
-            String Id = consulta.getString(1);
-            String Nombre = consulta.getString(2)+" "+consulta.getString(3);
-            Id_grado.add(Id);
-            tx_grado.addItem(Nombre);   
-        }
-        
-        a  = base.createStatement();
         consulta = a.executeQuery("SELECT curso.Id,curso.Nombre FROM asignacioncat INNER JOIN curso ON asignacioncat.Curso_Id = curso.Id WHERE asignacioncat.CicloEscolar_Id ="+Id_ciclo+";");
         while(consulta.next()){
             String Id = consulta.getString(1);

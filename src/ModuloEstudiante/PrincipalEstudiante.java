@@ -5,7 +5,7 @@
  */
 package ModuloEstudiante;
 
-import ModuloAsignacion.*;
+import ModuloAsignacionEST.AsignarEstudiante;
 import java.sql.Connection;
 
 /**

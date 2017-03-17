@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ModuloAsignacion;
+package ModuloAsignacionEST;
 
 import ModuloEstudiante.InformacionEstudiante;
 import java.sql.Connection;
@@ -45,7 +45,7 @@ public class AsignarEstudiante extends javax.swing.JFrame {
         extraerDatos(0, "Sin especificar");
         tabla_estudiantes.setModel(tablaModel);
     }
-    public AsignarEstudiante(Connection conexion, int tipoUsuario) {
+    public AsignarEstudiante(Connection conexion) {
         initComponents();
         this.conexion = conexion;
         this.consultaEstudiante = null;

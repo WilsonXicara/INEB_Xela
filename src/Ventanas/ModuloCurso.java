@@ -17,7 +17,7 @@ public class ModuloCurso {
     public Connection Conectar(){
         try {
             Class.forName("org.gjt.mm.mysql.Driver");
-            conect = DriverManager.getConnection("jdbc:mysql://localhost/bddeescuela","root","chuchumix03");
+            conect = DriverManager.getConnection("jdbc:mysql://localhost/sbd_inebxela","root","chuchumix03");
             //JOptionPane.showMessageDialog(null, "Conecto");
         } catch (Exception e) {
             System.out.println("Fallo");
