@@ -287,7 +287,7 @@ public class AsignarEstudiante extends javax.swing.JDialog {
                 mensaje+= "\n"+consulta.getString("Curso");
                 nuevasNotas+= "("+asignacionEST_Id+","+estudiante_Id+","+consulta.getInt("Curso_Id")+",0,0,0,0,0,0),";
             } nuevasNotas = nuevasNotas.substring(0, nuevasNotas.length()-1);
-            
+            System.out.println("Nuevas Notas = "+nuevasNotas);
             conexion.prepareStatement(nuevasNotas).executeUpdate();    // Inserto y actulizo
         } catch (SQLException ex) {
             Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);

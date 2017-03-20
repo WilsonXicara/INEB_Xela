@@ -346,8 +346,10 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             //Condicion si el CodigoPaquete no existe
             try {
                 Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+
                 resultado = sentencia.executeQuery("SELECT * FROM prestamo WHERE PaqueteLibro_ID = " + CodPack + ";");
                 resultado2 = sentencia.executeQuery("SELECT * FROM estudiante WHERE CodigoPersonal = " + CodEst + ";");
+
                 //Condicion que si el CodigoEstudiante no existe en la base arrojar un mensaje
                 //Condicion si el CodigoPaquete no existe
                 if((resultado.next() == false)||(resultado2.next() == false)){

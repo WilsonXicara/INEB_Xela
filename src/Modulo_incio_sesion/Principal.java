@@ -10,7 +10,7 @@ import Conexion.Conec_BD;
 import Conexion.conexion;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
 
-import Ventanas.ModuloPrincipalAdmin;
+import ModuloAdministrador.ModuloPrincipalAdmin;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -206,7 +206,9 @@ public class Principal extends javax.swing.JDialog {
                     }
                     else{
                         Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                        ResultSet resultado = sentencia.executeQuery("SELECT * FROM Usuario U INNER JOIN Administrador A WHERE Administrador_Id = " + b.getString(6)+";");
+
+                        ResultSet resultado = sentencia.executeQuery("SELECT * FROM Usuarios U INNER JOIN Administrador A ON U.Administrador_Id = " + b.getString(6)+";");
+
                         resultado.next();
                         this.dispose();
                         ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, resultado);
@@ -256,7 +258,9 @@ public class Principal extends javax.swing.JDialog {
                         }
                         else{
                             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                            ResultSet resultado = sentencia.executeQuery("SELECT * FROM Usuario U INNER JOIN Administrador A WHERE Administrador_Id = " + b.getString(6)+";");
+
+                            ResultSet resultado = sentencia.executeQuery("SELECT * FROM Usuarios U INNER JOIN Administrador A ON U.Administrador_Id = " + b.getString(6)+";");
+
                             resultado.next();
                             this.dispose();
                             ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, resultado);

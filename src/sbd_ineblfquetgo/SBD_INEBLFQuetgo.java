@@ -18,8 +18,8 @@ public class SBD_INEBLFQuetgo {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        //PrincipalEstudiante principal = new PrincipalEstudiante(new conexion().Conectar());
-        //principal.setVisible(true);
+        PrincipalEstudiante principal = new PrincipalEstudiante(new conexion().Conectar());
+        principal.setVisible(true);
     }
     
 }
