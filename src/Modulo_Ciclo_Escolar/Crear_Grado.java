@@ -114,37 +114,41 @@ public class Crear_Grado extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String Nombre = T_nombre.getText();
-        String Seccion = T_seccion.getText();
+        String Nombre = T_nombre.getText().trim();
+        String Seccion = T_seccion.getText().trim();
 
         if(Nombre.length()!=0 && Seccion.length()!=0){
-            String instruccion_grado = "INSERT INTO grado(Nombre,Seccion) VALUES('"+Nombre+"','"+Seccion+"');";
-
-                
+            Statement Primer_paso;
             try {
-                PreparedStatement pst = base.prepareStatement(instruccion_grado);
-                int a = pst.executeUpdate();
-                if (a>0){
-                    System.out.println("Guardado");
+                // confirmar si ya existe un grado con ese nombre
+                Primer_paso = base.createStatement();
+                ResultSet consulta_1 = Primer_paso.executeQuery("SELECT* FROM grado WHERE grado.Nombre = '"+Nombre+"' AND grado.Seccion = '"+Seccion+"';");
+                //Si ya existe solo se crea una relacion del grado con el ciclo
+                if(consulta_1.next()){
+                    String instruccion_asignacion = "INSERT INTO asignacioncat(asignacioncat.CicloEscolar_Id,asignacioncat.Grado_Id) VALUES ("+año+","+consulta_1.getString(1)+");";
+                    PreparedStatement pst = base.prepareStatement(instruccion_asignacion);
+                    pst.executeUpdate();
+                 
+                }   
+                //Si no existe se crea el registro en grado y luego la relacion del grado con el ciclo
+                else{
+                    //Se crea el grado y obtengo el Id
+                    String instruccion_grado = "INSERT INTO grado(Nombre,Seccion) VALUES('"+Nombre+"','"+Seccion+"');";
+                    PreparedStatement pst = base.prepareStatement(instruccion_grado);
+                    pst.executeUpdate();
+                    Statement aux = base.createStatement();
+                    ResultSet Id = aux.executeQuery("SELECT Id FROM grado WHERE grado.Nombre = '"+Nombre+"' AND grado.Seccion = '"+Seccion+"';");
+                    Id.next();
+                    
+                    //Creo la relacion del grado con ciclo
+                    String instruccion_asignacion = "INSERT INTO asignacioncat(asignacioncat.CicloEscolar_Id,asignacioncat.Grado_Id) VALUES ("+año+","+Id.getString(1)+");";
+                    PreparedStatement psta = base.prepareStatement(instruccion_asignacion);
+                    psta.executeUpdate();
                 }
                 this.dispose();
-            } catch (SQLException ex) {
+                } catch (SQLException ex) {
                 Logger.getLogger(Crear_Grado.class.getName()).log(Level.SEVERE, null, ex);
             }
-           Statement a;
-            try {
-                a = base.createStatement();
-                ResultSet consulta = a.executeQuery("SELECT Id FROM grado WHERE grado.Nombre = '"+Nombre+"' AND grado.Seccion = '"+Seccion+"';");
-                if(consulta.next()){
-                String instruccion_AsigAño = "INSERT INTO AsignacionCAT(CicloEscolar_Id,Grado_Id) VALUES("+año+","+consulta.getString(1)+");";
-                PreparedStatement pst = base.prepareStatement(instruccion_grado);
-                pst.executeQuery();
-                }
-            } catch (SQLException ex) {
-                Logger.getLogger(Crear_Grado.class.getName()).log(Level.SEVERE, null, ex);
-            }
-           
-
         }
         else{
             JOptionPane.showMessageDialog(this, "Debe llenar todos los campos", "ERROR", JOptionPane.ERROR_MESSAGE, null);
