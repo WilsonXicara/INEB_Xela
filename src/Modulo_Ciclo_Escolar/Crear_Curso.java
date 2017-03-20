@@ -21,9 +21,6 @@ import javax.swing.JOptionPane;
  */
 public class Crear_Curso extends javax.swing.JDialog {
     Connection base;
-    ArrayList<String> Id_catedratico;
-    ArrayList<String> Id_grado;
-    int posicion_cat =0,posicion_grado =0;
     String ciclo;
     /**
      * Creates new form Crear_Curso
@@ -37,29 +34,6 @@ public class Crear_Curso extends javax.swing.JDialog {
         initComponents();
         this.base = base;
         this.ciclo = ciclo;
-        Id_catedratico = new ArrayList<String>();
-        Id_grado = new ArrayList<String>();
-        Statement a  = base.createStatement();
-        ResultSet consulta = a.executeQuery("SELECT Id, Nombres, Apellidos FROM catedratico");
-        int s =1;
-        while(consulta.next()){
-            String Id = consulta.getString(1);
-            String Nombre = consulta.getString(2);
-            if(Nombre.equals("NO")) Nombre = "No asignar";
-            else Nombre = Nombre+" "+ consulta.getString(3);
-            Id_catedratico.add(Id);
-            tx_catedratico.addItem(Nombre);   
-        }
-        a = base.createStatement();
-        consulta = a.executeQuery("SELECT grado.* FROM AsignacionCAT INNER JOIN grado ON AsignacionCAT.Grado_Id = grado.Id WHERE AsignacionCAT.CicloEscolar_Id ="+ciclo+" GROUP BY grado.Id;");
-        while(consulta.next()){
-            String Id = consulta.getString(1);
-            String Nombre = consulta.getString(2)+" "+consulta.getString(3);
-            Id_grado.add(Id);
-            tx_grado.addItem(Nombre);   
-        }
-        
-        
     }
 
     /**
@@ -72,25 +46,13 @@ public class Crear_Curso extends javax.swing.JDialog {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         Tx_Nombre = new javax.swing.JTextField();
-        tx_catedratico = new javax.swing.JComboBox<>();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
-        tx_grado = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setText("Nombre: ");
-
-        jLabel2.setText("Asignar Catedratico: ");
-
-        tx_catedratico.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                tx_catedraticoItemStateChanged(evt);
-            }
-        });
 
         jButton1.setText("Crear");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -106,105 +68,73 @@ public class Crear_Curso extends javax.swing.JDialog {
             }
         });
 
-        jLabel3.setText("Asignar Grado(*):");
-
-        tx_grado.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                tx_gradoItemStateChanged(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(68, 68, 68)
+                        .addGap(87, 87, 87)
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton2))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(45, 45, 45)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(Tx_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tx_catedratico, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(77, 77, 77)
-                                .addComponent(jButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton2))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel3)
-                        .addGap(18, 18, 18)
-                        .addComponent(tx_grado, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(23, Short.MAX_VALUE))
+                        .addComponent(Tx_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
+                .addGap(49, 49, 49)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(Tx_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(12, 12, 12)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(tx_grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(tx_catedratico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
+                .addGap(50, 50, 50)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-            String Nombre = Tx_Nombre.getText();
-            if(Nombre.length()!=0){
-                String instruccion_curso;
-                String instruccion_asig_cat;
-                String id_curso="";
-                //Primero hago la instruccion_curso para crear el registro en la tabla curso
-                  instruccion_curso = "INSERT INTO curso(Nombre) VALUES('"+Nombre+"');";
-                  
-                //Luego hago el componente que me vincula el curso al año y grado
-                Statement d;
-                try {
-                    d = base.createStatement();
-                    ResultSet consulta = d.executeQuery("SELECT Id FROM curso WHERE Nombre = '"+Nombre+"';");
-                    if(consulta.next()){
-                        id_curso = consulta.getString(1);
-                        System.out.println(id_curso);
-                    }
-                } catch (SQLException ex) {
-                    Logger.getLogger(Crear_Curso.class.getName()).log(Level.SEVERE, null, ex);
-                }        
-                instruccion_asig_cat = "INSERT INTO AsignacionCAT(Curso_Id,CicloEscolar_Id,Grado_Id,Catedratico_Id) VALUES("+id_curso+","+ciclo+","+Id_grado.get(posicion_grado)+","+Id_catedratico.get(posicion_cat)+");";
-                
+         String Nombre = Tx_Nombre.getText().trim();
+        if(Nombre.length()!=0){
+            Statement Primer_paso;
             try {
-                PreparedStatement pst = base.prepareStatement(instruccion_curso);
-                int a = pst.executeUpdate();
-                if (a>0){
-                    System.out.println("Guardado");
-                }
-                PreparedStatement psta = base.prepareStatement(instruccion_asig_cat);
-                 a = psta.executeUpdate();
-                if (a>0){
-                    System.out.println("Guardado");
+                // confirmar si ya existe un curso con ese nombre
+                Primer_paso = base.createStatement();
+                ResultSet consulta_1 = Primer_paso.executeQuery("SELECT* FROM curso WHERE curso.Nombre = '"+Nombre+"';");
+                //Si ya existe solo se crea una relacion del curso con el ciclo
+                if(consulta_1.next()){
+                    String instruccion_asignacion = "INSERT INTO asignacioncat(asignacioncat.CicloEscolar_Id,asignacioncat.Curso_Id) VALUES ("+ciclo+","+consulta_1.getString(1)+");";
+                    PreparedStatement pst = base.prepareStatement(instruccion_asignacion);
+                    pst.executeUpdate();
+                 
+                }   
+                //Si no existe se crea el registro en curso y luego la relacion del curso con el ciclo
+                else{
+                    //Se crea el curso y obtengo el Id
+                    String instruccion_curso = "INSERT INTO curso(Nombre) VALUES('"+Nombre+"');";
+                    PreparedStatement pst = base.prepareStatement(instruccion_curso);
+                    pst.executeUpdate();
+                    Statement aux = base.createStatement();
+                    ResultSet Id = aux.executeQuery("SELECT Id FROM curso WHERE curso.Nombre = '"+Nombre+"';");
+                    Id.next();
+                    
+                    //Creo la relacion del curso con ciclo
+                    String instruccion_asignacion = "INSERT INTO asignacioncat(asignacioncat.CicloEscolar_Id,asignacioncat.Curso_Id) VALUES ("+ciclo+","+Id.getString(1)+");";
+                    PreparedStatement psta = base.prepareStatement(instruccion_asignacion);
+                    psta.executeUpdate();
                 }
                 this.dispose();
-            } catch (SQLException ex) {
+                } catch (SQLException ex) {
                 Logger.getLogger(Crear_Grado.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -213,18 +143,9 @@ public class Crear_Curso extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void tx_catedraticoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_tx_catedraticoItemStateChanged
-        posicion_cat = tx_catedratico.getSelectedIndex();
-        System.out.println(posicion_cat);
-    }//GEN-LAST:event_tx_catedraticoItemStateChanged
-
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void tx_gradoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_tx_gradoItemStateChanged
-        posicion_grado = tx_grado.getSelectedIndex();
-    }//GEN-LAST:event_tx_gradoItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -273,9 +194,5 @@ public class Crear_Curso extends javax.swing.JDialog {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JComboBox<String> tx_catedratico;
-    private javax.swing.JComboBox<String> tx_grado;
     // End of variables declaration//GEN-END:variables
 }
