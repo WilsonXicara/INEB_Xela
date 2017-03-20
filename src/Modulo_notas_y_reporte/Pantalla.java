@@ -7,7 +7,11 @@ package Modulo_notas_y_reporte;
 
 import Modulo_notas_y_reporte.ModuloCurso;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 //import modulo.prestamo.libro.MóduloCurso;
@@ -21,12 +25,17 @@ public class Pantalla extends javax.swing.JFrame {
     DefaultTableModel model;
     Connection conexion;
     Statement sent;
+    String año;
+    ArrayList<String> ID;
+    int posicion;
     /**
      * Creates new form Pantalla
      */
     ModuloCurso cn = new ModuloCurso();
 
-    public Pantalla() {
+    
+    //es este
+    public Pantalla() throws SQLException {
         initComponents();
         conexion = cn.Conectar();
         //validar(tipo);
@@ -34,8 +43,12 @@ public class Pantalla extends javax.swing.JFrame {
         deshabilitar();
         llenar("");
         cargar("");
+        Calendar fecha = new GregorianCalendar();
+        año = Integer.toString(fecha.get(Calendar.YEAR));
+        Cargar_Datos();
+        posicion = 0;
     }
-    public Pantalla(Connection conex, int tipo) {
+    public Pantalla(Connection conex, int tipo) throws SQLException {
         initComponents();
         conexion = cn.Conectar();
         validar(tipo);
@@ -43,6 +56,29 @@ public class Pantalla extends javax.swing.JFrame {
         deshabilitar();
         llenar("");
         cargar("");
+        Calendar fecha = new GregorianCalendar();
+        año = Integer.toString(fecha.get(Calendar.YEAR));
+        Cargar_Datos();
+        posicion = 0;
+    }
+    
+    public void Cargar_Datos() throws SQLException
+    {
+        boolean encontrado = false;
+        ID = new ArrayList<String>();
+        Statement a = conexion.createStatement();
+        ResultSet consulta = a.executeQuery("SELECT anio,Id FROM CicloEscolar ORDER BY anio");
+        while(consulta.next())
+        {
+            String nuevo = consulta.getString(1);
+            ID.add(consulta.getString(2));
+            if(nuevo.equals(año)) encontrado = true;
+            ciclo.addItem(nuevo);
+        }
+        if(encontrado == true)
+        {
+            ciclo.setSelectedItem(año);
+        }
     }
     
     void validar(int tip)
@@ -93,9 +129,10 @@ public class Pantalla extends javax.swing.JFrame {
 
     void llenar(String valor) {
         try {
+            String j = ciclo.getSelectedItem().toString();
             conexion = cn.Conectar();
-            String[] titulos = {"Curso_Id", "Estudiante_Id", "Nota 1", "Nota 2", "Nota 3", "Nota 4", "Nota Final", "Nota Recuperacion"};
-            String sql = "SELECT *FROM Notas WHERE Estudiante_Id LIKE '%"+valor+"%'";
+            String[] titulos = {"ID de Curso", "ID de Estudiante", "Nota 1", "Nota 2", "Nota 3", "Nota 4", "Nota Final", "Nota Recuperacion"};
+            String sql = "SELECT notas.* FROM notas INNER JOIN estudiante ON notas.Estudiante_Id = estudiante.Id INNER JOIN asignacionest ON asignacionest.Estudiante_Id = estudiante.Id INNER JOIN cicloescolar ON asignacionest.CicloEscolar_Id = cicloescolar.Id WHERE cicloescolar.Anio = " + j + " AND notas.Curso_Id LIKE '%"+valor+"%'";
             model = new DefaultTableModel(null, titulos);
             sent = conexion.createStatement();
             ResultSet rs = sent.executeQuery(sql);
@@ -120,21 +157,15 @@ public class Pantalla extends javax.swing.JFrame {
         }
     }
     //funcion que obtiene el año del pc
-    int calendario()
-    {
-        String año;
-        Calendar c1 = Calendar.getInstance();
-        return c1.get(Calendar.YEAR);
-    }
+    
     void cargar(String valor)
     {
         try {
-            String año = Integer.toString(calendario());
+            String j = ciclo.getSelectedItem().toString();
             conexion = cn.Conectar();
             String [] titulos={"ID (código)", "Nombre", "Código catedrático"};
             String [] fila = new String [3];
-        
-            String sql = "SELECT curso.Id, curso.Nombre, asignacioncat.Catedratico_Id FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id WHERE cicloescolar.Anio = '" + año + "' AND Curso.Nombre LIKE '%" + valor + "%'";
+            String sql = "SELECT curso.Id, curso.Nombre, asignacioncat.Catedratico_Id FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id WHERE cicloescolar.anio = '" + j + "' AND Curso.Nombre LIKE '%" + valor + "%';";
         
             model = new DefaultTableModel(null, titulos);
             sent = conexion.createStatement();
@@ -191,6 +222,7 @@ public class Pantalla extends javax.swing.JFrame {
         Buscarcurso = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
+        ciclo = new javax.swing.JComboBox();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         modificacion = new javax.swing.JTable();
@@ -359,6 +391,12 @@ public class Pantalla extends javax.swing.JFrame {
 
         jLabel11.setText("Ver estudiantes");
 
+        ciclo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cicloItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -366,34 +404,42 @@ public class Pantalla extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(Buscarcurso, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(28, 28, 28)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel11)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel11)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton1)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                                .addComponent(jButton1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(57, 57, 57))))
+                    .addComponent(jScrollPane3)))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Buscarcurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10))
-                .addGap(24, 24, 24)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel11)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(98, 98, 98))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Buscarcurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel10))
+                        .addGap(24, 24, 24))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton1)
+                            .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36))
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Modificación de notas", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), java.awt.Color.blue)); // NOI18N
@@ -426,7 +472,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
 
-        jLabel9.setText("Buscar (mediante Estudiante ID)");
+        jLabel9.setText("Buscar (mediante Curso ID)");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -435,7 +481,7 @@ public class Pantalla extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 478, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 603, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel9)
                         .addGap(18, 18, 18)
@@ -581,11 +627,22 @@ public class Pantalla extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        Ventanavisualizacionestudiante a = new Ventanavisualizacionestudiante();
+        Ventanavisualizacionestudiante a = null;
+        try {
+            a = new Ventanavisualizacionestudiante();
+        } catch (SQLException ex) {
+            Logger.getLogger(Pantalla.class.getName()).log(Level.SEVERE, null, ex);
+        }
         a.setVisible(true);
         //this.setVisible(false);
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void cicloItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cicloItemStateChanged
+        // TODO add your handling code here:
+        cargar(Buscarcurso.getText());
+        llenar(Buscarestudiante.getText());
+    }//GEN-LAST:event_cicloItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -618,7 +675,11 @@ public class Pantalla extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Pantalla().setVisible(true);
+                try {
+                    new Pantalla().setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Pantalla.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -638,6 +699,7 @@ public class Pantalla extends javax.swing.JFrame {
     private javax.swing.JTextField NotaR;
     private javax.swing.JTextField Notafinal;
     private javax.swing.JButton Nuevo;
+    private javax.swing.JComboBox ciclo;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;

@@ -6,6 +6,11 @@
 package Modulo_notas_y_reporte;
 import Modulo_notas_y_reporte.ModuloCurso;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 /**
@@ -17,24 +22,51 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
     DefaultTableModel model;
     Connection conexion;
     Statement sent;
+    String año;
+    ArrayList<String> ID;
+    int posicion;
     /**
      * Creates new form Ventanavisualizacionestudiante
      */
     ModuloCurso cn = new ModuloCurso();
-    public Ventanavisualizacionestudiante() {
+    public Ventanavisualizacionestudiante() throws SQLException {
         initComponents();
         conexion = cn.Conectar();
         cargar("");
+        Calendar fecha = new GregorianCalendar();
+        año = Integer.toString(fecha.get(Calendar.YEAR));
+        Cargar_Datos();
+        posicion = 0;
+    }
+    
+    public void Cargar_Datos() throws SQLException
+    {
+        boolean encontrado = false;
+        ID = new ArrayList<String>();
+        Statement a = conexion.createStatement();
+        ResultSet consulta = a.executeQuery("SELECT anio,Id FROM CicloEscolar ORDER BY anio");
+        while(consulta.next())
+        {
+            String nuevo = consulta.getString(1);
+            ID.add(consulta.getString(2));
+            if(nuevo.equals(año)) encontrado = true;
+            ciclo.addItem(nuevo);
+        }
+        if(encontrado == true)
+        {
+            ciclo.setSelectedItem(año);
+        }
     }
     
     void cargar(String valor)
     {
         try {
+            String j = ciclo.getSelectedItem().toString();
             conexion = cn.Conectar();
-            String [] titulos={"Curso ID", "Nombre", "Estudiante_Id", "Nombres", "Apellidos", "Codigo Personal"};
+            String [] titulos={"Curso ID", "Nombre", "Estudiante Id", "Nombres", "Apellidos", "Codigo Personal"};
             String [] fila = new String [6];
         
-            String sql = "SELECT A.Id, A.Nombre, B.Curso_Id, B.Estudiante_Id, C.Id, C.Nombres, C.Apellidos, C.CodigoPersonal FROM Curso A INNER JOIN Notas B ON A.Id = B.Curso_Id INNER JOIN Estudiante C ON B.Estudiante_Id = C.Id WHERE Nombre LIKE '%"+valor+"%'";
+            String sql = "SELECT curso.Id, curso.Nombre, estudiante.Id, estudiante.Nombres, estudiante.Apellidos, estudiante.CodigoPersonal FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id INNER JOIN notas ON curso.Id = notas.Curso_Id INNER JOIN estudiante ON notas.Estudiante_Id = estudiante.Id WHERE curso.Id = '%" + valor + "%' AND cicloescolar.Anio = '%" + j + "%'";
         
             model = new DefaultTableModel(null, titulos);
             sent = conexion.createStatement();
@@ -64,6 +96,7 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
         Tablaestudiante = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         Buscacurso = new javax.swing.JTextField();
+        ciclo = new javax.swing.JComboBox();
         Volver = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -88,31 +121,42 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
             }
         });
 
+        ciclo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cicloItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(191, 191, 191)
-                        .addComponent(jLabel1)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(143, 143, 143)
+                                .addComponent(jLabel1))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(Buscacurso, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(77, 77, 77)
-                .addComponent(Buscacurso, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Buscacurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Buscacurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -154,11 +198,21 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
 
     private void VolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VolverActionPerformed
         // TODO add your handling code here:
-        Pantalla a = new Pantalla();
+        Pantalla a = null;
+        try {
+            a = new Pantalla();
+        } catch (SQLException ex) {
+            Logger.getLogger(Ventanavisualizacionestudiante.class.getName()).log(Level.SEVERE, null, ex);
+        }
         a.setVisible(true);
         //this.setVisible(false);
         this.dispose();
     }//GEN-LAST:event_VolverActionPerformed
+
+    private void cicloItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cicloItemStateChanged
+        // TODO add your handling code here:
+        cargar(Buscacurso.getText());
+    }//GEN-LAST:event_cicloItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -190,7 +244,11 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Ventanavisualizacionestudiante().setVisible(true);
+                try {
+                    new Ventanavisualizacionestudiante().setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Ventanavisualizacionestudiante.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -199,6 +257,7 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
     private javax.swing.JTextField Buscacurso;
     private javax.swing.JTable Tablaestudiante;
     private javax.swing.JButton Volver;
+    private javax.swing.JComboBox ciclo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
