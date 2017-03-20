@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -18,47 +19,25 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Wilson Xicará
  */
-public class InformacionEstudiante extends javax.swing.JFrame {
+public class InformacionEstudiante extends javax.swing.JDialog {
     private Connection conexion;
     private ResultSet consultaEstudiante = null;
     private DefaultTableModel tablaModel;
     /**
-     * Creates new form VentanaEstudiante
+     * Creates new form InformacionEstudiante
      */
-    public InformacionEstudiante() {
+    public InformacionEstudiante(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
         this.consultaEstudiante = null;
-        tablaModel = new DefaultTableModel();
-        // Definición de las columnas de 'tablaModel'
-        tablaModel.addColumn("Id");
-        tablaModel.addColumn("Código Personal");
-        tablaModel.addColumn("CUI");
-        tablaModel.addColumn("Nombre");
-        tablaModel.addColumn("Dirección");
-        tablaModel.addColumn("Fecha Nacimiento");
-        tablaModel.addColumn("Sexo");
-        tablaModel.addColumn("Etnia");
-        tablaModel.addColumn("Capacidad Diferente");
-        tablaModel.addColumn("Tipo Capacidad");
-        tablaModel.addColumn("Encargado");
+        inicializarModel();
     }
-    public InformacionEstudiante(Connection conexion) {
+    public InformacionEstudiante(java.awt.Frame parent, boolean modal, Connection conexion) {
+        super(parent, modal);
         initComponents();
         this.conexion = conexion;
         this.consultaEstudiante = null;
-        tablaModel = new DefaultTableModel();
-        // Definición de las columnas de 'tablaModel'
-        tablaModel.addColumn("Id");
-        tablaModel.addColumn("Código Personal");
-        tablaModel.addColumn("CUI");
-        tablaModel.addColumn("Nombre");
-        tablaModel.addColumn("Dirección");
-        tablaModel.addColumn("Fecha Nacimiento");
-        tablaModel.addColumn("Sexo");
-        tablaModel.addColumn("Etnia");
-        tablaModel.addColumn("Capacidad Diferente");
-        tablaModel.addColumn("Tipo Capacidad");
-        tablaModel.addColumn("Encargado");
+        inicializarModel();
     }
 
     /**
@@ -70,45 +49,19 @@ public class InformacionEstudiante extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        ver_notas = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tabla_encontrados = new javax.swing.JTable();
+        jLabel4 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         filtro_busqueda = new javax.swing.JComboBox<>();
         campo_busqueda = new javax.swing.JTextField();
         buscar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         editar = new javax.swing.JButton();
-        ver_notas = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tabla_encontrados = new javax.swing.JTable();
-        jLabel4 = new javax.swing.JLabel();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Estudiante");
-
-        jLabel1.setText("Buscar por:");
-
-        filtro_busqueda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sin especificar", "Apellidos", "Código Personal", "CUI" }));
-
-        campo_busqueda.setText("jTextField1");
-
-        buscar.setText("Buscar");
-        buscar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buscarActionPerformed(evt);
-            }
-        });
-
-        jLabel2.setText("Encontrado:");
-
-        editar.setText("Editar Información");
-        editar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editarActionPerformed(evt);
-            }
-        });
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Información de los Estudiantes");
 
         ver_notas.setText("Ver Notas");
         ver_notas.addActionListener(new java.awt.event.ActionListener() {
@@ -129,22 +82,25 @@ public class InformacionEstudiante extends javax.swing.JFrame {
 
         jLabel4.setText("jLabel4");
 
-        jMenu1.setText("Archivo");
+        jLabel1.setText("Buscar por:");
 
-        jMenuItem1.setText("jMenuItem1");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        filtro_busqueda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sin especificar", "Apellidos", "Código Personal", "CUI" }));
+
+        buscar.setText("Buscar");
+        buscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                buscarActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
 
-        jMenuBar1.add(jMenu1);
+        jLabel2.setText("Encontrado:");
 
-        jMenu2.setText("Edit");
-        jMenuBar1.add(jMenu2);
-
-        setJMenuBar(jMenuBar1);
+        editar.setText("Editar Información");
+        editar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -157,22 +113,22 @@ public class InformacionEstudiante extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 708, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 701, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(editar)
                             .addComponent(ver_notas)))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(filtro_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(filtro_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(campo_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(campo_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buscar))
-                            .addComponent(jLabel2))
+                                .addComponent(buscar)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -191,7 +147,7 @@ public class InformacionEstudiante extends javax.swing.JFrame {
                         .addComponent(editar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ver_notas)
-                        .addContainerGap(23, Short.MAX_VALUE))
+                        .addContainerGap(54, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
@@ -204,18 +160,14 @@ public class InformacionEstudiante extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
-
     private void ver_notasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ver_notasActionPerformed
         int registroSeleccionado = tabla_encontrados.getSelectedRow();
         if (registroSeleccionado != -1) {
             try {
                 consultaEstudiante.first();
                 for(int i=0; i<registroSeleccionado; i++)
-                    consultaEstudiante.next();
-                Notas notas = new Notas(conexion, consultaEstudiante);
+                consultaEstudiante.next();
+                Notas notas = new Notas(new JFrame(), true, conexion, consultaEstudiante);
                 notas.setVisible(true);
             } catch (SQLException ex) {
                 Logger.getLogger(InformacionEstudiante.class.getName()).log(Level.SEVERE, null, ex);
@@ -224,6 +176,7 @@ public class InformacionEstudiante extends javax.swing.JFrame {
     }//GEN-LAST:event_ver_notasActionPerformed
 
     private void buscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarActionPerformed
+        inicializarModel();
         /* Obtención del tipo de filtro para utilizar en la búsqueda */
         int filtro = 0; // Sin especificar
         if ("Apellidos".equals(filtro_busqueda.getSelectedItem().toString()) == true) filtro = 1;   // Búsqueda por Apellidos
@@ -234,7 +187,7 @@ public class InformacionEstudiante extends javax.swing.JFrame {
         extraerDatos(filtro, campo);
         tabla_encontrados.setModel(tablaModel);
         tabla_encontrados.setVisible(true);
-        
+
         tabla_encontrados.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         tabla_encontrados.getColumnModel().getColumn(0).setPreferredWidth(40);
         tabla_encontrados.getColumnModel().getColumn(1).setPreferredWidth(110);
@@ -261,17 +214,35 @@ public class InformacionEstudiante extends javax.swing.JFrame {
                 // Hago una consulta para obtener la información del Encargado
                 Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 ResultSet consultaEncargado = sentencia.executeQuery("SELECT Encargado.*, Municipio.Nombre Municipio FROM Encargado "
-                        + "INNER JOIN Municipio ON Encargado.Municipio_Id = Municipio.Id "
-                        + " WHERE Encargado.Nombre = '"+consultaEstudiante.getString("Encargado")+"'");
+                    + "INNER JOIN Municipio ON Encargado.Municipio_Id = Municipio.Id "
+                    + " WHERE Encargado.Nombre = '"+consultaEstudiante.getString("Encargado")+"'");
                 consultaEncargado.next();
                 // Creación de la Ventana para Editar los datos del Estudiante
-                EditarEstudiante editarEstudiante = new EditarEstudiante(conexion, consultaEstudiante, consultaEncargado);
+                EditarEstudiante editarEstudiante = new EditarEstudiante(new JFrame(), true, conexion, consultaEstudiante, consultaEncargado);
                 editarEstudiante.setVisible(true);
             }
         } catch (SQLException ex) {
             Logger.getLogger(InformacionEstudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_editarActionPerformed
+    /**
+     * Método que inicializa el Model para la 'tabla_encontrados'. Inserta el nombre de los encabezados de las columnas.
+     */
+    private void inicializarModel() {
+        tablaModel = new DefaultTableModel();
+        // Definición de las columnas de 'tablaModel'
+        tablaModel.addColumn("Id");
+        tablaModel.addColumn("Código Personal");
+        tablaModel.addColumn("CUI");
+        tablaModel.addColumn("Nombre");
+        tablaModel.addColumn("Dirección");
+        tablaModel.addColumn("Fecha Nacimiento");
+        tablaModel.addColumn("Sexo");
+        tablaModel.addColumn("Etnia");
+        tablaModel.addColumn("Capacidad Diferente");
+        tablaModel.addColumn("Tipo Capacidad");
+        tablaModel.addColumn("Encargado");
+    }
     private void extraerDatos(int filtro, String campoBusqueda) {
         try {
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
@@ -362,12 +333,18 @@ public class InformacionEstudiante extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(InformacionEstudiante.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        //</editor-fold>
 
-        /* Create and display the form */
+        /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new InformacionEstudiante().setVisible(true);
+                InformacionEstudiante dialog = new InformacionEstudiante(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
             }
         });
     }
@@ -380,10 +357,6 @@ public class InformacionEstudiante extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tabla_encontrados;
     private javax.swing.JButton ver_notas;
