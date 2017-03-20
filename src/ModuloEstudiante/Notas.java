@@ -12,14 +12,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 
 /**
  * Clase utilizada para visualizar y modificar las Notas, de todos los cursos, de un Estudiante específico.
  * @author Wilson Xicará
  */
-public class Notas extends javax.swing.JFrame {
+public class Notas extends javax.swing.JDialog {
     private Connection conexion;
     private ResultSet consultaNotas = null;
     private boolean notasEditadas;
@@ -28,9 +27,9 @@ public class Notas extends javax.swing.JFrame {
     /**
      * Creates new form Notas
      */
-    public Notas() {
+    public Notas(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.consultaNotas = null;
         this.notasEditadas = false;
         tablaModel = new DefaultTableModel();
@@ -43,14 +42,9 @@ public class Notas extends javax.swing.JFrame {
         tablaModel.addColumn("Nota Recuperacion");
         tablaModel.addColumn("Nota Final");
     }
-    /**
-     * Inicializa la ventana con las notas de todos los cursos de un estudiante en específico
-     * @param conexion objeto que permite la conexión y comunicación con la Base de Datos.
-     * @param estudiante nodo de la consulta (tabla) que tiene la información del Estudiante.
-     */
-    public Notas(Connection conexion, ResultSet estudiante) {
+    public Notas(java.awt.Frame parent, boolean modal, Connection conexion, ResultSet estudiante) {
+        super(parent, modal);
         initComponents();
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.conexion = conexion;
         this.consultaNotas = null;
         this.notasEditadas = false;
@@ -119,7 +113,7 @@ public class Notas extends javax.swing.JFrame {
         guardar_cambios = new javax.swing.JButton();
         editar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         tabla_notas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -152,12 +146,10 @@ public class Notas extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
                         .addComponent(nombre_estudiante)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -245,10 +237,17 @@ public class Notas extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        /* Create and display the form */
+        /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Notas().setVisible(true);
+                Notas dialog = new Notas(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
             }
         });
     }
