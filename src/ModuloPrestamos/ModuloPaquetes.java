@@ -293,8 +293,10 @@ public class ModuloPaquetes extends javax.swing.JFrame {
             EstadoL = Estado.getText();
             try {
                 Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                resultado = sentencia.executeQuery("SELECT * FROM PaqueteLibro WHERE Codigo = " + CodPack);
-                resultado2 = sentencia.executeQuery("SELECT * FROM Libro WHERE Codigo = " + CodLibro);
+
+                resultado = sentencia.executeQuery("SELECT * FROM PaqueteLibro WHERE Codigo = " + CodPack + ";");
+                resultado2 = sentencia.executeQuery("SELECT * FROM Libro WHERE Codigo = " + CodLibro + ";");
+
                 //Ciclo que cuenta el total de libros para un paquete
                 //Esto ayudará para saber si un paquete le pueden ingresar o no libros. 4 libros por paquete
                 while(resultado2.next() != false){
