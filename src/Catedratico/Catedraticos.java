@@ -415,7 +415,9 @@ public class Catedraticos extends javax.swing.JFrame {
                           + "VALUES('"+cadena2+"','"+cadena3+"','"+cadena4+"','"+cadena6+"','"+cadena7+"','"+cadena8+ "','" + sql+"')");
                   
                   System.out.println("Los valores han sido agregados a la base de datos ");
-                 
+                 //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                 //SELECT catedratico.*, telefono.Telefono, municipio.Nombre FROM catedratico LEFT OUTER JOIN telefono ON catedratico.Id = telefono.Id
+                //LEFT OUTER JOIN municipio ON catedratico.Municipio_Id = municipio.Id;
                    
         } catch (InstantiationException ex) {
            Logger.getLogger(Catedraticos.class.getName()).log(Level.SEVERE, null, ex);
