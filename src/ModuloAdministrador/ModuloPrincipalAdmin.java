@@ -12,7 +12,9 @@ import ModuloAsignacionEST.PrincipalAsignacionEST;
 import ModuloEstudiante.CrearEstudiante;
 import ModuloEstudiante.PrincipalEstudiante;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
+
 import Modulo_Ciclo_Escolar.Crear_Ciclo_Escolar_1;
+
 import java.awt.Frame;
 import java.io.IOException;
 import java.sql.Connection;
@@ -50,12 +52,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             Sexo.setText(User.getString("Sexo"));
             Tipo.setText(User.getString("Tipo"));
             Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+
             resultado = sentencia.executeQuery("SELECT * FROM Municipio WHERE Id = " + User.getString(13));
             resultado.next();
             Municipio.setText(resultado.getString("Nombre"));
             //Statement sentencia2 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             resultado2 = sentencia.executeQuery("SELECT * FROM Telefono WHERE Administrador_Id = " + User.getString(6));
             resultado2.next();
+
             Telefono.setText(resultado2.getString("Telefono"));
         } catch (SQLException ex) {
             Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
@@ -185,6 +189,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
+
+
+        jLabel16.setIcon(new javax.swing.ImageIcon("src\\Imagenes\\login_icon.png")); // NOI18N
 
         jMenu1.setText("Crear");
 
@@ -407,6 +414,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
         PrincipalEstudiante a = new PrincipalEstudiante(conexcion);
         a.setVisible(true);
+
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
@@ -472,12 +480,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         //this.setVisible(false);
         CrearEstudiante nueva_ventana = new CrearEstudiante(this, true, conexcion);
         nueva_ventana.setVisible(true);
+
         this.setVisible(true);
         
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         this.setVisible(false);
+
         Crear_Ciclo_Escolar_1 a;
         try {
             if(User.getString("Tipo").equals("1")){
