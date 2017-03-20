@@ -8,6 +8,7 @@ import ModuloPrestamos.ModuloPrestamo;
 import Catedratico.Catedraticos;
 import Catedratico.Datos_Catedraticos;
 import ModuloAsignacionEST.AsignarEstudiante;
+import ModuloAsignacionEST.PrincipalAsignacionEST;
 import ModuloEstudiante.CrearEstudiante;
 import ModuloEstudiante.PrincipalEstudiante;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
@@ -446,7 +447,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         this.setVisible(false);
-        AsignarEstudiante a = new AsignarEstudiante(conexcion);
+        PrincipalAsignacionEST a = new PrincipalAsignacionEST(this, true, conexcion);
         a.setVisible(true);
         this.setVisible(true);
     }//GEN-LAST:event_jButton4ActionPerformed
@@ -470,7 +471,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
         this.setVisible(false);
-        CrearEstudiante s = new CrearEstudiante(conexcion);
+        CrearEstudiante s = new CrearEstudiante(this, true, conexcion);
         s.setVisible(true);
         this.setVisible(true);
         
