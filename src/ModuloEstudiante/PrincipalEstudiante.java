@@ -39,7 +39,7 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
         ver_estudiante = new javax.swing.JButton();
         asignar_estudiantes = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Módulo Estudiante");
 
         crear_estudiante.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N

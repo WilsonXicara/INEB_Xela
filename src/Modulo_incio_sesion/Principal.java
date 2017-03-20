@@ -10,7 +10,7 @@ import Conexion.Conec_BD;
 import Conexion.conexion;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
 
-import Ventanas.ModuloPrincipalAdmin;
+import ModuloAdministrador.ModuloPrincipalAdmin;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -41,7 +41,7 @@ public class Principal extends javax.swing.JDialog {
     public static final String SEPARADOR = System.getProperty("file.separator");
     public static final String CARPETA_PRINCIPAL =  System.getProperty("user.home")+ SEPARADOR +"BD";
     public static final String archivo = CARPETA_PRINCIPAL+SEPARADOR+"datos";
-    
+    String ConsultaAdmin = "";
     
     public Principal(java.awt.Frame parent, boolean modal) throws IOException {
         super(parent, modal);
@@ -205,8 +205,11 @@ public class Principal extends javax.swing.JDialog {
                         this.show(true);
                     }
                     else{
+                        Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                        ResultSet resultado = sentencia.executeQuery("SELECT * FROM Usuarios U INNER JOIN Administrador A ON U.Administrador_Id = " + b.getString(6)+";");
+                        resultado.next();
                         this.dispose();
-                        ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, b);
+                        ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, resultado);
                         s.setVisible(true);
                         //this.show(true);
                     }
@@ -252,10 +255,12 @@ public class Principal extends javax.swing.JDialog {
                             this.pack();
                         }
                         else{
+                            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                            ResultSet resultado = sentencia.executeQuery("SELECT * FROM Usuarios U INNER JOIN Administrador A ON U.Administrador_Id = " + b.getString(6)+";");
+                            resultado.next();
                             this.dispose();
-                            ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, b);
+                            ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, resultado);
                             s.setVisible(true);
-                            this.pack();
                         }
                     }
                     else {
