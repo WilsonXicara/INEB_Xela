@@ -6,9 +6,10 @@
 package Modulo_incio_sesion;
 
 import Catedratico.Principal_catedratico;
-import Modulo_Ciclo_Escolar.Ciclo_Escolar;
 import Conexion.Conec_BD;
 import Conexion.conexion;
+import Modulo_Ciclo_Escolar.Ciclo_Escolar;
+
 import Ventanas.ModuloPrincipalAdmin;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,7 +17,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -24,18 +24,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
  *
  * @author USUARIO
  */
-public class Principal extends javax.swing.JFrame {
+public class Principal extends javax.swing.JDialog {
 
     /**
      * Creates new form Principal
      */
+    
     Connection conexion;
     Ciclo_Escolar ciclo;
     public static final String SEPARADOR = System.getProperty("file.separator");
@@ -43,10 +43,11 @@ public class Principal extends javax.swing.JFrame {
     public static final String archivo = CARPETA_PRINCIPAL+SEPARADOR+"datos";
     
     
-    public Principal() throws IOException {
+    public Principal(java.awt.Frame parent, boolean modal) throws IOException {
+        super(parent, modal);
         initComponents();
         
-        File carpetaPrincipal = new File(CARPETA_PRINCIPAL);
+          File carpetaPrincipal = new File(CARPETA_PRINCIPAL);
         // Si la carpeta principal no existe se crea para guardar los datos de la base de datos
         if (!carpetaPrincipal.exists()) {
             System.out.println("No se encontró la carpeta principal: "+CARPETA_PRINCIPAL);
@@ -91,7 +92,6 @@ public class Principal extends javax.swing.JFrame {
         }
         
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -101,14 +101,14 @@ public class Principal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        contraseña = new javax.swing.JPasswordField();
         saludo = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         usuario = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
-        contraseña = new javax.swing.JPasswordField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         saludo.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         saludo.setText("BIENVENIDO");
@@ -143,29 +143,28 @@ public class Principal extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(35, 35, 35)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(usuario))
+                        .addComponent(saludo))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel1)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(usuario))
-                                .addComponent(saludo))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(contraseña, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(115, 115, 115)
-                        .addComponent(jButton1)))
-                .addContainerGap(61, Short.MAX_VALUE))
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(contraseña, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(41, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(117, 117, 117))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(29, 29, 29)
                 .addComponent(saludo, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -177,7 +176,7 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(contraseña, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1)
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         pack();
@@ -196,32 +195,35 @@ public class Principal extends javax.swing.JFrame {
             String tipo;
             ResultSet b = a.executeQuery("SELECT* FROM usuarios WHERE NombreUsuario = '"+ usuario_entrada+"'");
             if(b.next()){
-            contraseña = b.getString(3);
-            tipo = b.getString(4);
-            if(contraseña_entrada.equals(contraseña)){
-                if(tipo.equals("3")){
-                    Principal_catedratico s = new Principal_catedratico();
-                    s.setVisible(true);
+                contraseña = b.getString(3);
+                tipo = b.getString(4);
+                if(contraseña_entrada.equals(contraseña)){
+                    if(tipo.equals("3")){
+                        this.dispose();
+                        Principal_catedratico s = new Principal_catedratico();
+                        s.setVisible(true);
+                        this.show(true);
+                    }
+                    else{
+                        this.dispose();
+                        ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, b);
+                        s.setVisible(true);
+                        //this.show(true);
+                    }
+
                 }
-                else{
-                    ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, b);
-                    s.setVisible(true);
+                else {
+                    JOptionPane.showMessageDialog(this, "Contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE, null);
+                    this.contraseña.setText("");
+                    this.usuario.setText("");
                 }
-                
-            }
-            else {
-                JOptionPane.showMessageDialog(this, "Contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE, null);
-                this.contraseña.setText("");
-                this.usuario.setText("");
-            }
             }
             else{
-                  JOptionPane.showMessageDialog(this, "El usuario no existe", "Error", JOptionPane.ERROR_MESSAGE, null);
+                JOptionPane.showMessageDialog(this, "El usuario no existe", "Error", JOptionPane.ERROR_MESSAGE, null);
             }
-            
-            
+
         } catch (SQLException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -230,36 +232,45 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1KeyPressed
 
     private void jButton1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButton1KeyTyped
-        char code = evt.getKeyChar(); 
+        char code = evt.getKeyChar();
         if(code == '\n'){
-              try {
-            Statement a  = conexion.createStatement();
-            String contraseña_entrada = this.contraseña.getText();
-            String usuario_entrada = this.usuario.getText();
-            String contraseña;
-            String tipo;
-            ResultSet b = a.executeQuery("SELECT* FROM usuarios WHERE NombreUsuario = '"+ usuario_entrada+"'");
-            if(b.next()){
-            contraseña = b.getString(3);
-            tipo = b.getString(4);
-            if(contraseña_entrada.equals(contraseña)){
-                ciclo = new Ciclo_Escolar(this,true,conexion);
-                ciclo.setVisible(true);
+            try {
+                Statement a  = conexion.createStatement();
+                String contraseña_entrada = this.contraseña.getText();
+                String usuario_entrada = this.usuario.getText();
+                String contraseña;
+                String tipo;
+                ResultSet b = a.executeQuery("SELECT* FROM usuarios WHERE NombreUsuario = '"+ usuario_entrada+"'");
+                if(b.next()){
+                    contraseña = b.getString(3);
+                    tipo = b.getString(4);
+                    if(contraseña_entrada.equals(contraseña)){
+                        if(tipo.equals("3")){
+                            this.dispose();
+                            Principal_catedratico s = new Principal_catedratico();
+                            s.setVisible(true);
+                            this.pack();
+                        }
+                        else{
+                            this.dispose();
+                            ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, b);
+                            s.setVisible(true);
+                            this.pack();
+                        }
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(this, "Contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE, null);
+                        this.contraseña.setText("");
+                        this.usuario.setText("");
+                    }
+                }
+                else{
+                    JOptionPane.showMessageDialog(this, "El usuario no existe", "Error", JOptionPane.ERROR_MESSAGE, null);
+                }
+
+            } catch (SQLException ex) {
+                
             }
-            else {
-                JOptionPane.showMessageDialog(this, "Contraseña incorrecta", "Error", JOptionPane.ERROR_MESSAGE, null);
-                this.contraseña.setText("");
-                this.usuario.setText("");
-            }
-            }
-            else{
-                  JOptionPane.showMessageDialog(this, "El usuario no existe", "Error", JOptionPane.ERROR_MESSAGE, null);
-            }
-            
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
-        }
         }
     }//GEN-LAST:event_jButton1KeyTyped
 
@@ -289,12 +300,20 @@ public class Principal extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
 
-        /* Create and display the form */
+        /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    new Principal().setVisible(true);
+                    Principal dialog = new Principal(new javax.swing.JFrame(), true);
+                    dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                        @Override
+                        public void windowClosing(java.awt.event.WindowEvent e) {
+                            System.exit(0);
+                        }
+                    });
+                    dialog.setVisible(true);
                 } catch (IOException ex) {
                     Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -314,7 +333,6 @@ public class Principal extends javax.swing.JFrame {
         
         return respuesta;
     } 
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPasswordField contraseña;
