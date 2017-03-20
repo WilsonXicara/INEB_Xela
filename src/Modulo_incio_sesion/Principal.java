@@ -255,10 +255,12 @@ public class Principal extends javax.swing.JDialog {
                             this.pack();
                         }
                         else{
+                            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                            ResultSet resultado = sentencia.executeQuery("SELECT * FROM Usuario U INNER JOIN Administrador A WHERE Administrador_Id = " + b.getString(6)+";");
+                            resultado.next();
                             this.dispose();
-                            ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, b);
+                            ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, resultado);
                             s.setVisible(true);
-                            this.pack();
                         }
                     }
                     else {
