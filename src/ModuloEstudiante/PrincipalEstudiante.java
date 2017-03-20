@@ -6,6 +6,7 @@
 package ModuloEstudiante;
 
 import ModuloAsignacionEST.AsignarEstudiante;
+import ModuloAsignacionEST.PrincipalAsignacionEST;
 import java.sql.Connection;
 
 /**
@@ -36,13 +37,14 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
 
         crear_estudiante = new javax.swing.JButton();
         ver_estudiante = new javax.swing.JButton();
-        asignar_estudiante = new javax.swing.JButton();
+        asignar_estudiantes = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Módulo Estudiante");
 
         crear_estudiante.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         crear_estudiante.setText("Crear Estudiante");
+        crear_estudiante.setToolTipText("Permite crear un nuevo registro para un nuevo estudiante.\nTome en cuenta de que el programa le permitirá crear un nuevo estudiante siempre y cuando no tenga un Código Personal repetido con otro ya inscrito (el Código Personal es un atributo único para cada estudiante).");
         crear_estudiante.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 crear_estudianteActionPerformed(evt);
@@ -51,17 +53,19 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
 
         ver_estudiante.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         ver_estudiante.setText("Ver información de Estudiante");
+        ver_estudiante.setToolTipText("Permite visualizar la información general de cada estudiante, así como poder editar dicha información y las notas asociadas al estudiante, en el Ciclo escolar vigente.");
         ver_estudiante.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ver_estudianteActionPerformed(evt);
             }
         });
 
-        asignar_estudiante.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        asignar_estudiante.setText("Asignar Estudiante");
-        asignar_estudiante.addActionListener(new java.awt.event.ActionListener() {
+        asignar_estudiantes.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        asignar_estudiantes.setText("Asignar Estudiantes");
+        asignar_estudiantes.setToolTipText("Permite crear un nuevo registro para asignar un Estudiante a un Ciclo Escolar y a un Grado.\nEsta función es útil en caso de que a la hora de crear un nuevo estudiante no se crea la Asignación correspondiete (sólo mostrará el listado de los Estudiantes que aún no han sido asignados).");
+        asignar_estudiantes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                asignar_estudianteActionPerformed(evt);
+                asignar_estudiantesActionPerformed(evt);
             }
         });
 
@@ -71,42 +75,46 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(crear_estudiante, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(ver_estudiante, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(asignar_estudiante, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(ver_estudiante)
+                        .addGap(185, 185, 185))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(crear_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 393, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(asignar_estudiantes, javax.swing.GroupLayout.PREFERRED_SIZE, 393, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(crear_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(127, 127, 127)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(crear_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(asignar_estudiantes, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ver_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(asignar_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(136, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void crear_estudianteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crear_estudianteActionPerformed
-        CrearEstudiante nueva_ventana = new CrearEstudiante(conexion);
+        CrearEstudiante nueva_ventana = new CrearEstudiante(this, true, conexion);
         nueva_ventana.setVisible(true);
     }//GEN-LAST:event_crear_estudianteActionPerformed
 
     private void ver_estudianteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ver_estudianteActionPerformed
-        InformacionEstudiante nueva_ventana = new InformacionEstudiante(conexion);
+        InformacionEstudiante nueva_ventana = new InformacionEstudiante(this, true, conexion);
         nueva_ventana.setVisible(true);
     }//GEN-LAST:event_ver_estudianteActionPerformed
 
-    private void asignar_estudianteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_asignar_estudianteActionPerformed
-        AsignarEstudiante nueva_ventana = new AsignarEstudiante(conexion);
+    private void asignar_estudiantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_asignar_estudiantesActionPerformed
+        PrincipalAsignacionEST nueva_ventana = new PrincipalAsignacionEST(this, true, conexion);
         nueva_ventana.setVisible(true);
-    }//GEN-LAST:event_asignar_estudianteActionPerformed
+    }//GEN-LAST:event_asignar_estudiantesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -144,7 +152,7 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton asignar_estudiante;
+    private javax.swing.JButton asignar_estudiantes;
     private javax.swing.JButton crear_estudiante;
     private javax.swing.JButton ver_estudiante;
     // End of variables declaration//GEN-END:variables

@@ -12,58 +12,78 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
- *
- * @author pc
+ * Clase que permite crear UNA ASIGNACIÓN PARA UN ESTUDIANTE. Para ello, se evalua si la Asignación ya existe (que exista un
+ * registro de Asignación correspondiente al Ciclo Escolar en curso).
+ * @author Wilson Xicará
  */
-public class AsignarEstudiante extends javax.swing.JFrame {
+public class AsignarEstudiante extends javax.swing.JDialog {
     private Connection conexion;
-    private ResultSet consultaEstudiante;
+    private ResultSet consultaCicloEscolar, consultaGrado;
+//    private PreparedStatement insertar;
     private DefaultTableModel tablaModel;
+    private int estudiante_Id;
     /**
-     * Creates new form AsignarEstudiante
+     * Creates new form AsignacionEST
      */
-    public AsignarEstudiante() {
+    public AsignarEstudiante(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
-        this.consultaEstudiante = null;
         this.conexion = null;
-        tablaModel = new DefaultTableModel();
-        // Definición de las columnas de 'tablaModel'
-        tablaModel.addColumn("Id");
-        tablaModel.addColumn("Código Personal");
-        tablaModel.addColumn("CUI");
-        tablaModel.addColumn("Nombre");
-        tablaModel.addColumn("Dirección");
-        tablaModel.addColumn("Fecha Nacimiento");
-        tablaModel.addColumn("Sexo");
-        tablaModel.addColumn("Etnia");
-        tablaModel.addColumn("Capacidad Diferente");
-        tablaModel.addColumn("Tipo Capacidad");
-        tablaModel.addColumn("Encargado");
-        extraerDatos(0, "Sin especificar");
+        iniciarTabla();
+    }
+    public AsignarEstudiante(java.awt.Frame parent, boolean modal, Connection conexion, int estudiante_Id) {
+        super(parent, modal);
+        initComponents();
+        /* Extraigo parte de la información del estudiante para mostrarlo. */
+        this.conexion = conexion;
+        iniciarTabla();
+        this.estudiante_Id = estudiante_Id;
+        extraerDatosEstudiante(estudiante_Id);
+        extraerDatosAsignacion();
         tabla_estudiantes.setModel(tablaModel);
     }
-    public AsignarEstudiante(Connection conexion) {
-        initComponents();
-        this.conexion = conexion;
-        this.consultaEstudiante = null;
+    private void iniciarTabla() {
         tablaModel = new DefaultTableModel();
         // Definición de las columnas de 'tablaModel'
-        tablaModel.addColumn("Id");
         tablaModel.addColumn("Código Personal");
         tablaModel.addColumn("CUI");
-        tablaModel.addColumn("Nombre");
-        tablaModel.addColumn("Dirección");
-        tablaModel.addColumn("Fecha Nacimiento");
-        tablaModel.addColumn("Sexo");
-        tablaModel.addColumn("Etnia");
-        tablaModel.addColumn("Capacidad Diferente");
-        tablaModel.addColumn("Tipo Capacidad");
-        tablaModel.addColumn("Encargado");
-        extraerDatos(0, "Sin especificar");
-        tabla_estudiantes.setModel(tablaModel);
+        tablaModel.addColumn("Nombre Completo");
+    }
+    private void extraerDatosEstudiante(int estudiante_Id) {
+        try {
+            // Extraigo el registro del Estudiante con Id 'estudiante_Id' (ya existe y es único.
+            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            ResultSet consulta = sentencia.executeQuery("SELECT * FROM Estudiante WHERE Id = "+estudiante_Id);
+            // Inicio la extracción de datos
+            consulta.next();
+            String[] registro = {consulta.getString("CodigoPersonal"),
+                consulta.getString("CUI"),
+                consulta.getString("Nombres")+" "+consulta.getString("Apellidos")
+            };
+            tablaModel.addRow(registro);
+            this.setTitle("Asignación del(la) estudiante "+consulta.getString("Nombres")+" "+consulta.getString("Apellidos"));
+        } catch (SQLException ex) {
+            Logger.getLogger(InformacionEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    private void extraerDatosAsignacion() {
+        try {
+            ciclo_escolar.removeAllItems();
+            // Realizo una consulta a la tabla CicloEscolar
+            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            consultaCicloEscolar = sentencia.executeQuery("SELECT * FROM CicloEscolar");
+            // Cargo los datos de la consulta al JComboBox
+//            ciclo_escolar.addItem(consultaCicloEscolar.getString("Anio"));
+            while(consultaCicloEscolar.next()) {
+                ciclo_escolar.addItem(consultaCicloEscolar.getString("Anio"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -77,8 +97,16 @@ public class AsignarEstudiante extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla_estudiantes = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        ciclo_escolar = new javax.swing.JComboBox<>();
+        jLabel2 = new javax.swing.JLabel();
+        grado = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
+        crear_asignacion = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        aula = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Asignación de Estudiantes");
 
         tabla_estudiantes.setModel(new javax.swing.table.DefaultTableModel(
@@ -91,26 +119,180 @@ public class AsignarEstudiante extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tabla_estudiantes);
 
+        jLabel1.setText("Información:");
+
+        ciclo_escolar.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ciclo_escolarItemStateChanged(evt);
+            }
+        });
+
+        jLabel2.setText("Ciclo escolar:");
+
+        jLabel3.setText("Grado:");
+
+        crear_asignacion.setText("Crear Asignación");
+        crear_asignacion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                crear_asignacionActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("Aula:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 670, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(114, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addComponent(jLabel1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addGap(175, 175, 175)
+                                        .addComponent(jLabel4))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(aula, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(160, 160, 160)
+                                .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(71, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(45, 45, 45))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(aula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(8, 8, 8)
+                                .addComponent(jLabel2))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel4)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(51, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void ciclo_escolarItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ciclo_escolarItemStateChanged
+        // Realizo una consulta a las tablas AsignacionCAT y Grado para buscar todos los grados del Ciclo Escolar en curso
+        int itemSeleccionado = ciclo_escolar.getSelectedIndex();
+        if (itemSeleccionado > -1) {
+            grado.removeAllItems();
+            try {
+                Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                consultaCicloEscolar.first();   // Regreso al primer registro de la columna
+                for(int i=1; i<itemSeleccionado; i++) consultaCicloEscolar.next();
+                int cicloEscolar_Id = consultaCicloEscolar.getInt("Id");
+                // Realizo la consulta a las tablas AsignacionCAT y Grado: los Grados que tiene asignado el Ciclo Escolar seleccionado
+                consultaGrado = sentencia.executeQuery("SELECT AsignacionCAT.CicloEscolar_Id, AsignacionCAT.Grado_Id, Grado.*, COUNT(AsignacionCAT.Grado_Id) FROM AsignacionCAT "
+                        + "INNER JOIN Grado ON AsignacionCAT.Grado_Id = Grado.Id "
+                        + "WHERE AsignacionCAT.CicloEscolar_Id = "+cicloEscolar_Id+" "
+                        + "GROUP BY AsignacionCAT.Grado_Id");
+                // Cargo los datos al JComboBox correspondiente
+                while(consultaGrado.next()) {
+                    grado.addItem(consultaGrado.getString("Nombre")+" "+consultaGrado.getString("Seccion"));
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_ciclo_escolarItemStateChanged
+
+    private void crear_asignacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crear_asignacionActionPerformed
+        /* Para la asignación, el Ciclo Escolar se obtiene de 'ciclo_escolar.getSelectedIndex()' y el Grado se obtiene de
+            'grado.getSelectedIndex()'. Para ambos casos, sólo obtengo el Índice dentro de los JComboBox, pero puedo averiguar
+            a qué registro de la consulta pertenece (ya que el contenido de los ComboBox se obtiene del último valor de ambas
+            consultas). Obtengo los Índices de los JComboBox y busco los Id's correspondientes en las consultas */
+        try {
+            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            ResultSet consulta;
+            /* Obtengo el Id del Ciclo Escolar al que se asignará al nuevo Estudiante */
+            int indexCicloEscolar = ciclo_escolar.getSelectedIndex();
+            consultaCicloEscolar.first();   // Me muevo al primer registro
+            // Me muevo hasta el registro del Ciclo Esoclar al que se asignará al Estudiante
+            for (int i=0; i<indexCicloEscolar; i++) consultaCicloEscolar.next();
+            int cicloEscolar_Id = consultaCicloEscolar.getInt("Id");    // Obtengo el Id del Ciclo Escolar
+            
+            /* Obtengo el Id del Grado al que se asignará al nuevo Estudiante */
+            int indexGrado = grado.getSelectedIndex();
+            consultaGrado.first();  // Me muevo al primer Registro
+            // Me muevo hasta el registro del Grado al que se asignará al Estudiante
+            for(int i=0; i<indexGrado; i++) consultaGrado.next();
+            int grado_Id = consultaGrado.getInt("Grado_Id");
+            // Hasta aquí, ya obtuve los Id de Ciclo Escolar y Grado
+            
+            /* Creación de la Asignación del Nuevo Estudiante */
+            // Obtengo el Id de la nueva Asignación:
+            consulta = sentencia.executeQuery("SELECT COUNT(*) Cantidad FROM AsignacionEST");
+            consulta.next();
+            int asignacionEST_Id = consulta.getInt("Cantidad") + 1;
+            
+            String nuevaAsignacion = "INSERT INTO AsignacionEst(CicloEscolar_Id, Grado_Id, Estudiante_Id, Aula) VALUES("
+                    + cicloEscolar_Id + "," + grado_Id + "," + estudiante_Id + ",'" + aula.getText() + "')";
+            conexion.prepareStatement(nuevaAsignacion).executeUpdate(); // Inserto y actulizo
+            asignarCursos(cicloEscolar_Id, grado_Id, asignacionEST_Id);
+            
+            JOptionPane.showMessageDialog(new javax.swing.JFrame(), "Se creó la asignación y los cursos con éxito!", "Insertado", JOptionPane.INFORMATION_MESSAGE);
+            crear_asignacion.setEnabled(false);
+//            JOptionPane.showMessageDialog(new javax.swing.JFrame(), nuevaAsignacion+asignarCursos(cicloEscolar_Id, grado_Id, asignacionEST_Id), "Información", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException ex) {
+            Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_crear_asignacionActionPerformed
+    private void asignarCursos(int cicloEscolar_Id, int grado_Id, int asignacionEST_Id) {
+        String mensaje = "\nSe asignarán los siguientes cursos:";
+        String nuevasNotas = "";
+        /* Obtengo los Cursos que se le asignarán al Estudiante, y se los asigno al crear Notas */
+        try {
+            String nuevosCursos = "SELECT CicloEscolar.Id CicloEscolar_Id, CicloEscolar.Anio, Grado.Id Grado_Id, Grado.Nombre Grado, Curso.Id Curso_Id, Curso.Nombre Curso FROM CicloEscolar "
+                    + "INNER JOIN AsignacionCAT ON CicloEscolar.Id = AsignacionCAT.CicloEscolar_Id "
+                    + "INNER JOIN Grado ON AsignacionCAT.Grado_Id = Grado.Id "
+                    + "INNER JOIN Curso ON AsignacionCAT.Curso_Id = Curso.Id "
+                    + "WHERE CicloEscolar_Id = "+cicloEscolar_Id+" AND Grado_Id = "+grado_Id+"";
+            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            ResultSet consulta = sentencia.executeQuery(nuevosCursos);  // Realizo la consulta
+            
+            nuevasNotas+= "INSERT INTO Notas(AsignacionEST_Id, Estudiante_Id, Curso_Id, Nota1, Nota2, Nota3, Nota4, NotaRecuperacion, NotaFinal) VALUES";
+            // Inicio la extracción de los Cursos que se asignarán
+            while(consulta.next()) {
+                mensaje+= "\n"+consulta.getString("Curso");
+                nuevasNotas+= "("+asignacionEST_Id+","+estudiante_Id+","+consulta.getInt("Curso_Id")+",0,0,0,0,0,0),";
+            } nuevasNotas = nuevasNotas.substring(0, nuevasNotas.length()-1);
+            
+            conexion.prepareStatement(nuevasNotas).executeUpdate();    // Inserto y actulizo
+        } catch (SQLException ex) {
+            Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     /**
      * @param args the command line arguments
      */
@@ -137,81 +319,34 @@ public class AsignarEstudiante extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(AsignarEstudiante.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
-        /* Create and display the form */
+        /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AsignarEstudiante().setVisible(true);
+                AsignarEstudiante dialog = new AsignarEstudiante(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
             }
         });
     }
-    private void extraerDatos(int filtro, String campoBusqueda) {
-        System.out.println("Se hará la consulta");
-        try {
-            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            switch (filtro) {
-                // 'filtro == 1': Búsqueda por Apellidos
-                case 1:
-                    consultaEstudiante = sentencia.executeQuery("SELECT Estudiante.*, Municipio.Nombre Municipio, Encargado.Nombre Encargado FROM Estudiante "
-                            + "INNER JOIN Municipio ON Estudiante.Municipio_Id = Municipio.Id "
-                            + "INNER JOIN Encargado ON Estudiante.Encargado_Id = Encargado.Id "
-                            + "WHERE Estudiante.Apellidos = '"+campoBusqueda+"'");
-                break;
-                // 'filtro == 2': Búsqueda por Código Personal
-                case 2:
-                    consultaEstudiante = sentencia.executeQuery("SELECT Estudiante.*, Municipio.Nombre Municipio, Encargado.Nombre Encargado FROM Estudiante "
-                            + "INNER JOIN Municipio ON Estudiante.Municipio_Id = Municipio.Id "
-                            + "INNER JOIN Encargado ON Estudiante.Encargado_Id = Encargado.Id "
-                            + "WHERE Estudiante.CodigoPersonal = '"+campoBusqueda+"'");
-                break;
-                // 'filtro == 3': Búsqueda por CUI
-                case 3:
-                    consultaEstudiante = sentencia.executeQuery("SELECT Estudiante.*, Municipio.Nombre Municipio, Encargado.Nombre Encargado FROM Estudiante "
-                            + "INNER JOIN Municipio ON Estudiante.Municipio_Id = Municipio.Id "
-                            + "INNER JOIN Encargado ON Estudiante.Encargado_Id = Encargado.Id "
-                            + "WHERE Estudiante.CUI = '"+campoBusqueda+"'");
-                break;
-                // 'fitro == 0': Sin especificar (devuelve todo el contenido de la tabla de la BD)
-                default:
-                    consultaEstudiante = sentencia.executeQuery("SELECT Estudiante.*, Municipio.Nombre Municipio, Encargado.Nombre Encargado FROM Estudiante "
-                            + "INNER JOIN Municipio ON Estudiante.Municipio_Id = Municipio.Id "
-                            + "INNER JOIN Encargado ON Estudiante.Encargado_Id = Encargado.Id");
-                break;
-            }   // Hasta aquí se han cargado los datos
-            
-            /** Obtención de los Metadatos
-            ResultSetMetaData columnas = consulta.getMetaData();
-            int cantidadColumnas = columnas.getColumnCount();
-            for(int i=1; i<=cantidadColumnas; i++)
-                tabla.addColumn(columnas.getColumnLabel(i));**/
-            // Obtención e inserción de las filas en 'tabla'
-            while (consultaEstudiante.next()) {
-                String[] registro = new String[11];
-                registro[0] = consultaEstudiante.getString("Id");
-                registro[1] = consultaEstudiante.getString("CodigoPersonal");
-                registro[2] = consultaEstudiante.getString("CUI");
-                registro[3] = consultaEstudiante.getString("Nombres")+" "+ consultaEstudiante.getString("Apellidos");
-                registro[4] = consultaEstudiante.getString("Direccion") + ", " + consultaEstudiante.getString("Municipio");
-                registro[5] = consultaEstudiante.getString("FechaNacimiento");
-                registro[6] = consultaEstudiante.getString("Sexo");
-                registro[7] = consultaEstudiante.getString("Etnia");
-                if (consultaEstudiante.getBoolean("CapacidadDiferente")) {
-                    registro[8] = "Si";
-                    registro[9] = consultaEstudiante.getString("TipoCapacidad");
-                } else {
-                    registro[8] = "No";
-                    registro[9] = "<No existente>";
-                }
-                registro[10] = consultaEstudiante.getString("Encargado");
-                tablaModel.addRow(registro); // Inserción del i-ésimo registro en la tabla
-            }
-//            consultaEstudiante.close();   // No cierro la consulta pues me servirá para modificar algún registro
-        } catch (SQLException ex) {
-            Logger.getLogger(InformacionEstudiante.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField aula;
+    private javax.swing.JComboBox<String> ciclo_escolar;
+    private javax.swing.JButton crear_asignacion;
+    private javax.swing.JComboBox<String> grado;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tabla_estudiantes;
     // End of variables declaration//GEN-END:variables

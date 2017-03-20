@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package ModuloEstudiante;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +12,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 
 /**
  * Similar a la clase CrearEstudiante. Esta clase se utiliza para modificar los datos de un Estudiante, así como la de su
@@ -19,16 +19,16 @@ import javax.swing.JFrame;
  * También puede modificarse los datos del Encargado (incluso cambiar el Encargado del Estudiante).
  * @author Wilson Xicará
  */
-public class EditarEstudiante extends javax.swing.JFrame {
+public class EditarEstudiante extends javax.swing.JDialog {
     private Connection conexion;
     private PreparedStatement insercion;
     private int estudiante_Id, encargado_Id;
     /**
-     * Creates new form CrearEstudiante
+     * Creates new form EditarEstudiante
      */
-    public EditarEstudiante() {
+    public EditarEstudiante(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
     /**
      * Constructor para inicializar una nueva ventana para editar los datos de un Estudiante y/o su Encargado.
@@ -36,10 +36,10 @@ public class EditarEstudiante extends javax.swing.JFrame {
      * @param estudiante nodo de la consulta (tabla) que contiene la información del Estudiante a modificar.
      * @param encargado nodo de la consulta (tabla) que contiene la información del Encargado a modificar.
      */
-    public EditarEstudiante(Connection conexion, ResultSet estudiante, ResultSet encargado) {
-        // Inicio de la carga de los Datos del Estudiante y del Encargado, a los campos correspondientes
+    public EditarEstudiante(java.awt.Frame parent, boolean modal, Connection conexion, ResultSet estudiante, ResultSet encargado) {
+        super(parent, modal);
         initComponents();
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        // Inicio de la carga de los Datos del Estudiante y del Encargado, a los campos correspondientes
         this.conexion = conexion;
         try {
             // Datos del Estudiante
@@ -64,7 +64,7 @@ public class EditarEstudiante extends javax.swing.JFrame {
             // Datos del Encargado
             encargado_dpi.setText(encargado.getString("DPI"));
             encargado_nombre_completo.setText(encargado.getString("Nombre"));
-            encargado_edad.setText("NO");
+            encargado_fechaNacimiento.setText(encargado.getString("FechaNacimiento"));
             encargado_direccion.setText(encargado.getString("Direccion"));
             encargado_municipio.setSelectedIndex(encargado.getInt("Municipio_Id")-1);
             encargado_relacion_con_estudiante.setText(encargado.getString("Relacion"));
@@ -107,80 +107,70 @@ public class EditarEstudiante extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel24 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        encargado_dpi = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        estudiante_codigo_personal = new javax.swing.JTextField();
-        estudiante_cui = new javax.swing.JTextField();
         estudiante_nombres = new javax.swing.JTextField();
+        encargado_nombre_completo = new javax.swing.JTextField();
         estudiante_apellidos = new javax.swing.JTextField();
+        encargado_fechaNacimiento = new javax.swing.JTextField();
         estudiante_direccion = new javax.swing.JTextField();
+        encargado_direccion = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
         estudiante_municipio = new javax.swing.JComboBox<>();
+        encargado_municipio = new javax.swing.JComboBox<>();
         estudiante_sexo = new javax.swing.JComboBox<>();
+        encargado_relacion_con_estudiante = new javax.swing.JTextField();
         estudiante_etnia = new javax.swing.JTextField();
+        encargado_telefono_casa = new javax.swing.JTextField();
         estudiante_capacidad_diferente = new javax.swing.JComboBox<>();
+        encargado_celular = new javax.swing.JTextField();
         estudiante_tipo_capacidad = new javax.swing.JTextField();
         Editar = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JSeparator();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
-        jLabel21 = new javax.swing.JLabel();
-        jLabel22 = new javax.swing.JLabel();
-        jLabel23 = new javax.swing.JLabel();
-        jLabel24 = new javax.swing.JLabel();
-        encargado_dpi = new javax.swing.JTextField();
-        encargado_nombre_completo = new javax.swing.JTextField();
-        encargado_edad = new javax.swing.JTextField();
-        encargado_direccion = new javax.swing.JTextField();
-        jLabel17 = new javax.swing.JLabel();
-        encargado_municipio = new javax.swing.JComboBox<>();
-        encargado_relacion_con_estudiante = new javax.swing.JTextField();
-        encargado_telefono_casa = new javax.swing.JTextField();
-        encargado_celular = new javax.swing.JTextField();
         encargado_trabajo = new javax.swing.JTextField();
         estudiante_fechaNacimiento_dia = new javax.swing.JComboBox<>();
+        jSeparator1 = new javax.swing.JSeparator();
         estudiante_fechaNacimiento_mes = new javax.swing.JComboBox<>();
+        jLabel12 = new javax.swing.JLabel();
         estudiante_fechaNacimiento_año = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
         estudiante_fechaNacimiento = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        estudiante_codigo_personal = new javax.swing.JTextField();
+        estudiante_cui = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Crear nuevo estudiante");
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Editar información del Estudiante");
+
+        jLabel24.setText("Fecha de Nacimiento:");
 
         jLabel1.setText("Codigo Personal:");
 
         jLabel2.setText("CUI:");
 
-        jLabel3.setText("Nombres:");
-
-        jLabel4.setText("Apellidos:");
-
-        jLabel5.setText("Dirección:");
-
-        jLabel6.setText("Fecha de Nacimiento:");
-
-        jLabel7.setText("Sexo:");
-
-        jLabel8.setText("Comunidad étnica:");
-
-        jLabel9.setText("Capacidad Diferente:");
-
-        jLabel10.setText("Tipo capacidad:");
-
         jLabel11.setText("Municipio:");
 
+        jLabel17.setText("Municipio:");
+
         estudiante_municipio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Almolonga", "Cabrican", "Cajolá", "Cantel", "Coatepeque", "Colomba Costa Cuca", "Concepción Chiquirichapa", "El Palmar", "Flores Costa Cuca", "Génova Costa Cuca", "Huitán", "La Esperanza", "Olintepeque", "Palestina de los Altos", "Quetzaltenango", "Salcajá", "San Carlos Sija", "San Francisco La Unión", "San Juan Ostuncalco", "San Martín Sacatepéquez", "San Mateo", "San Miguel Sigüilá", "Sibilia", "Zunil" }));
+
+        encargado_municipio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Almolonga", "Cabrican", "Cajolá", "Cantel", "Coatepeque", "Colomba Costa Cuca", "Concepción Chiquirichapa", "El Palmar", "Flores Costa Cuca", "Génova Costa Cuca", "Huitán", "La Esperanza", "Olintepeque", "Palestina de los Altos", "Quetzaltenango", "Salcajá", "San Carlos Sija", "San Francisco La Unión", "San Juan Ostuncalco", "San Martín Sacatepéquez", "San Mateo", "San Miguel Sigüilá", "Sibilia", "Zunil" }));
 
         estudiante_sexo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Femenino", "Masculino" }));
 
@@ -193,33 +183,9 @@ public class EditarEstudiante extends javax.swing.JFrame {
             }
         });
 
-        jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
-
-        jLabel12.setText("INFORMACIÓN DEL ESTUDIANTE:");
-
-        jLabel13.setText("Dirección:");
-
-        jLabel14.setText("Relación con el estudiante:");
-
-        jLabel15.setText("Celular:");
-
-        jLabel16.setText("Trabajo u oficio:");
-
-        jLabel20.setText("INFORMACIÓN DEL ENCARGADO:");
-
-        jLabel21.setText("DPI:");
-
-        jLabel22.setText("Teléfono de casa:");
-
-        jLabel23.setText("Nombre Completo:");
-
-        jLabel24.setText("Edad:");
-
-        jLabel17.setText("Municipio:");
-
-        encargado_municipio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Almolonga", "Cabrican", "Cajolá", "Cantel", "Coatepeque", "Colomba Costa Cuca", "Concepción Chiquirichapa", "El Palmar", "Flores Costa Cuca", "Génova Costa Cuca", "Huitán", "La Esperanza", "Olintepeque", "Palestina de los Altos", "Quetzaltenango", "Salcajá", "San Carlos Sija", "San Francisco La Unión", "San Juan Ostuncalco", "San Martín Sacatepéquez", "San Mateo", "San Miguel Sigüilá", "Sibilia", "Zunil" }));
-
         estudiante_fechaNacimiento_dia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Dia" }));
+
+        jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         estudiante_fechaNacimiento_mes.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Mes", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" }));
         estudiante_fechaNacimiento_mes.addItemListener(new java.awt.event.ItemListener() {
@@ -228,7 +194,41 @@ public class EditarEstudiante extends javax.swing.JFrame {
             }
         });
 
+        jLabel12.setText("INFORMACIÓN DEL ESTUDIANTE:");
+
         estudiante_fechaNacimiento_año.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Año", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020" }));
+
+        jLabel3.setText("Nombres:");
+
+        jLabel13.setText("Dirección:");
+
+        jLabel4.setText("Apellidos:");
+
+        jLabel14.setText("Relación con el estudiante:");
+
+        jLabel5.setText("Dirección:");
+
+        jLabel15.setText("Celular:");
+
+        jLabel6.setText("Fecha de Nacimiento:");
+
+        jLabel16.setText("Trabajo u oficio:");
+
+        jLabel7.setText("Sexo:");
+
+        jLabel20.setText("INFORMACIÓN DEL ENCARGADO:");
+
+        jLabel8.setText("Comunidad étnica:");
+
+        jLabel21.setText("DPI:");
+
+        jLabel9.setText("Capacidad Diferente:");
+
+        jLabel22.setText("Teléfono de casa:");
+
+        jLabel10.setText("Tipo capacidad:");
+
+        jLabel23.setText("Nombre Completo:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -277,7 +277,7 @@ public class EditarEstudiante extends javax.swing.JFrame {
                                             .addGroup(layout.createSequentialGroup()
                                                 .addComponent(jLabel6)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                                 .addGap(16, 16, 16)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -294,17 +294,21 @@ public class EditarEstudiante extends javax.swing.JFrame {
                                 .addComponent(jLabel12)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(50, 50, 50)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel13)
-                                    .addComponent(jLabel24)
-                                    .addComponent(jLabel23)
-                                    .addComponent(jLabel21)
-                                    .addComponent(jLabel17))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(50, 50, 50)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel13)
+                                            .addComponent(jLabel23)
+                                            .addComponent(jLabel21)
+                                            .addComponent(jLabel17)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(32, 32, 32)
+                                        .addComponent(jLabel24)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(encargado_nombre_completo)
-                                    .addComponent(encargado_edad, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(encargado_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(encargado_direccion, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
                                     .addComponent(encargado_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(encargado_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -331,7 +335,7 @@ public class EditarEstudiante extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(277, 277, 277)
                         .addComponent(Editar, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(100, Short.MAX_VALUE))
+                .addContainerGap(58, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(estudiante_fechaNacimiento_dia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -410,7 +414,7 @@ public class EditarEstudiante extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel24)
-                            .addComponent(encargado_edad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(encargado_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel13)
@@ -437,7 +441,7 @@ public class EditarEstudiante extends javax.swing.JFrame {
                             .addComponent(encargado_trabajo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(Editar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 93, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(estudiante_fechaNacimiento_dia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(estudiante_fechaNacimiento_mes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -459,7 +463,7 @@ public class EditarEstudiante extends javax.swing.JFrame {
         try {
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             ResultSet cEncargadoId = null;
-            
+
             // Si cambia de encargado (diferente DPI para Encargado) entonces se crea el nuevo encargado.
             // De lo contrario, sólo se actualiza el existente
             if (encargadoYaExiste() == false) {
@@ -530,19 +534,19 @@ public class EditarEstudiante extends javax.swing.JFrame {
             estudiante_fechaNacimiento_dia.removeAllItems();
             estudiante_fechaNacimiento_dia.addItem("Dia");
             if ((itemMes == 1) || (itemMes == 3) || (itemMes == 5) || (itemMes == 7) || (itemMes == 8) || (itemMes == 10) || itemMes == 12)
-                for (int i=1; i<32; i++)
-                    estudiante_fechaNacimiento_dia.addItem(Integer.toString(i));
+            for (int i=1; i<32; i++)
+            estudiante_fechaNacimiento_dia.addItem(Integer.toString(i));
             else if ((itemMes == 4) || (itemMes == 6) || (itemMes == 9) || (itemMes == 11))
-                for (int i=1; i<31; i++)
-                    estudiante_fechaNacimiento_dia.addItem(Integer.toString(i));
+            for (int i=1; i<31; i++)
+            estudiante_fechaNacimiento_dia.addItem(Integer.toString(i));
             else
-                for (int i=1; i<29; i++)
-                    estudiante_fechaNacimiento_dia.addItem(Integer.toString(i));
+            for (int i=1; i<29; i++)
+            estudiante_fechaNacimiento_dia.addItem(Integer.toString(i));
         }
         if (itemDia <= itemMes)
-            estudiante_fechaNacimiento_dia.setSelectedIndex(itemDia);
+        estudiante_fechaNacimiento_dia.setSelectedIndex(itemDia);
         else
-            estudiante_fechaNacimiento_dia.setSelectedIndex(estudiante_fechaNacimiento_dia.getItemCount()-1);
+        estudiante_fechaNacimiento_dia.setSelectedIndex(estudiante_fechaNacimiento_dia.getItemCount()-1);
     }//GEN-LAST:event_estudiante_fechaNacimiento_mesItemStateChanged
 
     /**
@@ -571,12 +575,18 @@ public class EditarEstudiante extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(EditarEstudiante.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        //</editor-fold>
 
-        /* Create and display the form */
+        /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new EditarEstudiante().setVisible(true);
+                EditarEstudiante dialog = new EditarEstudiante(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
             }
         });
     }
@@ -586,7 +596,7 @@ public class EditarEstudiante extends javax.swing.JFrame {
     private javax.swing.JTextField encargado_celular;
     private javax.swing.JTextField encargado_direccion;
     private javax.swing.JTextField encargado_dpi;
-    private javax.swing.JTextField encargado_edad;
+    private javax.swing.JTextField encargado_fechaNacimiento;
     private javax.swing.JComboBox<String> encargado_municipio;
     private javax.swing.JTextField encargado_nombre_completo;
     private javax.swing.JTextField encargado_relacion_con_estudiante;

@@ -66,7 +66,6 @@ public class Catedraticos extends javax.swing.JFrame {
         Campo_Telefono = new javax.swing.JTextField();
         Campo_DPI = new javax.swing.JTextField();
         Campo_Sexo = new javax.swing.JComboBox<>();
-        Campo_Etnia = new javax.swing.JComboBox<>();
         Boton_Aceptar = new javax.swing.JButton();
         Boton_Datos = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
@@ -75,6 +74,8 @@ public class Catedraticos extends javax.swing.JFrame {
         Campo_Id = new javax.swing.JTextField();
         Campo8 = new javax.swing.JLabel();
         Campo_Municipio = new javax.swing.JComboBox<>();
+        Campo_Etnia = new javax.swing.JTextField();
+        jButton3 = new javax.swing.JButton();
         Fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -151,9 +152,6 @@ public class Catedraticos extends javax.swing.JFrame {
         Campo_Sexo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "F", "M" }));
         getContentPane().add(Campo_Sexo, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 170, 170, -1));
 
-        Campo_Etnia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Maya", "Ladina", "Xinca", "Garifuna" }));
-        getContentPane().add(Campo_Etnia, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 220, 170, -1));
-
         Boton_Aceptar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         Boton_Aceptar.setText("Aceptar");
         Boton_Aceptar.addActionListener(new java.awt.event.ActionListener() {
@@ -169,7 +167,7 @@ public class Catedraticos extends javax.swing.JFrame {
                 Boton_DatosActionPerformed(evt);
             }
         });
-        getContentPane().add(Boton_Datos, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 20, 120, 30));
+        getContentPane().add(Boton_Datos, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 50, 120, 30));
 
         jButton1.setText("Actualizar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -201,8 +199,12 @@ public class Catedraticos extends javax.swing.JFrame {
         Campo8.setText("Municipio:");
         getContentPane().add(Campo8, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 270, -1, -1));
 
-        Campo_Municipio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Quetzaltenango", "Almolonga", "Cabricán", "Cajolá", "Cantel", "Coatepeque", "Colomba Costa Cuca", "Concepción Chiquirichapa", "El Palmar", "Flores Costa Cuca", "Génova", "Huitán", "La Esperanza", "Olintepeque", "Palestina de Los Altos", "Salcajá", "San Juan Ostuncalco", "San Carlos Sija", "San Francisco La Unión", "San Martín Sacatepéquez", "San Mateo", "San Miguel Sigüilá", "Sibilia", "Zunil" }));
+        Campo_Municipio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Almolonga", "Cabricán", "Cajolá", "Cantel", "Coatepeque", "Colomba Costa Cuca", "Concepción Chiquirichapa", "El Palmar", "Flores Costa Cuca", "Génova", "Huitán", "La Esperanza", "Olintepeque", "Palestina de Los Altos", "Quetzaltenango", "Salcajá", "San Juan Ostuncalco", "San Carlos Sija", "San Francisco La Unión", "San Martín Sacatepéquez", "San Mateo", "San Miguel Sigüilá", "Sibilia", "Zunil" }));
         getContentPane().add(Campo_Municipio, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 270, 170, -1));
+        getContentPane().add(Campo_Etnia, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 220, 170, -1));
+
+        jButton3.setText("Volver");
+        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 10, 120, -1));
 
         Fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Catedratico/Imagenes/pizarra.png"))); // NOI18N
         getContentPane().add(Fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 450));
@@ -220,7 +222,7 @@ public class Catedraticos extends javax.swing.JFrame {
        cadena5 = Campo_Telefono.getText();
        cadena6 = Campo_DPI.getText();
        cadena7 = Campo_Sexo.getSelectedItem().toString();
-       cadena8 = Campo_Etnia.getSelectedItem().toString();
+       cadena8 = Campo_Etnia.getText().toString();
        cadena9 = Campo_Municipio.getSelectedItem().toString();
      
     
@@ -242,8 +244,10 @@ public class Catedraticos extends javax.swing.JFrame {
                    //                    "\n " + url ); 
   
                   stmt = con.createStatement(); 
-                  stmt.executeUpdate("update ignore catedratico set Id= '"+cadena1+"' , Nombres = '"+cadena2+"',Apellidos = '"+cadena3+"',Direccion = '"+cadena4+"', DPI = '"+cadena6+"', Sexo = '"+cadena7+ "' , Etnia = '"+cadena8+
-                          "' where Id = '"+Campo_Id.getText()+"' || Nombres = '"+Campo_Nombre.getText()+"' || Apellidos = '"+Campo_Apellidos.getText()+"' || Direccion = '"+Campo_Direccion.getText()+"' || DPI = '"+Campo_DPI.getText()+"' || Sexo = '"+Campo_Sexo.getSelectedItem()+"' || Etnia = '"+Campo_Etnia.getSelectedItem()+"'"); 
+                  stmt.executeUpdate("update ignore catedratico  set Id= '"+cadena1+"' , Nombres = '"+cadena2+"',Apellidos = '"+cadena3+"',Direccion = '"+cadena4+"', DPI = '"+cadena6+"', Sexo = '"+cadena7+ "' , Etnia = '"+cadena8+
+                          "' where Id = '"+Campo_Id.getText()+"' || Nombres = '"+Campo_Nombre.getText()+"' || Apellidos = '"+Campo_Apellidos.getText()+"' || Direccion = '"+Campo_Direccion.getText()+"' || DPI = '"+Campo_DPI.getText()+"' || Sexo = '"+Campo_Sexo.getSelectedItem()+"' || Etnia = '"+Campo_Etnia.getText()+"'");
+                  //stmt.executeUpdate("update ignore telefono set Telefono '"+cadena5"'");
+                  stmt.executeUpdate("update ignore telefono set Telefono= '"+cadena5+"' where Telefono = '"+Campo_Telefono.getText()+"'|| telefono.Catedratico_Id = '"+Campo_Id.getText()+"'");
                   //System.out.println("Los valores han sido Actualizados"); 
                   } 
                   catch( SQLException e ) { 
@@ -281,7 +285,8 @@ public class Catedraticos extends javax.swing.JFrame {
         String cap="";
         ResultSet rs = null;
         var2 = var;
-        String sql2="Select Id, Nombres, Apellidos, Direccion, DPI, Sexo, Etnia FROM catedratico where Nombres = '"+var2+"'";
+        String sql2="Select catedratico.Id, catedratico.Nombres, catedratico.Apellidos, catedratico.Direccion, catedratico.DPI, catedratico.Sexo, catedratico.Etnia, telefono.Telefono FROM telefono "
+                + "INNER JOIN catedratico ON telefono.Catedratico_Id = catedratico.Id  where catedratico.Nombres = '"+var2+"'";
             
    try { 
        
@@ -312,6 +317,7 @@ public class Catedraticos extends javax.swing.JFrame {
                    String depei = rs.getString("DPI");
                    String sexo = rs.getString("Sexo");
                    String etnia = rs.getString("Etnia"); 
+                   String tel = rs.getString("Telefono");
 	           /*System.out.println("Sitio Web "+ (i++) + ":\n" 
 	                     
                            + id + "\n"
@@ -330,7 +336,8 @@ public class Catedraticos extends javax.swing.JFrame {
                   // Campo_Sexo.setText(sexo);
                    //Campo_Etnia.setText(etnia);
                    Campo_Sexo.setSelectedItem(sexo);
-                   Campo_Etnia.setSelectedItem(etnia);
+                   Campo_Etnia.setText(etnia);
+                   Campo_Telefono.setText(tel);
                   
 	         } 
 	        } 
@@ -401,8 +408,9 @@ public class Catedraticos extends javax.swing.JFrame {
         cadena5 = Campo_Telefono.getText();
         cadena6 = Campo_DPI.getText();
         cadena7 = Campo_Sexo.getSelectedItem().toString();
-        cadena8 = Campo_Etnia.getSelectedItem().toString();
-        cadena9 = Campo_Municipio.getSelectedItem().toString();
+        cadena8 = Campo_Etnia.getText().toString();
+        cadena9 = Integer.toString(Campo_Municipio.getSelectedIndex()+1);
+        //int mun = Integer.toString(Campo_Municipio.getSelectedIndex()+1);
         //---------------------------------------------------------------------------------------------------------------------------------
        
         try {
@@ -418,15 +426,33 @@ public class Catedraticos extends javax.swing.JFrame {
                                        "\n " + url ); 
                                        
                   stmt = con.createStatement();
+                  stmt = con.createStatement();
                   
-                  stmt.executeUpdate("INSERT INTO municipio (Nombre) VALUES('"+cadena9+"')");
-                  int sql= stmt.executeUpdate("SELECT LAST_INSERT_ID() FROM municipio") /*"SELECT LAST_INSERT_ID() FROM municipio"*/;
+                 // System.out.println(id2);
+                 stmt.executeUpdate("INSERT INTO catedratico (Nombres,Apellidos,Direccion,DPI, Sexo, Etnia,Municipio_Id) "
+                          + "VALUES('"+cadena2+"','"+cadena3+"','"+cadena4+"','"+cadena6+"','"+cadena7+"','"+cadena8+"','"+cadena9+ "')");
+                  //int sql= stmt.executeUpdate("SELECT MAX(catedratico.Id)FROM catedratico") /*"SELECT LAST_INSERT_ID() FROM municipio"*/;}// int sql;/*= stmt.executeUpdate("SELECT LAST_INSERT_ID() FROM municipio") /*"SELECT LAST_INSERT_ID() FROM municipio"*/;
+                  String id;
+                  ResultSet rs = null;
                   
-                  stmt.executeUpdate("INSERT INTO catedratico (Nombres,Apellidos,Direccion,DPI, Sexo, Etnia,Municipio_Id) "
-                          + "VALUES('"+cadena2+"','"+cadena3+"','"+cadena4+"','"+cadena6+"','"+cadena7+"','"+cadena8+ "','" + sql+"')");
+                 // stmt.executeUpdate("INSERT INTO municipio (Nombre) VALUES('"+cadena9+"')");
+                  String sql = "SELECT MAX(catedratico.Id) FROM catedratico";
+                  rs = stmt.executeQuery(sql);
+                  int id2 =0;
+                    while(rs.next()){
+                   // System.out.println(id);
+                 //  id = rs.getString("Nombre");
+                    System.out.println(rs.getInt(1));
+                    id2 = rs.getInt(1);
+                    }
+                 // int id2 = rs.getInt(1);
+                 
+                 stmt.executeUpdate("INSERT INTO telefono (Telefono,Catedratico_Id) VALUES('"+cadena5+"','"+id2+"')");
                   
                   System.out.println("Los valores han sido agregados a la base de datos ");
-                 
+                 //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                 //SELECT catedratico.*, telefono.Telefono, municipio.Nombre FROM catedratico LEFT OUTER JOIN telefono ON catedratico.Id = telefono.Id
+                //LEFT OUTER JOIN municipio ON catedratico.Municipio_Id = municipio.Id;
                    
         } catch (InstantiationException ex) {
            Logger.getLogger(Catedraticos.class.getName()).log(Level.SEVERE, null, ex);
@@ -584,7 +610,7 @@ public class Catedraticos extends javax.swing.JFrame {
     private javax.swing.JTextField Campo_Apellidos;
     private javax.swing.JTextField Campo_DPI;
     private javax.swing.JTextField Campo_Direccion;
-    private javax.swing.JComboBox<String> Campo_Etnia;
+    private javax.swing.JTextField Campo_Etnia;
     private javax.swing.JTextField Campo_Id;
     private javax.swing.JComboBox<String> Campo_Municipio;
     private javax.swing.JTextField Campo_Nombre;
@@ -594,5 +620,6 @@ public class Catedraticos extends javax.swing.JFrame {
     private javax.swing.JLabel Titulo;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     // End of variables declaration//GEN-END:variables
 }

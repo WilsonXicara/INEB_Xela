@@ -34,7 +34,20 @@ public class conexion {
     }
 
     public Connection Conectar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            Class.forName("org.gjt.mm.mysql.Driver");
+            conect = DriverManager.getConnection("jdbc:mysql://localhost/sbd_inebxela","usuario","usuario");
+        } catch (Exception e) {
+             /**String[] opciones = new String[1];
+                      opciones[0] = "Aceptar";
+                     int choice = JOptionPane.showOptionDialog(null, "Error", "No se ha podido conectar al servidor", JOptionPane.YES_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+                      if(choice == JOptionPane.YES_OPTION){
+                          ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                }**/
+        }
+//        if (conect != null)
+//            JOptionPane.showMessageDialog(new JFrame(), "Conexión exitosa", "Mensaaje", JOptionPane.INFORMATION_MESSAGE);
+        return conect;
     }
 
    
