@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Ventanas;
+package Modulo_notas_y_reporte;
 
-import Ventanas.ModuloCurso;
+import Modulo_notas_y_reporte.ModuloCurso;
 import java.sql.*;
 import java.util.Calendar;
 import javax.swing.*;
@@ -439,8 +439,7 @@ public class Pantalla extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel9)
                         .addGap(18, 18, 18)
-                        .addComponent(Buscarestudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(Buscarestudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(Modificar)))

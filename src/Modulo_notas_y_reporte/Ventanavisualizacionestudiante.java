@@ -3,8 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Ventanas;
-import Ventanas.ModuloCurso;
+package Modulo_notas_y_reporte;
+import Modulo_notas_y_reporte.ModuloCurso;
 import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
