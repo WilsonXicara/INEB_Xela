@@ -282,7 +282,7 @@ public class CrearAdmin extends javax.swing.JFrame {
             Contra = Contraseña.getText();
             ConfirContra = ConfirmarContra.getText();
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            resultado = sentencia.executeQuery("SELECT * FROM Usuarios WHERE NombreUsuario = " + User + ";");
+            resultado = sentencia.executeQuery("SELECT * FROM Usuarios WHERE NombreUsuario = " + User);
             if(resultado.next() == false){
                 //Creamos
                 JOptionPane.showMessageDialog(null, "¡Usuario " + User + " Validado!");
