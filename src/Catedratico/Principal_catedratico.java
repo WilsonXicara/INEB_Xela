@@ -6,6 +6,14 @@
 package Catedratico;
 
 import Ventanas.Pantalla;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 /**
  *
@@ -16,10 +24,72 @@ public class Principal_catedratico extends javax.swing.JFrame {
     /**
      * Creates new form Principal_catedratico
      */
+    String titulos [] = {"Nombre del curso"};
+    String fila[]= new String [1];
+    DefaultTableModel modelo;
+    int idcat, idcurso;
+    String Materia = "";
+    
+    Connection ab = null;
+    Statement stmt = null;
+    ResultSet respuesta;
+    
+    public Principal_catedratico(Connection p, ResultSet informacion){
+        initComponents();
+        respuesta = informacion;
+        ab = p;
+    }
+    
     public Principal_catedratico() {
         initComponents();
+        this.setTitle("Módulo cátedratico");
+        this.setLocation(335,220);
+        try{
+            int maestro = 0;
+            System.out.println(maestro);
+            String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
+            String usuario = "root";
+            String contraseña = "6148";  
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            ab = DriverManager.getConnection(url,usuario,contraseña);
+            stmt = ab.createStatement();
+            ResultSet respuesta3 = stmt.executeQuery("SELECT usuarios.* FROM usuarios");
+            while (respuesta.next()){
+                maestro = respuesta.getInt(5);
+                System.out.println(maestro);
+                idcat = maestro;
+            }
+            //int maestro = respuesta2.getInt(1);
+            System.out.println(maestro);
+            
+           
+            ResultSet rs = stmt.executeQuery("SELECT curso.Nombre, catedratico.Nombres FROM asignacioncat INNER JOIN catedratico ON asignacioncat.Catedratico_Id = catedratico.Id\n" +
+            "INNER JOIN curso ON asignacioncat.Curso_Id = curso.Id WHERE catedratico.Id = "+maestro);
+            modelo = new DefaultTableModel (null,titulos);
+            //ResultSet rs = stmt.executeQuery("select* from curso");
+            while(rs.next()){
+                fila[0] = rs.getString("curso.Nombre");
+                //fila[1] = rs.getString("catedratico.Nombres");
+                modelo.addRow(fila);
+            }
+            Tabla.setModel(modelo);
+            TableColumn ci = Tabla.getColumn("Nombre del curso");
+            ci.setMaxWidth(700);
+           /* TableColumn cn = Tabla.getColumn("catedratico.Nombres");
+            cn.setMaxWidth(500);*/
+           
+           
+           
+            
+        }
+        catch (Exception e) {
+            
+            JOptionPane.showMessageDialog(null,"Error al extraer los datos de la tabla");
+        
+         }
     }
 
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -31,10 +101,14 @@ public class Principal_catedratico extends javax.swing.JFrame {
 
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        Tabla = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        Campo_Curso = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jButton1.setText("jButton1");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -42,8 +116,9 @@ public class Principal_catedratico extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 320, -1, -1));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        Tabla.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -54,45 +129,82 @@ public class Principal_catedratico extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        Tabla.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TablaMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(Tabla);
+
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(72, 73, 381, 173));
 
         jLabel1.setText("Bienvenido:");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 13, -1, -1));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(164, 164, 164)
-                        .addComponent(jButton1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 381, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1)))
-                .addContainerGap(13, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(64, 64, 64)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(55, 55, 55)
-                .addComponent(jButton1)
-                .addContainerGap(43, Short.MAX_VALUE))
-        );
+        jLabel2.setText("Año:");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 10, -1, -1));
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        getContentPane().add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 10, -1, -1));
+
+        Campo_Curso.setEditable(false);
+        Campo_Curso.setBackground(new java.awt.Color(204, 204, 204));
+        Campo_Curso.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Campo_CursoActionPerformed(evt);
+            }
+        });
+        getContentPane().add(Campo_Curso, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 270, 130, 30));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Pantalla s= new Pantalla(); 
+        //Pantalla s= new Pantalla(); 
+        
+        try{
+            int maestro = 0;
+            //System.out.println(maestro);
+            String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
+            String usuario = "root";
+            String contraseña = "6148";  
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            ab = DriverManager.getConnection(url,usuario,contraseña);
+            stmt = ab.createStatement(); 
+           String sql = "SELECT * FROM curso WHERE curso.Nombre = '"+Materia+"'";
+           ResultSet respuesta4 = stmt.executeQuery(sql);
+           int id=0;
+           //System.out.println(id);
+           while (respuesta4.next()){
+                id = respuesta4.getInt(1);
+                //System.out.println(id);
+                idcurso = id;
+            }
+           Pantalla s = new Pantalla(ab,idcat, idcurso); // Llama a la del Andrés
+           
+          // System.out.println(idcurso+ " "+idcat);
+    }
+           catch (Exception e) {
+            
+            JOptionPane.showMessageDialog(null,"Error al extraer los datos de la tabla");
+        
+         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void Campo_CursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Campo_CursoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Campo_CursoActionPerformed
+
+    private void TablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TablaMouseClicked
+        // TODO add your handling code here:
+           int fila = Tabla.getSelectedRow();
+           int columna = Tabla.getSelectedColumn();
+           
+           String curso= Tabla.getValueAt(fila, columna).toString();
+           //System.out.println(curso);
+           Campo_Curso.setText(curso);
+           Materia = curso;
+    }//GEN-LAST:event_TablaMouseClicked
 
     /**
      * @param args the command line arguments
@@ -130,9 +242,12 @@ public class Principal_catedratico extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField Campo_Curso;
+    private javax.swing.JTable Tabla;
     private javax.swing.JButton jButton1;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }
