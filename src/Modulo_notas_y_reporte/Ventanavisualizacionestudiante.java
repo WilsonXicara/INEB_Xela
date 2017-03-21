@@ -24,19 +24,32 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
     Statement sent;
     String año;
     ArrayList<String> ID;
-    int posicion;
+    int posicion, Id_cat, Id_cur;
+    ResultSet b;
     /**
      * Creates new form Ventanavisualizacionestudiante
      */
     ModuloCurso cn = new ModuloCurso();
     public Ventanavisualizacionestudiante() throws SQLException {
         initComponents();
-        conexion = cn.Conectar();
+        //conexion = cn.Conectar();
+        //cargar();
+        //Calendar fecha = new GregorianCalendar();
+        //año = Integer.toString(fecha.get(Calendar.YEAR));
+        //Cargar_Datos();
+        //posicion = 0;
+    }
+    public Ventanavisualizacionestudiante(Connection conex, int cat, int cur, ResultSet a) throws SQLException {
+        initComponents();
+        conexion = conex;
         //cargar();
         Calendar fecha = new GregorianCalendar();
         año = Integer.toString(fecha.get(Calendar.YEAR));
         Cargar_Datos();
         posicion = 0;
+        Id_cat = cat;
+        Id_cur = cur;
+        b = a;
     }
     
     public void Cargar_Datos() throws SQLException
@@ -185,7 +198,7 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
         // TODO add your handling code here:
         Pantalla a = null;
         try {
-            a = new Pantalla();
+            a = new Pantalla(conexion, Id_cat, Id_cur, b);
         } catch (SQLException ex) {
             Logger.getLogger(Ventanavisualizacionestudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -236,7 +249,7 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
         // TODO add your handling code here:
         Pantalla a = null;
         try {
-            a = new Pantalla();
+            a = new Pantalla(conexion, Id_cat, Id_cur, b);
         } catch (SQLException ex) {
             Logger.getLogger(Ventanavisualizacionestudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
