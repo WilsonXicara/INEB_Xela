@@ -408,7 +408,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             if(User.getString("Tipo").equals("1")){
                 //Si se puede llamar a la ventana
                 new CrearAdmin(conexcion).setVisible(true);
-                this.dispose();
+                //this.dispose();
             }
             else{
                 JOptionPane.showMessageDialog(null, "¡No tiene permisos para realizar esta acción!");
@@ -431,7 +431,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             String tipo = User.getString("Tipo");
             if(tipo.equals("1")){
                 new ModuloPrestamo(conexcion).setVisible(true);
-                this.setVisible(false);
+                //this.setVisible(false);
             }
             else{
                 JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
@@ -444,14 +444,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
         new Catedraticos().setVisible(true);
-        this.setVisible(false);
+        //this.setVisible(false);
         
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        JOptionPane.showConfirmDialog(null, "¿Cerrar Sesión?", "Confirme", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        //JOptionPane.showConfirmDialog(null, "¿Cerrar Sesión?", "Confirme", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         //new Principal().setVisible(true);
-        this.setVisible(false);
+        //this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
