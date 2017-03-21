@@ -22,50 +22,57 @@ import javax.swing.table.DefaultTableModel;
  */
 public class AsignarEstudiante extends javax.swing.JDialog {
     private Connection conexion;
-    private ResultSet consultaCicloEscolar, consultaGrado;
-//    private PreparedStatement insertar;
-    private DefaultTableModel tablaModel;
-    private int estudiante_Id;
+    private ResultSet consultaCicloEscolar, consultaGrado = null;
+    private Statement sentencia;
+    private DefaultTableModel tablaModelEst, tablaModelCursos;
+    private int estudiante_Id, cicloEscolar_Id, grado_Id;
+    private boolean ciclosCargados = false, gradosCargados = false;
     /**
      * Creates new form AsignacionEST
      */
     public AsignarEstudiante(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        this.conexion = null;
-        iniciarTabla();
     }
     public AsignarEstudiante(java.awt.Frame parent, boolean modal, Connection conexion, int estudiante_Id) {
         super(parent, modal);
         initComponents();
         /* Extraigo parte de la información del estudiante para mostrarlo. */
         this.conexion = conexion;
-        iniciarTabla();
+        try {
+            this.sentencia = this.conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        } catch (SQLException ex) {
+            Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+        }
         this.estudiante_Id = estudiante_Id;
-        extraerDatosEstudiante(estudiante_Id);
+        iniciarTabla();
+        extraerDatosEstudiante();
         extraerDatosAsignacion();
-        tabla_estudiantes.setModel(tablaModel);
+        tabla_info_estudiante.setModel(tablaModelEst);
     }
     private void iniciarTabla() {
-        tablaModel = new DefaultTableModel();
-        // Definición de las columnas de 'tablaModel'
-        tablaModel.addColumn("Código Personal");
-        tablaModel.addColumn("CUI");
-        tablaModel.addColumn("Nombre Completo");
+        // Definición de las columnas de 'tablaModelEst'
+        tablaModelEst = new DefaultTableModel();
+        tablaModelEst.addColumn("Código Personal");
+        tablaModelEst.addColumn("CUI");
+        tablaModelEst.addColumn("Nombre Completo");
     }
-    private void extraerDatosEstudiante(int estudiante_Id) {
+    private void extraerDatosEstudiante() {
         try {
-            // Extraigo el registro del Estudiante con Id 'estudiante_Id' (ya existe y es único.
-            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            ResultSet consulta = sentencia.executeQuery("SELECT * FROM Estudiante WHERE Id = "+estudiante_Id);
+            // Extraigo el registro del Estudiante con Id 'estudiante_Id' (ya existe y es único).
+            ResultSet consulta = sentencia.executeQuery("SELECT CodigoPersonal, CUI, Nombres, Apellidos, Sexo FROM Estudiante WHERE Id = "+estudiante_Id);
             // Inicio la extracción de datos
             consulta.next();
-            String[] registro = {consulta.getString("CodigoPersonal"),
+            String[] registro = {
+                consulta.getString("CodigoPersonal"),
                 consulta.getString("CUI"),
                 consulta.getString("Nombres")+" "+consulta.getString("Apellidos")
             };
-            tablaModel.addRow(registro);
-            this.setTitle("Asignación del(la) estudiante "+consulta.getString("Nombres")+" "+consulta.getString("Apellidos"));
+            tablaModelEst.addRow(registro);
+            String titulo = "Asignación ";
+            titulo+= (consulta.getString("Sexo").equals("F"))?"de la":"del";
+            titulo+= " estudiante "+consulta.getString("Nombres")+" "+consulta.getString("Apellidos");
+            this.setTitle(titulo);
         } catch (SQLException ex) {
             Logger.getLogger(InformacionEstudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -96,7 +103,7 @@ public class AsignarEstudiante extends javax.swing.JDialog {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        tabla_estudiantes = new javax.swing.JTable();
+        tabla_info_estudiante = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         ciclo_escolar = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
@@ -105,11 +112,15 @@ public class AsignarEstudiante extends javax.swing.JDialog {
         crear_asignacion = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         aula = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tabla_info_cursos = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Asignación de Estudiantes");
 
-        tabla_estudiantes.setModel(new javax.swing.table.DefaultTableModel(
+        tabla_info_estudiante.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        tabla_info_estudiante.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -117,20 +128,32 @@ public class AsignarEstudiante extends javax.swing.JDialog {
 
             }
         ));
-        jScrollPane1.setViewportView(tabla_estudiantes);
+        jScrollPane1.setViewportView(tabla_info_estudiante);
 
-        jLabel1.setText("Información:");
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel1.setText("Información del(la) estudiante:");
 
+        ciclo_escolar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         ciclo_escolar.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 ciclo_escolarItemStateChanged(evt);
             }
         });
 
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel2.setText("Ciclo escolar:");
 
+        grado.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        grado.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                gradoItemStateChanged(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel3.setText("Grado:");
 
+        crear_asignacion.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         crear_asignacion.setText("Crear Asignación");
         crear_asignacion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -138,7 +161,24 @@ public class AsignarEstudiante extends javax.swing.JDialog {
             }
         });
 
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel4.setText("Aula:");
+
+        aula.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel5.setText("Cursos:");
+
+        tabla_info_cursos.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        tabla_info_cursos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        jScrollPane2.setViewportView(tabla_info_cursos);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -147,56 +187,68 @@ public class AsignarEstudiante extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addComponent(jLabel1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel3)
-                                        .addGap(175, 175, 175)
-                                        .addComponent(jLabel4))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(aula, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(jLabel4)
+                                .addGap(80, 80, 80)
+                                .addComponent(jLabel5))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(160, 160, 160)
-                                .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap())
+                                .addComponent(aula, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(58, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(234, 234, 234)
+                .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addComponent(jLabel1)
+                .addGap(6, 6, 6)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(8, 8, 8)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(aula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3)))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        .addGap(11, 11, 11)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5))))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(8, 8, 8)
-                                .addComponent(jLabel2))
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel4)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(51, Short.MAX_VALUE))
+                        .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(aula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pack();
@@ -210,8 +262,8 @@ public class AsignarEstudiante extends javax.swing.JDialog {
             try {
                 Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 consultaCicloEscolar.first();   // Regreso al primer registro de la columna
-                for(int i=1; i<itemSeleccionado; i++) consultaCicloEscolar.next();
-                int cicloEscolar_Id = consultaCicloEscolar.getInt("Id");
+                for(int i=1; i<=itemSeleccionado; i++) consultaCicloEscolar.next();
+                cicloEscolar_Id = consultaCicloEscolar.getInt("Id");
                 // Realizo la consulta a las tablas AsignacionCAT y Grado: los Grados que tiene asignado el Ciclo Escolar seleccionado
                 consultaGrado = sentencia.executeQuery("SELECT AsignacionCAT.CicloEscolar_Id, AsignacionCAT.Grado_Id, Grado.*, COUNT(AsignacionCAT.Grado_Id) FROM AsignacionCAT "
                         + "INNER JOIN Grado ON AsignacionCAT.Grado_Id = Grado.Id "
@@ -233,22 +285,9 @@ public class AsignarEstudiante extends javax.swing.JDialog {
             a qué registro de la consulta pertenece (ya que el contenido de los ComboBox se obtiene del último valor de ambas
             consultas). Obtengo los Índices de los JComboBox y busco los Id's correspondientes en las consultas */
         try {
-            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             ResultSet consulta;
-            /* Obtengo el Id del Ciclo Escolar al que se asignará al nuevo Estudiante */
-            int indexCicloEscolar = ciclo_escolar.getSelectedIndex();
-            consultaCicloEscolar.first();   // Me muevo al primer registro
-            // Me muevo hasta el registro del Ciclo Esoclar al que se asignará al Estudiante
-            for (int i=0; i<indexCicloEscolar; i++) consultaCicloEscolar.next();
-            int cicloEscolar_Id = consultaCicloEscolar.getInt("Id");    // Obtengo el Id del Ciclo Escolar
-            
-            /* Obtengo el Id del Grado al que se asignará al nuevo Estudiante */
-            int indexGrado = grado.getSelectedIndex();
-            consultaGrado.first();  // Me muevo al primer Registro
-            // Me muevo hasta el registro del Grado al que se asignará al Estudiante
-            for(int i=0; i<indexGrado; i++) consultaGrado.next();
-            int grado_Id = consultaGrado.getInt("Grado_Id");
-            // Hasta aquí, ya obtuve los Id de Ciclo Escolar y Grado
+            // Tengo el Ciclo Escolar en 'this.cicloEscolar_Id'
+            // Tengo el Grado en 'this.grado_Id'
             
             /* Creación de la Asignación del Nuevo Estudiante */
             // Obtengo el Id de la nueva Asignación:
@@ -259,17 +298,39 @@ public class AsignarEstudiante extends javax.swing.JDialog {
             String nuevaAsignacion = "INSERT INTO AsignacionEst(CicloEscolar_Id, Grado_Id, Estudiante_Id, Aula) VALUES("
                     + cicloEscolar_Id + "," + grado_Id + "," + estudiante_Id + ",'" + aula.getText() + "')";
             conexion.prepareStatement(nuevaAsignacion).executeUpdate(); // Inserto y actulizo
-            asignarCursos(cicloEscolar_Id, grado_Id, asignacionEST_Id);
+            asignarCursos(asignacionEST_Id);
             
             JOptionPane.showMessageDialog(new javax.swing.JFrame(), "Se creó la asignación y los cursos con éxito!", "Insertado", JOptionPane.INFORMATION_MESSAGE);
             crear_asignacion.setEnabled(false);
-//            JOptionPane.showMessageDialog(new javax.swing.JFrame(), nuevaAsignacion+asignarCursos(cicloEscolar_Id, grado_Id, asignacionEST_Id), "Información", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException ex) {
             Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_crear_asignacionActionPerformed
-    private void asignarCursos(int cicloEscolar_Id, int grado_Id, int asignacionEST_Id) {
-        String mensaje = "\nSe asignarán los siguientes cursos:";
+
+    private void gradoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_gradoItemStateChanged
+        // Realizo una consulta a las Tablas Grado, AsignacionCAT y Cursos para mostrar todos los cursos del Grado y Ciclo Escolar en curso
+        int itemSeleccionado = grado.getSelectedIndex();
+        if (itemSeleccionado > -1) {
+            // Definición de las columnas de 'tablaModelCursos'
+            tablaModelCursos = new DefaultTableModel();
+            tablaModelCursos.addColumn("Cursos");
+            try {
+                consultaGrado.first();  // Regreso al primer registro de la consulta
+                for(int i=1; i<=itemSeleccionado; i++) consultaGrado.next();
+                grado_Id = consultaGrado.getInt("Grado_Id");
+                // Obtengo los cursos asignados al Ciclo Escolar y Grado correspondientes
+                ResultSet cursos = sentencia.executeQuery("SELECT CicloEscolar_Id, Grado_Id, Curso_Id, Curso.Nombre FROM AsignacionCAT "
+                        + "INNER JOIN Curso ON AsignacionCAT.Curso_Id = Curso.Id "
+                        + "WHERE AsignacionCAT.CicloEscolar_Id = "+cicloEscolar_Id+" AND Grado_Id = "+grado_Id+"");
+                while (cursos.next())
+                    tablaModelCursos.addRow(new String[]{cursos.getString("Nombre")});
+                tabla_info_cursos.setModel(tablaModelCursos);
+            } catch (SQLException ex) {
+                Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_gradoItemStateChanged
+    private void asignarCursos(int asignacionEST_Id) {
         String nuevasNotas = "";
         /* Obtengo los Cursos que se le asignarán al Estudiante, y se los asigno al crear Notas */
         try {
@@ -278,16 +339,14 @@ public class AsignarEstudiante extends javax.swing.JDialog {
                     + "INNER JOIN Grado ON AsignacionCAT.Grado_Id = Grado.Id "
                     + "INNER JOIN Curso ON AsignacionCAT.Curso_Id = Curso.Id "
                     + "WHERE CicloEscolar_Id = "+cicloEscolar_Id+" AND Grado_Id = "+grado_Id+"";
-            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             ResultSet consulta = sentencia.executeQuery(nuevosCursos);  // Realizo la consulta
             
             nuevasNotas+= "INSERT INTO Notas(AsignacionEST_Id, Estudiante_Id, Curso_Id, Nota1, Nota2, Nota3, Nota4, NotaRecuperacion, NotaFinal) VALUES";
+            
             // Inicio la extracción de los Cursos que se asignarán
             while(consulta.next()) {
-                mensaje+= "\n"+consulta.getString("Curso");
                 nuevasNotas+= "("+asignacionEST_Id+","+estudiante_Id+","+consulta.getInt("Curso_Id")+",0,0,0,0,0,0),";
             } nuevasNotas = nuevasNotas.substring(0, nuevasNotas.length()-1);
-            System.out.println("Nuevas Notas = "+nuevasNotas);
             conexion.prepareStatement(nuevasNotas).executeUpdate();    // Inserto y actulizo
         } catch (SQLException ex) {
             Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
@@ -347,7 +406,10 @@ public class AsignarEstudiante extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tabla_estudiantes;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable tabla_info_cursos;
+    private javax.swing.JTable tabla_info_estudiante;
     // End of variables declaration//GEN-END:variables
 }
