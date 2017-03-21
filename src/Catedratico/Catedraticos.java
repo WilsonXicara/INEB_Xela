@@ -24,7 +24,7 @@ public class Catedraticos extends javax.swing.JFrame {
     
     
 
-    Connection con = null;
+    Connection con;
     Statement stmt = null;
     String var, var2;
     JFrame padre;
@@ -233,12 +233,12 @@ public class Catedraticos extends javax.swing.JFrame {
      else {   
      
      try { 
-                  String url = "jdbc:mysql://localhost:3306/sbd_inebxela"; 
+                /*  String url = "jdbc:mysql://localhost:3306/sbd_inebxela"; 
                   String usuario = "root"; 
                   String contraseña = "6148"; 
                   
                   Class.forName("com.mysql.jdbc.Driver").newInstance(); 
-                  con = DriverManager.getConnection(url,usuario,contraseña); 
+                  con = DriverManager.getConnection(url,usuario,contraseña); */
                   if ( con != null ) 
                    // System.out.println("Se ha establecido una conexión a la base de datos " +  
                    //                    "\n " + url ); 
@@ -252,13 +252,7 @@ public class Catedraticos extends javax.swing.JFrame {
                   } 
                   catch( SQLException e ) { 
                       e.printStackTrace(); 
-                  } catch (ClassNotFoundException ex) { 
-            Logger.getLogger(Catedraticos.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            Logger.getLogger(Catedraticos.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(Catedraticos.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+                  }
   
               finally { 
                   if ( con != null ) { 
@@ -415,15 +409,15 @@ public class Catedraticos extends javax.swing.JFrame {
        
         try {
            
-            String url = "jdbc:mysql://localhost:3306/sbd_inebxela"/*?zeroDateTimeBehavior=convertToNull"*/;
-            String usuario = "root";
+            /*String url = "jdbc:mysql://localhost:3306/sbd_inebxela"/*?zeroDateTimeBehavior=convertToNull"*/;
+            /*String usuario = "root";
             String contraseña = "6148";
             
              Class.forName("com.mysql.jdbc.Driver").newInstance(); 
              con = DriverManager.getConnection(url,usuario,contraseña); 
              if ( con != null ) 
                     System.out.println("Se ha establecido una conexión a la base de datos " +  
-                                       "\n " + url ); 
+                                       "\n " + url ); */
                                        
                   stmt = con.createStatement();
                   stmt = con.createStatement();
@@ -453,14 +447,8 @@ public class Catedraticos extends javax.swing.JFrame {
                  //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
                  //SELECT catedratico.*, telefono.Telefono, municipio.Nombre FROM catedratico LEFT OUTER JOIN telefono ON catedratico.Id = telefono.Id
                 //LEFT OUTER JOIN municipio ON catedratico.Municipio_Id = municipio.Id;
-                   
-        } catch (InstantiationException ex) {
-           Logger.getLogger(Catedraticos.class.getName()).log(Level.SEVERE, null, ex);
-       } catch (IllegalAccessException ex) {
-           Logger.getLogger(Catedraticos.class.getName()).log(Level.SEVERE, null, ex);
-       } catch (ClassNotFoundException ex) {
-           Logger.getLogger(Catedraticos.class.getName()).log(Level.SEVERE, null, ex);
-       } catch (SQLException ex) {
+        }
+        catch (SQLException ex) {
            Logger.getLogger(Catedraticos.class.getName()).log(Level.SEVERE, null, ex);
        }
         
@@ -507,13 +495,13 @@ public class Catedraticos extends javax.swing.JFrame {
         }
          else {
         try {
-            
+           /* 
             String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
             String usuario = "root";
             String contraseña = "6148";
             
              Class.forName("com.mysql.jdbc.Driver").newInstance(); 
-             con = DriverManager.getConnection(url,usuario,contraseña); 
+             con = DriverManager.getConnection(url,usuario,contraseña); */
              if ( con != null ) 
                     //System.out.println("Se ha establecido una conexión a la base de datos " +  
                     //                   "\n " + url ); 
@@ -531,7 +519,7 @@ public class Catedraticos extends javax.swing.JFrame {
           //}
          }   // fin del bucle While
          
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException ex) {
+        } catch (SQLException ex) {
            Logger.getLogger(Catedraticos.class.getName()).log(Level.SEVERE, null, ex);
        }
         

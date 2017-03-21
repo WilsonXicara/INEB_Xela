@@ -1,10 +1,14 @@
 package Catedratico;
 
 
+import ModuloAdministrador.ModuloPrincipalAdmin;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -28,6 +32,61 @@ public class Datos_Catedraticos extends javax.swing.JFrame {
     String fila[] = new String [8];
     DefaultTableModel modelo;
 
+    public Datos_Catedraticos(Connection a){
+        initComponents();
+        con = a;
+        try {
+            
+           /* String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
+            String usuario = "root";
+            String contraseña = "6148";  
+            
+               Class.forName("com.mysql.jdbc.Driver").newInstance();// Crea la conexión
+               con = DriverManager.getConnection(url,usuario,contraseña);//Obtiene la conexión
+               if (con!= null)//Verifica si existe conexión
+                   System.out.println("Se ha establecido una conexion a la base de datos"+"\n"+url);
+               */
+               stmt = con.createStatement(); 
+               ResultSet rs = stmt.executeQuery("select* from catedratico");//...
+               
+               modelo = new DefaultTableModel(null,titulos);
+            System.out.println("SAAAAAAAAAAAAAAAAAAAAA");
+               while(rs.next()) {
+                   
+                   fila[0] = rs.getString("ID");
+                   fila[1] = rs.getString("Nombres");
+                   fila[2] = rs.getString("Apellidos");
+                   fila[3] = rs.getString("Direccion");
+                   //fila[4] = rs.getString("Telefono");
+                   fila[4] = rs.getString("DPI");
+                   fila[5] = rs.getString("Sexo");
+                   fila[6] = rs.getString("Etnia");
+                   
+                   modelo.addRow(fila);     
+               }
+               Tabla.setModel(modelo);
+                TableColumn ci = Tabla.getColumn("ID");
+                ci.setMaxWidth(25);
+                TableColumn cn = Tabla.getColumn("Nombres");
+                cn.setMaxWidth(145);
+                TableColumn cd = Tabla.getColumn("Apellidos");
+                cd.setMaxWidth(140);
+                TableColumn ct = Tabla.getColumn("Direccion");
+                ct.setMaxWidth(240);
+              //  TableColumn cnick = Tabla.getColumn("Telefono");
+              //  cnick.setMaxWidth(100);
+                TableColumn cp = Tabla.getColumn("DPI");
+                cp.setMaxWidth(85);
+                TableColumn ctipo = Tabla.getColumn("Sexo");
+                ctipo.setMaxWidth(50);
+                TableColumn ca = Tabla.getColumn("Etnia");
+                ca.setMaxWidth(75);
+        
+    } catch (SQLException ex) {
+            Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public Datos_Catedraticos() {
         initComponents();
         this.setTitle("Datos de catedráticos");
@@ -39,7 +98,7 @@ public class Datos_Catedraticos extends javax.swing.JFrame {
         
         try {
             
-            String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
+           /* String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
             String usuario = "root";
             String contraseña = "6148";  
             
@@ -47,7 +106,7 @@ public class Datos_Catedraticos extends javax.swing.JFrame {
                con = DriverManager.getConnection(url,usuario,contraseña);//Obtiene la conexión
                if (con!= null)//Verifica si existe conexión
                    System.out.println("Se ha establecido una conexion a la base de datos"+"\n"+url);
-               
+               */
                stmt = con.createStatement(); 
                ResultSet rs = stmt.executeQuery("select* from catedratico");//...
                

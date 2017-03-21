@@ -5,11 +5,15 @@
  */
 package Catedratico;
 
-import Ventanas.Pantalla;
+
+import Modulo_notas_y_reporte.Pantalla;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -30,40 +34,27 @@ public class Principal_catedratico extends javax.swing.JFrame {
     int idcat, idcurso;
     String Materia = "";
     
-    Connection ab = null;
-    Statement stmt = null;
+    Connection ab;
+    Statement stmt;
     ResultSet respuesta;
     
     public Principal_catedratico(Connection p, ResultSet informacion){
         initComponents();
         respuesta = informacion;
         ab = p;
-    }
-    
-    public Principal_catedratico() {
-        initComponents();
-        this.setTitle("Módulo cátedratico");
-        this.setLocation(335,220);
+       // this.setTitle("Módulo cátedratico");
+       // this.setLocation(335,220);
         try{
-            int maestro = 0;
+            int maestro;
+            maestro = respuesta.getInt(5);
             System.out.println(maestro);
-            String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
-            String usuario = "root";
-            String contraseña = "6148";  
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            ab = DriverManager.getConnection(url,usuario,contraseña);
-            stmt = ab.createStatement();
-            ResultSet respuesta3 = stmt.executeQuery("SELECT usuarios.* FROM usuarios");
-            while (respuesta.next()){
-                maestro = respuesta.getInt(5);
-                System.out.println(maestro);
-                idcat = maestro;
-            }
-            //int maestro = respuesta2.getInt(1);
+            idcat = maestro;
+           // Campo_Usuario.setText(respuesta.getString("NombreUsuario"));
+            Campo_Nombre.setText(respuesta.getString("Apellidos"));
             System.out.println(maestro);
             
            
-            ResultSet rs = stmt.executeQuery("SELECT curso.Nombre, catedratico.Nombres FROM asignacioncat INNER JOIN catedratico ON asignacioncat.Catedratico_Id = catedratico.Id\n" +
+            ResultSet rs = stmt.executeQuery("SELECT curso.Nombre, catedratico.Nombres FROM asignacioncat INNER JOIN catedratico ON asignacioncat.Catedratico_Id = catedratico.Id " +
             "INNER JOIN curso ON asignacioncat.Curso_Id = curso.Id WHERE catedratico.Id = "+maestro);
             modelo = new DefaultTableModel (null,titulos);
             //ResultSet rs = stmt.executeQuery("select* from curso");
@@ -75,18 +66,21 @@ public class Principal_catedratico extends javax.swing.JFrame {
             Tabla.setModel(modelo);
             TableColumn ci = Tabla.getColumn("Nombre del curso");
             ci.setMaxWidth(700);
-           /* TableColumn cn = Tabla.getColumn("catedratico.Nombres");
-            cn.setMaxWidth(500);*/
+            TableColumn cn = Tabla.getColumn("catedratico.Nombres");
+            cn.setMaxWidth(500);
            
            
            
             
         }
-        catch (Exception e) {
-            
-            JOptionPane.showMessageDialog(null,"Error al extraer los datos de la tabla");
+        catch (SQLException ex) {
+            Logger.getLogger(Principal_catedratico.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public Principal_catedratico() {
+        initComponents();
         
-         }
     }
 
     
@@ -106,6 +100,8 @@ public class Principal_catedratico extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
         Campo_Curso = new javax.swing.JTextField();
+        Campo_Usuario = new javax.swing.JTextField();
+        Campo_Nombre = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -156,6 +152,19 @@ public class Principal_catedratico extends javax.swing.JFrame {
         });
         getContentPane().add(Campo_Curso, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 270, 130, 30));
 
+        Campo_Usuario.setEditable(false);
+        Campo_Usuario.setBackground(new java.awt.Color(51, 255, 0));
+        Campo_Usuario.setText(" ");
+        Campo_Usuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Campo_UsuarioActionPerformed(evt);
+            }
+        });
+        getContentPane().add(Campo_Usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 10, 110, -1));
+
+        Campo_Nombre.setText("jTextField1");
+        getContentPane().add(Campo_Nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 10, -1, -1));
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -165,12 +174,12 @@ public class Principal_catedratico extends javax.swing.JFrame {
         try{
             int maestro = 0;
             //System.out.println(maestro);
-            String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
+/**            String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
             String usuario = "root";
             String contraseña = "6148";  
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            ab = DriverManager.getConnection(url,usuario,contraseña);
-            stmt = ab.createStatement(); 
+            ab = DriverManager.getConnection(url,usuario,contraseña);**/
+          stmt = ab.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY); 
            String sql = "SELECT * FROM curso WHERE curso.Nombre = '"+Materia+"'";
            ResultSet respuesta4 = stmt.executeQuery(sql);
            int id=0;
@@ -180,15 +189,15 @@ public class Principal_catedratico extends javax.swing.JFrame {
                 //System.out.println(id);
                 idcurso = id;
             }
-           Pantalla s = new Pantalla(ab,idcat, idcurso); // Llama a la del Andrés
+           Pantalla s = new Pantalla(ab,idcat, idcurso, respuesta); // Llama a la del Andrés
+           s.setVisible(true);
+           this.dispose();
            
           // System.out.println(idcurso+ " "+idcat);
     }
-           catch (Exception e) {
-            
-            JOptionPane.showMessageDialog(null,"Error al extraer los datos de la tabla");
-        
-         }
+           catch (SQLException ex) {
+            Logger.getLogger(Principal_catedratico.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void Campo_CursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Campo_CursoActionPerformed
@@ -205,6 +214,10 @@ public class Principal_catedratico extends javax.swing.JFrame {
            Campo_Curso.setText(curso);
            Materia = curso;
     }//GEN-LAST:event_TablaMouseClicked
+
+    private void Campo_UsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Campo_UsuarioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Campo_UsuarioActionPerformed
 
     /**
      * @param args the command line arguments
@@ -243,6 +256,8 @@ public class Principal_catedratico extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField Campo_Curso;
+    private javax.swing.JTextField Campo_Nombre;
+    private javax.swing.JTextField Campo_Usuario;
     private javax.swing.JTable Tabla;
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox1;
