@@ -11,10 +11,10 @@ import ModuloAsignacionEST.AsignarEstudiante;
 import ModuloAsignacionEST.PrincipalAsignacionEST;
 import ModuloEstudiante.CrearEstudiante;
 import ModuloEstudiante.PrincipalEstudiante;
+import ModuloPrestamos.ModuloPaquetes;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
-
 import Modulo_Ciclo_Escolar.Crear_Ciclo_Escolar_1;
-
+import Modulo_incio_sesion.Principal;
 import java.awt.Frame;
 import java.io.IOException;
 import java.sql.Connection;
@@ -52,14 +52,12 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             Sexo.setText(User.getString("Sexo"));
             Tipo.setText(User.getString("Tipo"));
             Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-
             resultado = sentencia.executeQuery("SELECT * FROM Municipio WHERE Id = " + User.getString(13));
             resultado.next();
             Municipio.setText(resultado.getString("Nombre"));
             //Statement sentencia2 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             resultado2 = sentencia.executeQuery("SELECT * FROM Telefono WHERE Administrador_Id = " + User.getString(6));
             resultado2.next();
-
             Telefono.setText(resultado2.getString("Telefono"));
         } catch (SQLException ex) {
             Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
@@ -110,6 +108,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
@@ -226,6 +225,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             }
         });
         jMenu1.add(jMenuItem3);
+
+        jMenuItem6.setText("Paquete Libro");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem6);
 
         jMenuBar1.add(jMenu1);
 
@@ -401,7 +408,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             if(User.getString("Tipo").equals("1")){
                 //Si se puede llamar a la ventana
                 new CrearAdmin(conexcion).setVisible(true);
-                this.dispose();
+                //this.dispose();
             }
             else{
                 JOptionPane.showMessageDialog(null, "¡No tiene permisos para realizar esta acción!");
@@ -424,7 +431,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             String tipo = User.getString("Tipo");
             if(tipo.equals("1")){
                 new ModuloPrestamo(conexcion).setVisible(true);
-                this.setVisible(false);
+                //this.setVisible(false);
             }
             else{
                 JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
@@ -437,14 +444,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
         new Catedraticos().setVisible(true);
-        this.setVisible(false);
+        //this.setVisible(false);
         
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        JOptionPane.showConfirmDialog(null, "¿Cerrar Sesión?", "Confirme", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-    //    new Principal().setVisible(true);
-        this.setVisible(false);
+        //JOptionPane.showConfirmDialog(null, "¿Cerrar Sesión?", "Confirme", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        //new Principal().setVisible(true);
+        //this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
@@ -480,14 +487,12 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         //this.setVisible(false);
         CrearEstudiante nueva_ventana = new CrearEstudiante(this, true, conexcion);
         nueva_ventana.setVisible(true);
-
         this.setVisible(true);
         
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         this.setVisible(false);
-
         Crear_Ciclo_Escolar_1 a;
         try {
             if(User.getString("Tipo").equals("1")){
@@ -503,6 +508,11 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         }
        
     }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        // TODO add your handling code here:
+        new ModuloPaquetes(conexcion).setVisible(true);
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -576,6 +586,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JSeparator jSeparator1;
