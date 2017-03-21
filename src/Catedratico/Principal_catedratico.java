@@ -5,7 +5,7 @@
  */
 package Catedratico;
 
-import Ventanas.Pantalla;
+import Modulo_notas_y_reporte.Pantalla;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
