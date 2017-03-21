@@ -21,23 +21,36 @@ import javax.swing.table.DefaultTableModel;
  */
 public class InformacionEstudiante extends javax.swing.JDialog {
     private Connection conexion;
-    private ResultSet consultaEstudiante = null;
+    private ResultSet consultaEstudiante, consultaCicloEscolar;
     private DefaultTableModel tablaModel;
+    private int cicloEscolar_Id = 0;
     /**
      * Creates new form InformacionEstudiante
      */
     public InformacionEstudiante(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        this.consultaEstudiante = null;
-        inicializarModel();
     }
     public InformacionEstudiante(java.awt.Frame parent, boolean modal, Connection conexion) {
         super(parent, modal);
         initComponents();
         this.conexion = conexion;
         this.consultaEstudiante = null;
+        cargarCicloEscolar();
         inicializarModel();
+    }
+    private void cargarCicloEscolar() {
+        try {
+            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            // Obtengo el listado de los ciclos escolares y los inserto en el JComboBox correspondiente
+            consultaCicloEscolar = sentencia.executeQuery("SELECT CicloEscolar.Id, CicloEscolar.Anio FROM CicloEscolar");
+            ciclo_escolar.removeAllItems();
+            while (consultaCicloEscolar.next()) {
+                ciclo_escolar.addItem(consultaCicloEscolar.getString("Anio"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(InformacionEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -52,17 +65,19 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         ver_notas = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla_encontrados = new javax.swing.JTable();
-        jLabel4 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         filtro_busqueda = new javax.swing.JComboBox<>();
         campo_busqueda = new javax.swing.JTextField();
         buscar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         editar = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        ciclo_escolar = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Información de los Estudiantes");
 
+        ver_notas.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         ver_notas.setText("Ver Notas");
         ver_notas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -70,6 +85,7 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             }
         });
 
+        tabla_encontrados.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         tabla_encontrados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -80,12 +96,20 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         ));
         jScrollPane1.setViewportView(tabla_encontrados);
 
-        jLabel4.setText("jLabel4");
-
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText("Buscar por:");
 
+        filtro_busqueda.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         filtro_busqueda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sin especificar", "Apellidos", "Código Personal", "CUI" }));
+        filtro_busqueda.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                filtro_busquedaItemStateChanged(evt);
+            }
+        });
 
+        campo_busqueda.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        buscar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         buscar.setText("Buscar");
         buscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -93,12 +117,24 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             }
         });
 
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel2.setText("Encontrado:");
 
+        editar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         editar.setText("Editar Información");
         editar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editarActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel3.setText("Ciclo Escolar:");
+
+        ciclo_escolar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        ciclo_escolar.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ciclo_escolarItemStateChanged(evt);
             }
         });
 
@@ -107,29 +143,30 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel4)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 701, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(editar)
-                            .addComponent(ver_notas)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
+                        .addComponent(jLabel2)
+                        .addGap(0, 913, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(filtro_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(campo_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(campo_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buscar)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addComponent(buscar))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 821, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(editar)
+                            .addComponent(ver_notas))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -140,21 +177,23 @@ public class InformacionEstudiante extends javax.swing.JDialog {
                     .addComponent(jLabel1)
                     .addComponent(filtro_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(campo_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(buscar))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(buscar)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel3)
+                        .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(124, 124, 124)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
+                        .addGap(20, 20, 20))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(editar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ver_notas)
-                        .addContainerGap(54, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4))))
+                        .addGap(173, 173, 173))))
         );
 
         pack();
@@ -206,7 +245,6 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         try {
             int registroSelccionado = tabla_encontrados.getSelectedRow();
             consultaEstudiante.first();
-            jLabel4.setText("Seleccionado = "+registroSelccionado);
             if (registroSelccionado != -1) {
                 // Obtengo el regitro seleccionado (desde la consulta)
                 for(int i=0; i<registroSelccionado; i++)
@@ -225,6 +263,27 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             Logger.getLogger(InformacionEstudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_editarActionPerformed
+
+    private void ciclo_escolarItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ciclo_escolarItemStateChanged
+        // Obtengo el Id del Ciclo Escolar seleccionado
+        int itemSeleccionado = ciclo_escolar.getSelectedIndex();
+        if (itemSeleccionado > -1) {
+            try {
+                consultaCicloEscolar.first();   // Regreso al primer registro de la consulta
+                for(int i=1; i<=itemSeleccionado; i++) consultaCicloEscolar.next();
+                cicloEscolar_Id = consultaCicloEscolar.getInt("Id");    // Obtengo el Id del Ciclo Escolar Seleccionado
+            } catch (SQLException ex) {
+                Logger.getLogger(InformacionEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_ciclo_escolarItemStateChanged
+
+    private void filtro_busquedaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_filtro_busquedaItemStateChanged
+        if (filtro_busqueda.getSelectedIndex() == 0)
+            campo_busqueda.setEnabled(false);
+        else
+            campo_busqueda.setEnabled(true);
+    }//GEN-LAST:event_filtro_busquedaItemStateChanged
     /**
      * Método que inicializa el Model para la 'tabla_encontrados'. Inserta el nombre de los encabezados de las columnas.
      */
@@ -244,35 +303,46 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         tablaModel.addColumn("Encargado");
     }
     private void extraerDatos(int filtro, String campoBusqueda) {
+        /* La búsqueda debe realizarse por Ciclo Escolar */
         try {
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             switch (filtro) {
                 // 'filtro == 1': Búsqueda por Apellidos
                 case 1:
-                    consultaEstudiante = sentencia.executeQuery("SELECT Estudiante.*, Municipio.Nombre Municipio, Encargado.Nombre Encargado FROM Estudiante "
+                    consultaEstudiante = sentencia.executeQuery("SELECT AsignacionEST.CicloEscolar_Id, CicloEscolar.Anio, Estudiante.*, Municipio.Nombre Municipio, Encargado.Nombre Encargado FROM CicloEscolar "
+                            + "INNER JOIN AsignacionEST ON CicloEscolar.Id = AsignacionEST.CicloEscolar_Id "
+                            + "INNER JOIN Estudiante ON AsignacionEST.Estudiante_Id = Estudiante.Id "
                             + "INNER JOIN Municipio ON Estudiante.Municipio_Id = Municipio.Id "
                             + "INNER JOIN Encargado ON Estudiante.Encargado_Id = Encargado.Id "
-                            + "WHERE Estudiante.Apellidos = '"+campoBusqueda+"'");
+                            + "WHERE Estudiante.Apellidos = '"+campoBusqueda+"' AND CicloEscolar_Id = "+cicloEscolar_Id+"");
                 break;
                 // 'filtro == 2': Búsqueda por Código Personal
                 case 2:
-                    consultaEstudiante = sentencia.executeQuery("SELECT Estudiante.*, Municipio.Nombre Municipio, Encargado.Nombre Encargado FROM Estudiante "
+                    consultaEstudiante = sentencia.executeQuery("SELECT AsignacionEST.CicloEscolar_Id, CicloEscolar.Anio, Estudiante.*, Municipio.Nombre Municipio, Encargado.Nombre Encargado FROM CicloEscolar "
+                            + "INNER JOIN AsignacionEST ON CicloEscolar.Id = AsignacionEST.CicloEscolar_Id "
+                            + "INNER JOIN Estudiante ON AsignacionEST.Estudiante_Id = Estudiante.Id "
                             + "INNER JOIN Municipio ON Estudiante.Municipio_Id = Municipio.Id "
                             + "INNER JOIN Encargado ON Estudiante.Encargado_Id = Encargado.Id "
-                            + "WHERE Estudiante.CodigoPersonal = '"+campoBusqueda+"'");
+                            + "WHERE Estudiante.CodigoPersonal = '"+campoBusqueda+"' AND CicloEscolar_Id = "+cicloEscolar_Id+"");
                 break;
                 // 'filtro == 3': Búsqueda por CUI
                 case 3:
-                    consultaEstudiante = sentencia.executeQuery("SELECT Estudiante.*, Municipio.Nombre Municipio, Encargado.Nombre Encargado FROM Estudiante "
+                    consultaEstudiante = sentencia.executeQuery("SELECT AsignacionEST.CicloEscolar_Id, CicloEscolar.Anio, Estudiante.*, Municipio.Nombre Municipio, Encargado.Nombre Encargado FROM CicloEscolar "
+                            + "INNER JOIN AsignacionEST ON CicloEscolar.Id = AsignacionEST.CicloEscolar_Id "
+                            + "INNER JOIN Estudiante ON AsignacionEST.Estudiante_Id = Estudiante.Id "
                             + "INNER JOIN Municipio ON Estudiante.Municipio_Id = Municipio.Id "
                             + "INNER JOIN Encargado ON Estudiante.Encargado_Id = Encargado.Id "
-                            + "WHERE Estudiante.CUI = '"+campoBusqueda+"'");
+                            + "WHERE Estudiante.CUI = '"+campoBusqueda+"' AND CicloEscolar_Id = "+cicloEscolar_Id+"");
                 break;
                 // 'fitro == 0': Sin especificar (devuelve todo el contenido de la tabla de la BD)
                 default:
-                    consultaEstudiante = sentencia.executeQuery("SELECT Estudiante.*, Municipio.Nombre Municipio, Encargado.Nombre Encargado FROM Estudiante "
+                    consultaEstudiante = sentencia.executeQuery("SELECT AsignacionEST.CicloEscolar_Id, CicloEscolar.Anio, Estudiante.*, Municipio.Nombre Municipio, Encargado.Nombre Encargado FROM CicloEscolar "
+                            + "INNER JOIN AsignacionEST ON CicloEscolar.Id = AsignacionEST.CicloEscolar_Id "
+                            + "INNER JOIN Estudiante ON AsignacionEST.Estudiante_Id = Estudiante.Id "
                             + "INNER JOIN Municipio ON Estudiante.Municipio_Id = Municipio.Id "
-                            + "INNER JOIN Encargado ON Estudiante.Encargado_Id = Encargado.Id");
+                            + "INNER JOIN Encargado ON Estudiante.Encargado_Id = Encargado.Id "
+                            + "WHERE CicloEscolar_Id = "+cicloEscolar_Id+"");
+                    
                 break;
             }   // Hasta aquí se han cargado los datos
             
@@ -352,11 +422,12 @@ public class InformacionEstudiante extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buscar;
     private javax.swing.JTextField campo_busqueda;
+    private javax.swing.JComboBox<String> ciclo_escolar;
     private javax.swing.JButton editar;
     private javax.swing.JComboBox<String> filtro_busqueda;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tabla_encontrados;
     private javax.swing.JButton ver_notas;

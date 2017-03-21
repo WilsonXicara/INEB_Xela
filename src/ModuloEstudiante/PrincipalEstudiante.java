@@ -5,7 +5,6 @@
  */
 package ModuloEstudiante;
 
-import ModuloAsignacionEST.AsignarEstudiante;
 import ModuloAsignacionEST.PrincipalAsignacionEST;
 import java.sql.Connection;
 
@@ -39,7 +38,7 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
         ver_estudiante = new javax.swing.JButton();
         asignar_estudiantes = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Módulo Estudiante");
 
         crear_estudiante.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
@@ -102,18 +101,24 @@ public class PrincipalEstudiante extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void crear_estudianteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crear_estudianteActionPerformed
+        this.setVisible(false);
         CrearEstudiante nueva_ventana = new CrearEstudiante(this, true, conexion);
         nueva_ventana.setVisible(true);
+        this.setVisible(true);
     }//GEN-LAST:event_crear_estudianteActionPerformed
 
     private void ver_estudianteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ver_estudianteActionPerformed
+        this.setVisible(false);
         InformacionEstudiante nueva_ventana = new InformacionEstudiante(this, true, conexion);
         nueva_ventana.setVisible(true);
+        this.setVisible(true);
     }//GEN-LAST:event_ver_estudianteActionPerformed
 
     private void asignar_estudiantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_asignar_estudiantesActionPerformed
+        this.setVisible(false);
         PrincipalAsignacionEST nueva_ventana = new PrincipalAsignacionEST(this, true, conexion);
         nueva_ventana.setVisible(true);
+        this.setVisible(true);
     }//GEN-LAST:event_asignar_estudiantesActionPerformed
 
     /**

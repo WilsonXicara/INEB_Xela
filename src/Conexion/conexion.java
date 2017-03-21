@@ -36,7 +36,7 @@ public class conexion {
     public Connection Conectar() {
         try {
             Class.forName("org.gjt.mm.mysql.Driver");
-            conect = DriverManager.getConnection("jdbc:mysql://localhost/sbd_inebxela","usuario","usuario");
+            conect = DriverManager.getConnection("jdbc:mysql://localhost/sbd_inebxela","root","sergio2710");
         } catch (Exception e) {
              /**String[] opciones = new String[1];
                       opciones[0] = "Aceptar";

@@ -30,8 +30,6 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
     public PrincipalAsignacionEST(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        this.conexion = null;
-        this.consultaAsignaciones = null;
     }
     public PrincipalAsignacionEST(java.awt.Frame parent, boolean modal, Connection conexion) {
         super(parent, modal);
@@ -43,6 +41,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
     private void iniciarTabla() {
         tablaModel = new DefaultTableModel();
         // Definición de las columnas de 'tablaModel'
+        tablaModel.addColumn("No.");
         tablaModel.addColumn("Código Personal");
         tablaModel.addColumn("CUI");
         tablaModel.addColumn("Nombres");
@@ -58,10 +57,11 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
             consultaAsignaciones = sentencia.executeQuery("SELECT Estudiante.Id, Estudiante.CodigoPersonal, Estudiante.CUI, Estudiante.Nombres, Estudiante.Apellidos, AsignacionEST.* FROM Estudiante "
                     + "LEFT JOIN AsignacionEST ON Estudiante.Id = AsignacionEST.Estudiante_Id "
                     + "WHERE AsignacionEst.Id IS NULL");
-            
+            int contador = 1;
             // Obtención e inserción de las filas en 'tabla'
             while (consultaAsignaciones.next()) {
                 String[] registro = {
+                    Integer.toString(contador),
                     consultaAsignaciones.getString("CodigoPersonal"),
                     consultaAsignaciones.getString("CUI"),
                     consultaAsignaciones.getString("Nombres"),
@@ -69,6 +69,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
                     "NO"
                 };
                 tablaModel.addRow(registro); // Inserción del i-ésimo registro en la tabla
+                contador++;
             }
             jLabel1.setText("Estudiantes que aún no han sido asignados: "+tablaModel.getRowCount()+" registro(s).");
 //            consultaEstudiante.close();   // No cierro la consulta pues me servirá para modificar algún registro
@@ -95,6 +96,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
         setTitle("Asignación de Estudiantes");
         setLocation(new java.awt.Point(100, 10));
 
+        tabla_estudiantes.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         tabla_estudiantes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -105,6 +107,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
         ));
         jScrollPane1.setViewportView(tabla_estudiantes);
 
+        jButton1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jButton1.setText("Crear Asignación");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -112,6 +115,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
             }
         });
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText("Estudiantes que aún no han sido asignados:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -119,29 +123,28 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addContainerGap()
+                        .addComponent(jLabel1))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(298, 298, 298)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(24, 24, 24)
+                .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         pack();
