@@ -5,7 +5,7 @@
  */
 package Catedratico;
 
-import Ventanas.Pantalla;
+import Modulo_notas_y_reporte.Pantalla;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -48,8 +48,8 @@ public class Principal_catedratico extends javax.swing.JFrame {
             int maestro = 0;
             System.out.println(maestro);
             String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
-            String usuario = "root";
-            String contraseña = "6148";  
+            String usuario = "usuario";
+            String contraseña = "usuario";  
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             ab = DriverManager.getConnection(url,usuario,contraseña);
             stmt = ab.createStatement();
@@ -63,7 +63,7 @@ public class Principal_catedratico extends javax.swing.JFrame {
             System.out.println(maestro);
             
            
-            ResultSet rs = stmt.executeQuery("SELECT curso.Nombre, catedratico.Nombres FROM asignacioncat INNER JOIN catedratico ON asignacioncat.Catedratico_Id = catedratico.Id\n" +
+            ResultSet rs = stmt.executeQuery("SELECT curso.Nombre, catedratico.Nombres FROM asignacioncat INNER JOIN catedratico ON asignacioncat.Catedratico_Id = catedratico.Id " +
             "INNER JOIN curso ON asignacioncat.Curso_Id = curso.Id WHERE catedratico.Id = "+maestro);
             modelo = new DefaultTableModel (null,titulos);
             //ResultSet rs = stmt.executeQuery("select* from curso");
@@ -165,11 +165,11 @@ public class Principal_catedratico extends javax.swing.JFrame {
         try{
             int maestro = 0;
             //System.out.println(maestro);
-            String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
+/**            String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
             String usuario = "root";
             String contraseña = "6148";  
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            ab = DriverManager.getConnection(url,usuario,contraseña);
+            ab = DriverManager.getConnection(url,usuario,contraseña);**/
             stmt = ab.createStatement(); 
            String sql = "SELECT * FROM curso WHERE curso.Nombre = '"+Materia+"'";
            ResultSet respuesta4 = stmt.executeQuery(sql);

@@ -110,8 +110,6 @@ public class Principal extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        contraseña.setText("1234");
-
         saludo.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         saludo.setText("BIENVENIDO");
 
@@ -119,7 +117,6 @@ public class Principal extends javax.swing.JDialog {
 
         jLabel2.setText("Contraseña");
 
-        usuario.setText("prueba");
         usuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 usuarioActionPerformed(evt);
@@ -203,7 +200,8 @@ public class Principal extends javax.swing.JDialog {
                 if(contraseña_entrada.equals(contraseña)){
                     if(tipo.equals("3")){
                         this.dispose();
-                        Principal_catedratico s = new Principal_catedratico();
+                        b.previous();
+                        Principal_catedratico s = new Principal_catedratico(conexion, b);
                         s.setVisible(true);
                         this.show(true);
                     }
@@ -253,7 +251,8 @@ public class Principal extends javax.swing.JDialog {
                     if(contraseña_entrada.equals(contraseña)){
                         if(tipo.equals("3")){
                             this.dispose();
-                            Principal_catedratico s = new Principal_catedratico();
+                            b.previous();
+                            Principal_catedratico s = new Principal_catedratico(conexion, b);
                             s.setVisible(true);
                             this.pack();
                         }
