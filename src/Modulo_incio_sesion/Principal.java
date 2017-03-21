@@ -110,6 +110,8 @@ public class Principal extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+        contraseña.setText("1234");
+
         saludo.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         saludo.setText("BIENVENIDO");
 
@@ -117,6 +119,7 @@ public class Principal extends javax.swing.JDialog {
 
         jLabel2.setText("Contraseña");
 
+        usuario.setText("prueba");
         usuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 usuarioActionPerformed(evt);
