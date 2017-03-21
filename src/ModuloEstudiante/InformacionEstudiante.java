@@ -52,7 +52,6 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         ver_notas = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla_encontrados = new javax.swing.JTable();
-        jLabel4 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         filtro_busqueda = new javax.swing.JComboBox<>();
         campo_busqueda = new javax.swing.JTextField();
@@ -80,8 +79,6 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         ));
         jScrollPane1.setViewportView(tabla_encontrados);
 
-        jLabel4.setText("jLabel4");
-
         jLabel1.setText("Buscar por:");
 
         filtro_busqueda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sin especificar", "Apellidos", "Código Personal", "CUI" }));
@@ -106,10 +103,6 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel4)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -153,8 +146,7 @@ public class InformacionEstudiante extends javax.swing.JDialog {
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4))))
+                        .addGap(20, 20, 20))))
         );
 
         pack();
@@ -206,7 +198,6 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         try {
             int registroSelccionado = tabla_encontrados.getSelectedRow();
             consultaEstudiante.first();
-            jLabel4.setText("Seleccionado = "+registroSelccionado);
             if (registroSelccionado != -1) {
                 // Obtengo el regitro seleccionado (desde la consulta)
                 for(int i=0; i<registroSelccionado; i++)
@@ -356,7 +347,6 @@ public class InformacionEstudiante extends javax.swing.JDialog {
     private javax.swing.JComboBox<String> filtro_busqueda;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tabla_encontrados;
     private javax.swing.JButton ver_notas;

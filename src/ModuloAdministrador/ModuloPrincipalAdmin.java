@@ -189,7 +189,8 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             }
         });
 
-        jLabel16.setIcon(new javax.swing.ImageIcon("C:\\Users\\SERGIO MALDONADO\\Documents\\GitHub\\INEB_Xela\\src\\Imagenes\\login_icon.png")); // NOI18N
+
+        jLabel16.setIcon(new javax.swing.ImageIcon("src\\Imagenes\\login_icon.png")); // NOI18N
 
         jMenu1.setText("Crear");
 
@@ -418,10 +419,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-        this.setVisible(false);
         PrincipalEstudiante a = new PrincipalEstudiante(conexcion);
         a.setVisible(true);
-        this.setVisible(true);
+
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
