@@ -5,7 +5,6 @@
  */
 package Modulo_notas_y_reporte;
 
-import Modulo_notas_y_reporte.ModuloCurso;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -655,7 +654,7 @@ public class Pantalla extends javax.swing.JFrame {
         String Id = ID1.get(posicion);
             try {
                 //String j = ciclo.getSelectedItem().toString();
-                conexion = cn.Conectar();
+                //conexion = cn.Conectar();
                 String[] titulos = {"ID Notas", "Curso", "Estudiante", "Nota 1", "Nota 2", "Nota 3", "Nota 4", "Nota Recuperación", "Nota Final"};
                 String sql = "SELECT Notas.Id, curso.Nombre, Estudiante.Nombres, notas.Nota1, notas.Nota2, notas.Nota3, notas.Nota4, notas.NotaRecuperacion, notas.NotaFinal FROM notas INNER JOIN curso ON notas.Curso_Id = curso.Id INNER JOIN estudiante ON notas.Estudiante_Id = estudiante.Id INNER JOIN asignacionest ON asignacionest.Estudiante_Id = estudiante.Id INNER JOIN cicloescolar ON asignacionest.CicloEscolar_Id = cicloescolar.Id WHERE asignacionest.CicloEscolar_Id = " + Id + " ;"; //AND Curso.Id = " + Id_curso + "
                 model = new DefaultTableModel(null, titulos);
