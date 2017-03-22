@@ -7,6 +7,7 @@ package ModuloAdministrador;
 import ModuloPrestamos.ModuloPrestamo;
 import Catedratico.Catedraticos;
 import Catedratico.Datos_Catedraticos;
+import Catedratico.Mostrar_Datos;
 import ModuloAsignacionEST.AsignarEstudiante;
 import ModuloAsignacionEST.PrincipalAsignacionEST;
 import ModuloEstudiante.CrearEstudiante;
@@ -456,7 +457,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here:
-        Catedraticos ven = new Catedraticos(conexcion, this);
+        Datos_Catedraticos ven = new Datos_Catedraticos(conexcion);
         ven.setVisible(true);
        // new Catedraticos(conexcion, this).setVisible(true);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
