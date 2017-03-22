@@ -115,6 +115,7 @@ public class Notas extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+        tabla_notas.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         tabla_notas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -125,8 +126,10 @@ public class Notas extends javax.swing.JDialog {
         ));
         jScrollPane1.setViewportView(tabla_notas);
 
+        nombre_estudiante.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         nombre_estudiante.setText("Estudiante:");
 
+        guardar_cambios.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         guardar_cambios.setText("Guardar cambios");
         guardar_cambios.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -134,6 +137,7 @@ public class Notas extends javax.swing.JDialog {
             }
         });
 
+        editar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         editar.setText("Editar notas");
         editar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -148,17 +152,17 @@ public class Notas extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(nombre_estudiante)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(189, 189, 189)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(editar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(guardar_cambios)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(247, 247, 247))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -170,7 +174,7 @@ public class Notas extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(guardar_cambios)
                     .addComponent(editar))
-                .addContainerGap(58, Short.MAX_VALUE))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
 
         pack();

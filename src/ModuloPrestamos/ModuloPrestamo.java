@@ -5,6 +5,7 @@
  */
 package ModuloPrestamos;
 
+import ModuloAdministrador.ModuloPrincipalAdmin;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -65,6 +66,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         jLabel11 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -135,6 +137,14 @@ public class ModuloPrestamo extends javax.swing.JFrame {
 
         jLabel15.setIcon(new javax.swing.ImageIcon("C:\\Users\\SERGIO MALDONADO\\Documents\\GitHub\\INEB_Xela\\src\\Imagenes\\Libros.png")); // NOI18N
 
+        jButton3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jButton3.setText("Regresar Menú Principal");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -165,7 +175,10 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                         .addGap(202, 202, 202)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(65, 65, 65)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(47, 47, 47)
+                        .addComponent(jButton3)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 99, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -227,23 +240,28 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
                             .addComponent(CodigoEstudiante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(59, 59, 59)
-                        .addComponent(jLabel14)
-                        .addGap(44, 44, 44)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(59, 59, 59)
+                                .addComponent(jLabel14)
+                                .addGap(44, 44, 44)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jButton1)
+                                    .addComponent(jButton2))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton3))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(67, 67, 67)
-                        .addComponent(jLabel15)
-                        .addGap(33, 33, 33)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel13)
-                            .addComponent(jLabel9))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel11)
-                        .addContainerGap())))
+                        .addComponent(jLabel15)))
+                .addGap(33, 33, 33)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel9))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel11)
+                .addContainerGap())
         );
 
         pack();
@@ -289,20 +307,19 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             //Condicion si el CodigoPaquete no existe
             try {
                 Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                //packetes = sentencia.executeQuery("SELECT * FROM paquetelibro WHERE Codigo = " + "'" + CodPack + "'" +";");
-                //packetes.next();
                 resultado = sentencia.executeQuery("SELECT * FROM PaqueteLibro WHERE Codigo = '" + CodPack + "';");
-                resultado2 = sentencia.executeQuery("SELECT * FROM estudiante WHERE CodigoPersonal = " + "'" + CodEst + "';");
+                Statement sentencia2 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                resultado2 = sentencia2.executeQuery("SELECT * FROM estudiante WHERE CodigoPersonal = " + "'" + CodEst + "';");
                 //Condicion que si el CodigoEstudiante no existe en la base arrojar un mensaje
                 //Condicion si el CodigoPaquete no existe
-                //if((resultado.next() == false)||(resultado2.next() == false)){
-                    //JOptionPane.showMessageDialog(null, "Hay Datos incorrectos");
-                //}
-                //else{
+                if((false == resultado.next())||(resultado2.next() == false)){
+                    JOptionPane.showMessageDialog(null, "Hay Datos incorrectos");
+                }
+                else{
                     //Concatenamos la instrucción para insertar a la tabla prestamo.
-                    resultado.next();
-                    resultado2.next();
-                    Instruccion = "INSERT INTO prestamo(PaqueteLibro_ID,Estudiante_ID,CodigoBoleta,Monto) VALUES (" + resultado.getString(1) + "," + resultado2.getString(1) +  "," + "'" + NoFac + "'" + "," + Efectivo + ");"; //Insercion a la Tabla Prestamos
+                    //System.out.println(resultado.next());
+                    //System.out.println(resultado2.next());
+                    Instruccion = "INSERT INTO prestamo(PaqueteLibro_ID,Estudiante_ID,CodigoBoleta,FechaPago,Monto) VALUES (" + resultado.getString(1) + "," + resultado2.getString(1) +  "," + "'" + NoFac + "'" + ",'" + Fech + " " + Hora+ "'," + Efectivo + ");"; //Insercion a la Tabla Prestamos
                      //Insertamos en la base
                     try {
                         PreparedStatement  pst = conexcion.prepareStatement(Instruccion);
@@ -316,13 +333,18 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                         Logger.getLogger(ModuloPrestamo.class.getName()).log(Level.SEVERE, null, ex);
                         System.out.println("Error en SQLException: "+ex.getMessage());
                     }
-                //}
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
            
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -367,6 +389,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
     private javax.swing.JTextField NoFactura;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;

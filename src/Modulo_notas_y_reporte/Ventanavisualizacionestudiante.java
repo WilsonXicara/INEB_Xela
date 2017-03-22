@@ -24,19 +24,32 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
     Statement sent;
     String año;
     ArrayList<String> ID;
-    int posicion;
+    int posicion, Id_cat, Id_cur;
+    ResultSet b;
     /**
      * Creates new form Ventanavisualizacionestudiante
      */
     ModuloCurso cn = new ModuloCurso();
     public Ventanavisualizacionestudiante() throws SQLException {
         initComponents();
-        conexion = cn.Conectar();
-        cargar("");
+        //conexion = cn.Conectar();
+        //cargar();
+        //Calendar fecha = new GregorianCalendar();
+        //año = Integer.toString(fecha.get(Calendar.YEAR));
+        //Cargar_Datos();
+        //posicion = 0;
+    }
+    public Ventanavisualizacionestudiante(Connection conex, int cat, int cur, ResultSet a) throws SQLException {
+        initComponents();
+        conexion = conex;
+        //cargar();
         Calendar fecha = new GregorianCalendar();
         año = Integer.toString(fecha.get(Calendar.YEAR));
         Cargar_Datos();
         posicion = 0;
+        Id_cat = cat;
+        Id_cur = cur;
+        b = a;
     }
     
     public void Cargar_Datos() throws SQLException
@@ -58,7 +71,7 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
         }
     }
     
-    void cargar(String valor)
+    void cargar()
     {
         try {
             String j = ciclo.getSelectedItem().toString();
@@ -66,19 +79,19 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
             String [] titulos={"Curso ID", "Nombre", "Estudiante Id", "Nombres", "Apellidos", "Codigo Personal"};
             String [] fila = new String [6];
         
-            String sql = "SELECT curso.Id, curso.Nombre, estudiante.Id, estudiante.Nombres, estudiante.Apellidos, estudiante.CodigoPersonal FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id INNER JOIN notas ON curso.Id = notas.Curso_Id INNER JOIN estudiante ON notas.Estudiante_Id = estudiante.Id WHERE curso.Id = '%" + valor + "%' AND cicloescolar.Anio = '%" + j + "%'";
+            String sql = "SELECT curso.Id, curso.Nombre, estudiante.Id, estudiante.Nombres, estudiante.Apellidos, estudiante.CodigoPersonal FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id INNER JOIN notas ON curso.Id = notas.Curso_Id INNER JOIN estudiante ON notas.Estudiante_Id = estudiante.Id WHERE curso.Id = cicloescolar.Anio = '%" + j + "%'";
         
             model = new DefaultTableModel(null, titulos);
             sent = conexion.createStatement();
             ResultSet rs = sent.executeQuery(sql);
             
             while (rs.next()) {
-                fila[0] = rs.getString("Curso_Id");
-                fila[1] = rs.getString("Nombre");
-                fila[2] = rs.getString("Estudiante_Id");
-                fila[3] = rs.getString("Nombres");
-                fila[4] = rs.getString("Apellidos");
-                fila[5] = rs.getString("CodigoPersonal");
+                fila[0] = rs.getString("Curso.Id");
+                fila[1] = rs.getString("Curso.Nombre");
+                fila[2] = rs.getString("Estudiante.Id");
+                fila[3] = rs.getString("Estudiante.Nombres");
+                fila[4] = rs.getString("Estudiante.Apellidos");
+                fila[5] = rs.getString("Estudiante.CodigoPersonal");
                 
                 model.addRow(fila);
             }
@@ -94,12 +107,16 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         Tablaestudiante = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
-        Buscacurso = new javax.swing.JTextField();
         ciclo = new javax.swing.JComboBox();
+        jLabel1 = new javax.swing.JLabel();
         Volver = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Estudiantes por curso", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), java.awt.Color.blue)); // NOI18N
 
@@ -113,51 +130,37 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(Tablaestudiante);
 
-        jLabel1.setText("Búsqueda por curso");
-
-        Buscacurso.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                BuscacursoKeyReleased(evt);
-            }
-        });
-
         ciclo.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cicloItemStateChanged(evt);
             }
         });
 
+        jLabel1.setText("Año");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(143, 143, 143)
-                                .addComponent(jLabel1))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(Buscacurso, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(179, 179, 179))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addContainerGap(22, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Buscacurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                    .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -191,16 +194,11 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void BuscacursoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_BuscacursoKeyReleased
-        // TODO add your handling code here:
-        cargar(Buscacurso.getText());
-    }//GEN-LAST:event_BuscacursoKeyReleased
-
     private void VolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VolverActionPerformed
         // TODO add your handling code here:
         Pantalla a = null;
         try {
-            a = new Pantalla();
+            a = new Pantalla(conexion, Id_cat, Id_cur, b);
         } catch (SQLException ex) {
             Logger.getLogger(Ventanavisualizacionestudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -211,8 +209,54 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
 
     private void cicloItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cicloItemStateChanged
         // TODO add your handling code here:
-        cargar(Buscacurso.getText());
+        //cargar();
+        if(ciclo.getSelectedIndex()!=-1){
+        posicion = ciclo.getSelectedIndex();
+        String Id = ID.get(posicion);
+        Statement a;
+        try {
+            //a = conexion.createStatement();
+            //ResultSet consulta_Grados = a.executeQuery("SELECT curso.Id, curso.Nombre, estudiante.Id, estudiante.Nombres, estudiante.Apellidos FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id INNER JOIN notas ON curso.Id = notas.Curso_Id INNER JOIN asignacionest ON asignacionest.Id = notas.AsignacionEST_Id INNER JOIN estudiante ON asignacionest.Estudiante_Id = estudiante.Id WHERE asignacionest.CicloEscolar_Id = "+ Id + ";");
+            conexion = cn.Conectar();
+            String [] titulos={"Curso ID", "Nombre", "Estudiante Id", "Nombres", "Apellidos"};
+            String [] fila = new String [5];
+            
+            System.out.println(Id);
+        
+            String sql = "SELECT curso.Id, curso.Nombre, estudiante.Id, estudiante.Nombres, estudiante.Apellidos FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id INNER JOIN notas ON curso.Id = notas.Curso_Id INNER JOIN asignacionest ON asignacionest.Id = notas.AsignacionEST_Id INNER JOIN estudiante ON asignacionest.Estudiante_Id = estudiante.Id WHERE asignacionest.CicloEscolar_Id = " + Id + ";";
+        
+            model = new DefaultTableModel(null, titulos);
+            sent = conexion.createStatement();
+            ResultSet rs = sent.executeQuery(sql);
+            
+            while (rs.next()) {
+                fila[0] = rs.getString("Curso.Id");
+                fila[1] = rs.getString("Curso.Nombre");
+                fila[2] = rs.getString("Estudiante.Id");
+                fila[3] = rs.getString("Estudiante.Nombres");
+                fila[4] = rs.getString("Estudiante.Apellidos");
+                
+                model.addRow(fila);
+            }
+            Tablaestudiante.setModel(model);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        }
     }//GEN-LAST:event_cicloItemStateChanged
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        Pantalla a = null;
+        try {
+            a = new Pantalla(conexion, Id_cat, Id_cur, b);
+        } catch (SQLException ex) {
+            Logger.getLogger(Ventanavisualizacionestudiante.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        a.setVisible(true);
+        this.dispose();
+        
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
@@ -254,7 +298,6 @@ public class Ventanavisualizacionestudiante extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField Buscacurso;
     private javax.swing.JTable Tablaestudiante;
     private javax.swing.JButton Volver;
     private javax.swing.JComboBox ciclo;

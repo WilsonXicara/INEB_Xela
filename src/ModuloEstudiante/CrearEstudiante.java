@@ -11,7 +11,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -30,10 +29,10 @@ import javax.swing.JOptionPane;
 public class CrearEstudiante extends javax.swing.JDialog {
     private Connection conexion;
     private PreparedStatement insercion;
-    private Statement sentencia = null;
-    private String mensaje_error_estudiante, mensaje_error_encargado;
-    private int estudiante_Id, encargado_Id;
-    private boolean estudianteCreado = false;
+    private Statement sentencia;
+    private String mensaje_error_estudiante;
+    private int nuevoEstudiante_Id, encargado_Id;
+    private boolean encargadoYaExiste = false;
     /**
      * Creates new form NewJDialog
      * @param parent
@@ -46,14 +45,34 @@ public class CrearEstudiante extends javax.swing.JDialog {
     /**
      * Inicializa la ventana con los campos requeridos para crear un nuevo Estudiante y agregarlo a la BD, así como la
      * información de su Encargado.
-     * @param parent
-     * @param modal
+     * @param parent componente padre del nuevo JDialog a mostrar
+     * @param modal modo de apertura. Si es 'true', no se permitirá trabajar sobre la ventana padre mientras este JDialog está abierto.
      * @param conexion objeto que permite la conexión y comunicación con la Base de Datos
      */
     public CrearEstudiante(java.awt.Frame parent, boolean modal, Connection conexion) {
         super(parent, modal);
         initComponents();
-        this.conexion = conexion;
+        this.conexion = conexion;   // Inicializo la conexión.
+        try {
+            this.sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        } catch (SQLException ex) {
+            Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        cargarMunicipios();
+    }
+    private void cargarMunicipios() {
+        // Realiza una consulta para obtenenr el nombre de los municipios (no obtengo el Id del municipio por ser correlativo al orden que tiene).
+        estudiante_municipio.removeAllItems();
+        encargado_municipio.removeAllItems();
+        try {
+            ResultSet municipios = sentencia.executeQuery("SELECT Nombre FROM Municipio");
+            while (municipios.next()) {
+                estudiante_municipio.addItem(municipios.getString("Nombre"));
+                encargado_municipio.addItem(municipios.getString("Nombre"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     /**
      * Función que evalua si el nuevo estudiante ya existe en la Base de Datos. Para ello, busca una coincidencia de
@@ -64,9 +83,8 @@ public class CrearEstudiante extends javax.swing.JDialog {
         boolean encontrado = false;
         // Hago una consulta a la tabla Estudiante en busca del campo estudiante_codigo_personal.getText() en la columna CodigoPersonal
         try {
-            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            ResultSet consulta = sentencia.executeQuery("SELECT Id, CodigoPersonal, Nombres, Apellidos FROM Estudiante"
-                    + " WHERE CodigoPersonal = '"+estudiante_codigo_personal.getText()+"'");
+            ResultSet consulta = sentencia.executeQuery("SELECT Id, CodigoPersonal, Nombres, Apellidos FROM Estudiante "
+                    + "WHERE CodigoPersonal = '"+estudiante_codigo_personal.getText()+"'");
             encontrado = consulta.next();
             // Si la consulta regresa por lo menos un registro, consulta.next() es true, de lo contrario es false (no existe).
             if (encontrado == true) {
@@ -76,41 +94,55 @@ public class CrearEstudiante extends javax.swing.JDialog {
                         + "\n\tApellidos:       "+consulta.getString("Apellidos");
             } else {    // Si el nuevo estudiante no existe, obtengo lo que será su Id
                 consulta = sentencia.executeQuery("SELECT COUNT(*) Cantidad FROM Estudiante");
-                estudiante_Id = consulta.getInt("Cantidad") + 1;    // Obtengo lo que será el Id del nuevo estudiante
+                nuevoEstudiante_Id = consulta.getInt("Cantidad") + 1;    // Obtengo lo que será el Id del nuevo estudiante
             }
-            sentencia.close();
-            consulta.close();
         } catch (SQLException e) {
-            System.out.println("Error en estudianteYaExiste: "+e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error en:\n"+e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
         }
         return encontrado;
     }
     /**
-     * Función que evalua si el encargado del nuevo estudiante ya existe en la Base de Datos. Para ello,
-     * busca una coincidencia de 'DPI' del encargado nuevo en la tabla Encargado (ya que este campo es único para cada encargado).
+     * Función que evalua si el encargado del nuevo estudiante ya existe en la Base de Datos. Para ello, busca una coincidencia
+     * de 'DPI' del encargado nuevo en la tabla Encargado (ya que este campo es único para cada encargado). Si existe, se
+     * cargan dichos datos en los campos correspondientes y ya no se trata de crear un nuevo registro Encargado.
      * @return 'true' si el DPI (y por lo tanto el Encargado) ya existe; 'false' en caso contrario.
      */
-    private boolean encargadoYaExiste() {
-        boolean encontrado = false;
+    private void encargadoYaExiste() {
         // Hago una consulta a la tabla Encargado en busca del campo encargado_dpi.getText() en la columna DPI
         try {
-            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            ResultSet consulta = sentencia.executeQuery("SELECT Id, Nombre, DPI FROM Encargado"
-                    + " WHERE DPI = '"+encargado_dpi.getText()+"'");
+            ResultSet consulta = sentencia.executeQuery("SELECT * FROM Encargado WHERE DPI = "+encargado_dpi.getText()+"");
             // Si la consulta regresa por lo menos un registro, consulta.next() es true, de lo contrario es false (no existe).
-            encontrado = consulta.next();
-            if (encontrado == true) {
-                mensaje_error_encargado+= "Ya existe un encargado con el mismo DPI:"
-                        + "\n\tNombre: "+consulta.getString("Nombre")
-                        + "\n\tDPI:    "+consulta.getString("DPI")
-                        + "\nSe utilizará los datos anteriores.";
+            encargadoYaExiste = consulta.next();
+            if (encargadoYaExiste == true) {
                 // Obtengo su Id
                 encargado_Id = consulta.getInt("Id");
+                // Inicio la carga de los datos
+                encargado_nombre_completo.setText(consulta.getString("Nombre"));
+                encargado_direccion.setText(consulta.getString("Direccion"));
+                encargado_fechaNacimiento.setText(consulta.getString("FechaNacimiento"));
+                encargado_municipio.setSelectedIndex(consulta.getInt("Municipio_Id")-1);
+                encargado_relacion_con_estudiante.setText(consulta.getString("Relacion"));
+                // Obtengo los números de teléfono asociados al Encargado
+                ResultSet telefonos = sentencia.executeQuery("SELECT Telefono FROM Telefono WHERE Encargado_Id = "+encargado_Id+"");
+                if (telefonos.next()) encargado_telefono_casa.setText(telefonos.getString("Telefono"));
+                if (telefonos.next()) encargado_celular.setText(telefonos.getString("Telefono"));
+                encargado_trabajo.setText(consulta.getString("Trabajo"));
+            } else {
+                // Se creará un nuevo registro Encargado (habilito los campos necesarios)
+                encargado_nombre_completo.setEnabled(true);
+                encargado_direccion.setEnabled(true);
+                encargado_fechaNacimiento.setEnabled(true);
+                encargado_municipio.setEnabled(true);
+                encargado_relacion_con_estudiante.setEnabled(true);
+                encargado_telefono_casa.setEnabled(true);
+                encargado_celular.setEnabled(true);
+                encargado_trabajo.setEnabled(true);
+                consulta = sentencia.executeQuery("SELECT COUNT(*) Cantidad FROM Encargado");
+                encargado_Id = consulta.getInt("Cantidad") + 1; // Obtengo lo que será el Id del nuevo Encargado
             }
         } catch (SQLException e) {
-            System.out.println("Error en encargadoYaExiste: "+e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error en:\n"+e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
         }
-        return encontrado;
     }
 
     /**
@@ -136,10 +168,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
         encargado_trabajo = new javax.swing.JTextField();
         crear_estudiante = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
-        estudiante_fechaNacimiento_dia = new javax.swing.JComboBox<>();
-        estudiante_fechaNacimiento_mes = new javax.swing.JComboBox<>();
         jLabel12 = new javax.swing.JLabel();
-        estudiante_fechaNacimiento_año = new javax.swing.JComboBox<>();
         jLabel13 = new javax.swing.JLabel();
         estudiante_fechaNacimiento = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -170,23 +199,55 @@ public class CrearEstudiante extends javax.swing.JDialog {
         estudiante_direccion = new javax.swing.JTextField();
         encargado_direccion = new javax.swing.JTextField();
         crear_asignacion = new javax.swing.JButton();
+        borrar_todo = new javax.swing.JButton();
+        buscar_encargado = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Crear nuevo estudiante");
+        setPreferredSize(new java.awt.Dimension(925, 550));
+        setSize(new java.awt.Dimension(925, 550));
 
+        jLabel11.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel11.setText("Municipio:");
 
+        jLabel17.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel17.setText("Municipio:");
 
-        estudiante_municipio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Almolonga", "Cabrican", "Cajolá", "Cantel", "Coatepeque", "Colomba Costa Cuca", "Concepción Chiquirichapa", "El Palmar", "Flores Costa Cuca", "Génova Costa Cuca", "Huitán", "La Esperanza", "Olintepeque", "Palestina de los Altos", "Quetzaltenango", "Salcajá", "San Carlos Sija", "San Francisco La Unión", "San Juan Ostuncalco", "San Martín Sacatepéquez", "San Mateo", "San Miguel Sigüilá", "Sibilia", "Zunil" }));
+        estudiante_municipio.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
-        encargado_municipio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Almolonga", "Cabrican", "Cajolá", "Cantel", "Coatepeque", "Colomba Costa Cuca", "Concepción Chiquirichapa", "El Palmar", "Flores Costa Cuca", "Génova Costa Cuca", "Huitán", "La Esperanza", "Olintepeque", "Palestina de los Altos", "Quetzaltenango", "Salcajá", "San Carlos Sija", "San Francisco La Unión", "San Juan Ostuncalco", "San Martín Sacatepéquez", "San Mateo", "San Miguel Sigüilá", "Sibilia", "Zunil" }));
+        encargado_municipio.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        encargado_municipio.setEnabled(false);
 
+        estudiante_sexo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         estudiante_sexo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Femenino", "Masculino" }));
 
-        estudiante_capacidad_diferente.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No", "Si" }));
+        encargado_relacion_con_estudiante.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        encargado_relacion_con_estudiante.setEnabled(false);
 
-        crear_estudiante.setText("Crear");
+        estudiante_etnia.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        encargado_telefono_casa.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        encargado_telefono_casa.setEnabled(false);
+
+        estudiante_capacidad_diferente.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        estudiante_capacidad_diferente.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No", "Si" }));
+        estudiante_capacidad_diferente.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                estudiante_capacidad_diferenteItemStateChanged(evt);
+            }
+        });
+
+        encargado_celular.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        encargado_celular.setEnabled(false);
+
+        estudiante_tipo_capacidad.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        estudiante_tipo_capacidad.setEnabled(false);
+
+        encargado_trabajo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        encargado_trabajo.setEnabled(false);
+
+        crear_estudiante.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
+        crear_estudiante.setText("Crear Estudiante");
         crear_estudiante.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 crear_estudianteActionPerformed(evt);
@@ -195,61 +256,111 @@ public class CrearEstudiante extends javax.swing.JDialog {
 
         jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
-        estudiante_fechaNacimiento_dia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Dia" }));
-
-        estudiante_fechaNacimiento_mes.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Mes", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" }));
-        estudiante_fechaNacimiento_mes.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                estudiante_fechaNacimiento_mesItemStateChanged(evt);
-            }
-        });
-
+        jLabel12.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel12.setText("INFORMACIÓN DEL ESTUDIANTE:");
 
-        estudiante_fechaNacimiento_año.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Año", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020" }));
-
+        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel13.setText("Dirección:");
 
+        estudiante_fechaNacimiento.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel4.setText("Apellidos:");
 
+        jLabel14.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel14.setText("Relación con el estudiante:");
 
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel5.setText("Dirección:");
 
+        jLabel15.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel15.setText("Celular:");
 
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel6.setText("Fecha de Nacimiento:");
 
+        jLabel16.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel16.setText("Trabajo u oficio:");
 
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel7.setText("Sexo:");
 
+        jLabel20.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel20.setText("INFORMACIÓN DEL ENCARGADO:");
 
+        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel8.setText("Comunidad étnica:");
 
+        jLabel21.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel21.setText("DPI:");
 
+        jLabel9.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel9.setText("Capacidad Diferente:");
 
+        jLabel22.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel22.setText("Teléfono de casa:");
 
+        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel10.setText("Tipo capacidad:");
 
-        jLabel23.setText("Nombre Completo:");
+        jLabel23.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel23.setText("Nombre completo:");
 
+        estudiante_codigo_personal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jLabel24.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel24.setText("Fecha de Nacimiento:");
 
+        estudiante_cui.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        estudiante_nombres.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText("Codigo Personal:");
 
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel2.setText("CUI:");
 
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel3.setText("Nombres:");
 
+        encargado_dpi.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        encargado_nombre_completo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        encargado_nombre_completo.setEnabled(false);
+
+        estudiante_apellidos.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        encargado_fechaNacimiento.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        encargado_fechaNacimiento.setEnabled(false);
+
+        estudiante_direccion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        encargado_direccion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        encargado_direccion.setEnabled(false);
+
+        crear_asignacion.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         crear_asignacion.setText("Asignar Estudiante");
+        crear_asignacion.setEnabled(false);
         crear_asignacion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 crear_asignacionActionPerformed(evt);
+            }
+        });
+
+        borrar_todo.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
+        borrar_todo.setText("Iniciar nuevo");
+        borrar_todo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                borrar_todoActionPerformed(evt);
+            }
+        });
+
+        buscar_encargado.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        buscar_encargado.setText("Buscar");
+        buscar_encargado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buscar_encargadoActionPerformed(evt);
             }
         });
 
@@ -257,223 +368,216 @@ public class CrearEstudiante extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(277, 277, 277)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(crear_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addContainerGap(366, Short.MAX_VALUE))
-                .addGroup(layout.createSequentialGroup()
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addContainerGap()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(14, 14, 14)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jLabel7)
+                                    .addComponent(jLabel9))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(estudiante_sexo, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(estudiante_etnia, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(estudiante_capacidad_diferente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(20, 20, 20))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel1))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(estudiante_codigo_personal, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(estudiante_cui, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(estudiante_apellidos, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(estudiante_nombres, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(estudiante_direccion, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addGap(53, 53, 53)
+                            .addComponent(jLabel11)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(estudiante_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(51, 51, 51)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(83, 83, 83)
+                        .addComponent(jLabel12))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(45, 45, 45)
+                        .addComponent(jLabel10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(estudiante_tipo_capacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jSeparator1)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel14)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jLabel4)
-                                            .addComponent(jLabel5)
-                                            .addComponent(jLabel3)
-                                            .addComponent(jLabel2)
-                                            .addComponent(jLabel1))
-                                        .addGap(10, 10, 10)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                .addComponent(estudiante_cui, javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(estudiante_codigo_personal, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(estudiante_direccion, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                .addComponent(estudiante_apellidos, javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(estudiante_nombres, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(34, 34, 34)
-                                        .addComponent(jLabel11)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(estudiante_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(2, 2, 2)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jLabel9)
-                                            .addComponent(jLabel10))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(estudiante_capacidad_diferente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(estudiante_tipo_capacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jLabel6)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                            .addGap(16, 16, 16)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                .addComponent(jLabel8)
-                                                .addComponent(jLabel7))
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(jLabel16)
                                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(estudiante_sexo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(estudiante_etnia, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(83, 83, 83)
-                            .addComponent(jLabel12)))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(50, 50, 50)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(jLabel13)
-                                        .addComponent(jLabel23)
-                                        .addComponent(jLabel21)
-                                        .addComponent(jLabel17)))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(32, 32, 32)
-                                    .addComponent(jLabel24)))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(encargado_nombre_completo)
-                                .addComponent(encargado_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(encargado_direccion, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                                .addComponent(encargado_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(encargado_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(83, 83, 83)
-                            .addComponent(jLabel20))
-                        .addGroup(layout.createSequentialGroup()
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jLabel14)
-                                .addComponent(jLabel22)
-                                .addComponent(jLabel15)
-                                .addComponent(jLabel16))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(encargado_trabajo)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(encargado_relacion_con_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(encargado_telefono_casa, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
-                                            .addComponent(encargado_celular, javax.swing.GroupLayout.Alignment.LEADING)))
-                                    .addGap(0, 78, Short.MAX_VALUE)))))
-                    .addContainerGap(91, Short.MAX_VALUE)))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(estudiante_fechaNacimiento_dia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(estudiante_fechaNacimiento_mes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(estudiante_fechaNacimiento_año, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(53, 53, 53))
+                                                .addGroup(layout.createSequentialGroup()
+                                                    .addGap(118, 118, 118)
+                                                    .addComponent(jLabel15))
+                                                .addComponent(jLabel22, javax.swing.GroupLayout.Alignment.TRAILING)))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(encargado_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(encargado_relacion_con_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(encargado_telefono_casa, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(encargado_celular, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(encargado_trabajo, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGap(60, 60, 60))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(29, 29, 29)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel24)
+                                            .addComponent(jLabel17)
+                                            .addComponent(jLabel13)
+                                            .addComponent(jLabel23)
+                                            .addComponent(jLabel21))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(encargado_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(encargado_direccion, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(encargado_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(buscar_encargado))
+                                            .addComponent(encargado_nombre_completo, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel20)
+                                        .addGap(125, 125, 125)))
+                                .addGap(0, 92, Short.MAX_VALUE))))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(62, 62, 62)
+                .addComponent(crear_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(borrar_todo, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel12)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSeparator1)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel20)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel1)
-                                    .addComponent(estudiante_codigo_personal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel2)
-                                    .addComponent(estudiante_cui, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel3)
-                                    .addComponent(estudiante_nombres, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel4)
-                                    .addComponent(estudiante_apellidos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel5)
-                                    .addComponent(estudiante_direccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel11)
-                                    .addComponent(estudiante_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel6)
-                                    .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel7)
-                                    .addComponent(estudiante_sexo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel8)
-                                    .addComponent(estudiante_etnia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel9)
-                                    .addComponent(estudiante_capacidad_diferente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel10)
-                                    .addComponent(estudiante_tipo_capacidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(8, 8, 8)
-                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel20)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel21)
-                            .addComponent(encargado_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel21)
+                                .addComponent(encargado_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(buscar_encargado))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel23)
                             .addComponent(encargado_nombre_completo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(encargado_direccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel13))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel24)
                             .addComponent(encargado_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel13)
-                            .addComponent(encargado_direccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel17)
                             .addComponent(encargado_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel14)
-                            .addComponent(encargado_relacion_con_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel22)
-                            .addComponent(encargado_telefono_casa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel15)
-                            .addComponent(encargado_celular, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel16)
-                            .addComponent(encargado_trabajo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(crear_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
+                            .addComponent(jLabel14)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(encargado_relacion_con_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(encargado_telefono_casa, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel22))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(encargado_celular, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel15))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(encargado_trabajo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel16))
+                        .addGap(28, 28, 28))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel12)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(estudiante_codigo_personal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(estudiante_cui, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(estudiante_nombres, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(estudiante_apellidos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(estudiante_direccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(estudiante_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(estudiante_sexo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(estudiante_etnia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel9)
+                            .addComponent(estudiante_capacidad_diferente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel10)
+                            .addComponent(estudiante_tipo_capacidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(31, 31, 31)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(estudiante_fechaNacimiento_dia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(estudiante_fechaNacimiento_mes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(estudiante_fechaNacimiento_año, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                    .addComponent(crear_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(borrar_todo, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(85, Short.MAX_VALUE))
         );
 
         pack();
@@ -488,14 +592,13 @@ public class CrearEstudiante extends javax.swing.JDialog {
         - Todo encargado tendrá un DPI único (lo que ayudará en la decisión de crea un nuevo registro o no).
         - Para el encargado, se buscará si su número telefónico existe en la tabla Telefono; de no existir se creará.*/
         try {
-            mensaje_error_estudiante = mensaje_error_encargado = "";
-            sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            ResultSet cEncargadoId = null;
+            mensaje_error_estudiante = "";
 
             // Primero evalúo si el estudiante ya existe
             if (estudianteYaExiste() == false) {
-                // Evaluo si el encargado ya existe
-                if (encargadoYaExiste() == false) {
+                /* Evaluo si el encargado ya existe */
+                if (encargadoYaExiste == false) {
+                    // Creación de un nuevo registro para el Encargado
                     String nuevoEncargado = "INSERT INTO Encargado(Nombre, Direccion, DPI, FechaNacimiento, Relacion, Trabajo, Municipio_Id) VALUES (";
                     // Datos del encargado
                     nuevoEncargado+= "'"+encargado_nombre_completo.getText()+"',";
@@ -503,22 +606,21 @@ public class CrearEstudiante extends javax.swing.JDialog {
                     nuevoEncargado+= "'"+encargado_dpi.getText()+"',";
                     nuevoEncargado+= "'"+encargado_fechaNacimiento.getText()+"',";
                     nuevoEncargado+= "'"+encargado_relacion_con_estudiante.getText()+"',";
+                    // De momento se crea nuevos teléfonos para cada nuevo Encargado
+                    if (encargado_telefono_casa.getText().length() != 0) {
+                        conexion.prepareStatement("INSERT INTO Telefono(Telefono, Encargado_Id) "
+                                + "VALUES('"+encargado_telefono_casa.getText()+"', "+encargado_Id+")").executeUpdate();
+                    }
+                    if (encargado_celular.getText().length() != 0) {
+                        conexion.prepareStatement("INSERT INTO Telefono(Telefono, Encargado_Id) "
+                                + "VALUES('"+encargado_celular.getText()+"', "+encargado_Id+")").executeUpdate();
+                    }
                     nuevoEncargado+= "'"+encargado_trabajo.getText()+"',";
                     nuevoEncargado+= ""+Integer.toString(encargado_municipio.getSelectedIndex()+1)+")";
-                    // En caso de no actualizar la tabla automáticamente, obtengo el Id del nuevo encagado que es igual
-                    // a COUNT(*). Esta consulta siempre devolverá un registro
-                    cEncargadoId = sentencia.executeQuery("SELECT COUNT(*) Cantidad FROM Encargado");
-                    cEncargadoId.next();
-                    encargado_Id = cEncargadoId.getInt("Cantidad") + 1; // El nuevo encargado tendrá Id COUNT(*) + 1
-
-                    insercion = conexion.prepareStatement(nuevoEncargado);
-                    insercion.executeUpdate();
-                    cEncargadoId.close();
-                } else {
-                    // Si el encargado ya existe, ya obtuve su Id
-                    JOptionPane.showMessageDialog(this, mensaje_error_encargado, "Información", JOptionPane.INFORMATION_MESSAGE, null);
+                    // En encargadoYaExiste() obtuve el Id del nuevo encargado
+                    conexion.prepareStatement(nuevoEncargado).executeUpdate();  // Inserción del nuevo registro
                 }
-
+                /* Creación de un nuevo retistro para el Nuevo Estudiante */
                 String nuevoEstudiante = "INSERT INTO Estudiante(CodigoPersonal, CUI, Nombres, Apellidos, FechaNacimiento, Direccion,"
                         + "Sexo, Etnia, CapacidadDiferente, TipoCapacidad, Municipio_Id, Encargado_Id) VALUES (";
                 // Datos del estudiante
@@ -531,23 +633,13 @@ public class CrearEstudiante extends javax.swing.JDialog {
                 if (estudiante_sexo.getSelectedIndex() == 0) nuevoEstudiante+= "'F',";
                 else nuevoEstudiante+= "'M',";
                 nuevoEstudiante+= "'"+estudiante_etnia.getText()+"',";
-                if (estudiante_capacidad_diferente.getSelectedIndex() == 0) {
-                    nuevoEstudiante+= ""+false+",";
-                    nuevoEstudiante+= "NULL,";
-                } else {
-                    nuevoEstudiante+= ""+true+",";
-                    nuevoEstudiante+= "'"+estudiante_tipo_capacidad.getText()+"',";
-                }
+                nuevoEstudiante+= (estudiante_capacidad_diferente.getSelectedIndex() == 0) ? ""+false+",NULL," : ""+true+",'"+estudiante_tipo_capacidad.getText()+"',";
                 nuevoEstudiante+= ""+Integer.toString(estudiante_municipio.getSelectedIndex()+1)+",";
                 nuevoEstudiante+= ""+encargado_Id+")";
-                insercion = conexion.prepareStatement(nuevoEstudiante);
-                insercion.executeUpdate();
-
-                sentencia.close();
+                conexion.prepareStatement(nuevoEstudiante).execute();
                 crear_asignacion.setEnabled(true);
-                estudianteCreado = true;
             } else {
-                JOptionPane.showMessageDialog(this, mensaje_error_estudiante, "Error", JOptionPane.ERROR_MESSAGE, null);
+                JOptionPane.showMessageDialog(this, mensaje_error_estudiante, "Error!", JOptionPane.ERROR_MESSAGE, null);
                 crear_asignacion.setEnabled(false);
             }
                 
@@ -556,36 +648,58 @@ public class CrearEstudiante extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_crear_estudianteActionPerformed
 
-    private void estudiante_fechaNacimiento_mesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_estudiante_fechaNacimiento_mesItemStateChanged
-        int itemMes = estudiante_fechaNacimiento_mes.getSelectedIndex();
-        int itemDia = estudiante_fechaNacimiento_dia.getSelectedIndex();
-        if (itemMes > 0) {
-            estudiante_fechaNacimiento_dia.removeAllItems();
-            estudiante_fechaNacimiento_dia.addItem("Dia");
-            if ((itemMes == 1) || (itemMes == 3) || (itemMes == 5) || (itemMes == 7) || (itemMes == 8) || (itemMes == 10) || itemMes == 12)
-            for (int i=1; i<32; i++)
-            estudiante_fechaNacimiento_dia.addItem(Integer.toString(i));
-            else if ((itemMes == 4) || (itemMes == 6) || (itemMes == 9) || (itemMes == 11))
-            for (int i=1; i<31; i++)
-            estudiante_fechaNacimiento_dia.addItem(Integer.toString(i));
-            else
-            for (int i=1; i<29; i++)
-            estudiante_fechaNacimiento_dia.addItem(Integer.toString(i));
-        }
-        if (itemDia <= itemMes)
-        estudiante_fechaNacimiento_dia.setSelectedIndex(itemDia);
-        else
-        estudiante_fechaNacimiento_dia.setSelectedIndex(estudiante_fechaNacimiento_dia.getItemCount()-1);
-    }//GEN-LAST:event_estudiante_fechaNacimiento_mesItemStateChanged
-
     private void crear_asignacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crear_asignacionActionPerformed
         /* Esta opción se habilita sí y solo si el estudiante aún no existía y ya fué creado. Tengo su Id en 'estudiante_Id'.
            Desde aquí, no es necesario comprobar si la Asignación ya existe (pues el estudiante acaba de ser creado, y por lo
            tanto no tiene asignación).*/
         // Le paso el Id del estudiante recién creado, para que pueda realizarse su asignación
-        AsignarEstudiante nueva_ventana = new AsignarEstudiante(new javax.swing.JFrame(), true, conexion, estudiante_Id);
+        this.setVisible(false);
+        AsignarEstudiante nueva_ventana = new AsignarEstudiante(new javax.swing.JFrame(), true, conexion, nuevoEstudiante_Id);
         nueva_ventana.setVisible(true);
+        this.setVisible(true);
     }//GEN-LAST:event_crear_asignacionActionPerformed
+
+    private void borrar_todoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrar_todoActionPerformed
+        // Borrado de los datos de Estudiante
+        estudiante_codigo_personal.setText("");
+        estudiante_cui.setText("");
+        estudiante_nombres.setText("");
+        estudiante_apellidos.setText("");
+        estudiante_direccion.setText("");
+        estudiante_fechaNacimiento.setText("");
+        estudiante_etnia.setText("");
+        estudiante_capacidad_diferente.setSelectedIndex(0);
+        estudiante_tipo_capacidad.setText("");
+        // Borrado de los datos de Encargado
+        encargado_dpi.setText("");
+        encargado_nombre_completo.setText("");
+        encargado_direccion.setText("");
+        encargado_fechaNacimiento.setText("");
+        encargado_relacion_con_estudiante.setText("");
+        encargado_telefono_casa.setText("");
+        encargado_celular.setText("");
+        encargado_trabajo.setText("");
+        // Deshabilitación de los campos de Encargado
+        encargado_nombre_completo.setEnabled(true);
+        encargado_direccion.setEnabled(true);
+        encargado_fechaNacimiento.setEnabled(true);
+        encargado_municipio.setEnabled(true);
+        encargado_relacion_con_estudiante.setEnabled(true);
+        encargado_telefono_casa.setEnabled(true);
+        encargado_celular.setEnabled(true);
+        encargado_trabajo.setEnabled(true);
+        // Deshabilitación del botón Crear Asignación
+        crear_asignacion.setEnabled(false);
+    }//GEN-LAST:event_borrar_todoActionPerformed
+
+    private void estudiante_capacidad_diferenteItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_estudiante_capacidad_diferenteItemStateChanged
+        estudiante_tipo_capacidad.setEnabled(estudiante_capacidad_diferente.getSelectedIndex() != 0);
+    }//GEN-LAST:event_estudiante_capacidad_diferenteItemStateChanged
+
+    private void buscar_encargadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscar_encargadoActionPerformed
+        // Evalúo si existe un registro con DPI = 'encargado_dpi.getText()'.
+        encargadoYaExiste();
+    }//GEN-LAST:event_buscar_encargadoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -629,6 +743,8 @@ public class CrearEstudiante extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton borrar_todo;
+    private javax.swing.JButton buscar_encargado;
     private javax.swing.JButton crear_asignacion;
     private javax.swing.JButton crear_estudiante;
     private javax.swing.JTextField encargado_celular;
@@ -647,9 +763,6 @@ public class CrearEstudiante extends javax.swing.JDialog {
     private javax.swing.JTextField estudiante_direccion;
     private javax.swing.JTextField estudiante_etnia;
     private javax.swing.JTextField estudiante_fechaNacimiento;
-    private javax.swing.JComboBox<String> estudiante_fechaNacimiento_año;
-    private javax.swing.JComboBox<String> estudiante_fechaNacimiento_dia;
-    private javax.swing.JComboBox<String> estudiante_fechaNacimiento_mes;
     private javax.swing.JComboBox<String> estudiante_municipio;
     private javax.swing.JTextField estudiante_nombres;
     private javax.swing.JComboBox<String> estudiante_sexo;
