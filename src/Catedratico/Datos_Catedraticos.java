@@ -22,31 +22,18 @@ import javax.swing.table.TableColumn;
  */
 public class Datos_Catedraticos extends javax.swing.JFrame {
 
-    Connection con = null;
+    Connection con;
     Statement stmt = null;
     String titulos[] = {"ID","Nombres","Apellidos","Direccion"/*,"Telefono"*/,"DPI","Sexo","Etnia"/*,"Municipio"*/};
     String fila[] = new String [8];
     DefaultTableModel modelo;
-
-    public Datos_Catedraticos() {
-        initComponents();
-        this.setTitle("Datos de catedráticos");
-        this.setLocation(335,220);
-        this.setResizable(false);// No permite que el usuario edite datos
-    //    ImageIcon icono = new ImageIcon("aqui pon la ruta de la imagen que quieres poner"); // Cambia el logo de la esquina ;)
-    //    this.setIconImage(icono.getImage());
     
-        
-        try {
-            
-            String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
-            String usuario = "root";
-            String contraseña = "6148";  
-            
-               Class.forName("com.mysql.jdbc.Driver").newInstance();// Crea la conexión
-               con = DriverManager.getConnection(url,usuario,contraseña);//Obtiene la conexión
-               if (con!= null)//Verifica si existe conexión
-                   System.out.println("Se ha establecido una conexion a la base de datos"+"\n"+url);
+    public Datos_Catedraticos(Connection v){
+        initComponents();
+        con = v;
+          try {       
+        if (con!= null)//Verifica si existe conexión
+                   System.out.println("Se ha establecido una conexion a la base de datos");
                
                stmt = con.createStatement(); 
                ResultSet rs = stmt.executeQuery("select* from catedratico");//...
@@ -83,13 +70,39 @@ public class Datos_Catedraticos extends javax.swing.JFrame {
                 ctipo.setMaxWidth(50);
                 TableColumn ca = Tabla.getColumn("Etnia");
                 ca.setMaxWidth(75);
+                }
+        catch (Exception e) {
+            
+            JOptionPane.showMessageDialog(null,"Error al extraer los datos de la tabla");
+        }
+        
+    }
+
+    public Datos_Catedraticos() {
+        initComponents();
+        this.setTitle("Datos de catedráticos");
+        this.setLocation(335,220);
+        this.setResizable(false);// No permite que el usuario edite datos
+    //    ImageIcon icono = new ImageIcon("aqui pon la ruta de la imagen que quieres poner"); // Cambia el logo de la esquina ;)
+    //    this.setIconImage(icono.getImage());
+    
+        /*
+        try {
+            
+            String url = "jdbc:mysql://localhost:3306/sbd_inebxela";
+            String usuario = "root";
+            String contraseña = "6148";  
+            
+               Class.forName("com.mysql.jdbc.Driver").newInstance();// Crea la conexión
+               con = DriverManager.getConnection(url,usuario,contraseña);//Obtiene la conexión
+               
                
         }
         catch (Exception e) {
             
             JOptionPane.showMessageDialog(null,"Error al extraer los datos de la tabla");
         }
-
+*/
 
     }
 

@@ -176,7 +176,7 @@ public class Pantalla extends javax.swing.JFrame {
     void llenar(String valor) {
         try {
             String j = ciclo.getSelectedItem().toString();
-            conexion = cn.Conectar();
+            //conexion = cn.Conectar();
             String[] titulos = {"ID de Curso", "ID de Estudiante", "Nota 1", "Nota 2", "Nota 3", "Nota 4", "Nota Final", "Nota Recuperacion"};
             String sql = "SELECT notas.* FROM notas INNER JOIN estudiante ON notas.Estudiante_Id = estudiante.Id INNER JOIN asignacionest ON asignacionest.Estudiante_Id = estudiante.Id INNER JOIN cicloescolar ON asignacionest.CicloEscolar_Id = cicloescolar.Id WHERE cicloescolar.Anio = " + j + " AND notas.Curso_Id LIKE '%"+valor+"%'";
             model = new DefaultTableModel(null, titulos);
@@ -208,7 +208,7 @@ public class Pantalla extends javax.swing.JFrame {
     {
         try {
             String j = ciclo.getSelectedItem().toString();
-            conexion = cn.Conectar();
+            //conexion = cn.Conectar();
             String [] titulos={"ID (código)", "Nombre", "Código catedrático"};
             String [] fila = new String [3];
             String sql = "SELECT curso.Id, curso.Nombre, asignacioncat.Catedratico_Id FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id WHERE cicloescolar.anio = '" + j + "' AND Curso.Nombre LIKE '%" + valor + "%';";
@@ -239,7 +239,7 @@ public class Pantalla extends javax.swing.JFrame {
         //cicloesc = Id;
             try {
                 //String j = ciclo.getSelectedItem().toString();
-                conexion = cn.Conectar();
+                //conexion = cn.Conectar();
                 String [] titulos={"ID (código)", "Nombre", "Código catedrático"};
                 String [] fila = new String [3];
                 String sql = "SELECT curso.Id, curso.Nombre, asignacioncat.Catedratico_Id FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id WHERE asignacioncat.CicloEscolar_Id = " + Id + ";"; // AND Curso.Id = " + Id_curso + "
@@ -622,7 +622,7 @@ public class Pantalla extends javax.swing.JFrame {
         //cicloesc = Id;
             try {
                 //String j = ciclo.getSelectedItem().toString();
-                conexion = cn.Conectar();
+                //conexion = cn.Conectar();
                 String [] titulos={"ID (código)", "Nombre", "Código catedrático"};
                 String [] fila = new String [3];
                 String sql = "SELECT curso.Id, curso.Nombre, asignacioncat.Catedratico_Id FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id WHERE asignacioncat.CicloEscolar_Id = " + Id + ";"; // AND Curso.Id = " + Id_curso + " AND asignacioncat.catedratico_Id = Id_cat

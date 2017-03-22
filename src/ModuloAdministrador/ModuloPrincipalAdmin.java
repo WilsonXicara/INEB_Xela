@@ -456,7 +456,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here:
-        new Catedraticos(conexcion, this).setVisible(true);
+        Catedraticos ven = new Catedraticos(conexcion, this);
+        ven.setVisible(true);
+       // new Catedraticos(conexcion, this).setVisible(true);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
