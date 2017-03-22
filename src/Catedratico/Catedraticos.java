@@ -418,7 +418,7 @@ public class Catedraticos extends javax.swing.JFrame {
              if ( con != null ) 
                     System.out.println("Se ha establecido una conexión a la base de datos " +  
                                        "\n " + url ); */
-                                       System.out.println("aaaaaa");
+                 System.out.println("aaaaaa");
                  Statement stmt2 = con.createStatement();
                  System.out.println("bbbbbbbb");
                  // System.out.println(id2);
@@ -451,7 +451,7 @@ public class Catedraticos extends javax.swing.JFrame {
            Logger.getLogger(Catedraticos.class.getName()).log(Level.SEVERE, null, ex);
        }
         
-        finally {
+      /*  finally {
             if (con != null) {
                 try {
                     con.close();
@@ -460,7 +460,7 @@ public class Catedraticos extends javax.swing.JFrame {
                          System.out.println( e.getMessage());
                 }
             }
-        }
+        }*/
          javax.swing.JOptionPane.showMessageDialog(this,"Registro exitoso! \n","AVISO!",javax.swing.JOptionPane.INFORMATION_MESSAGE);
         
         this.Campo_Id.setText("");
@@ -476,7 +476,7 @@ public class Catedraticos extends javax.swing.JFrame {
     private void Boton_DatosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Boton_DatosActionPerformed
 
         this.dispose();
-        Datos_Catedraticos Ventana = new Datos_Catedraticos(con);
+        Mostrar_Datos Ventana = new Mostrar_Datos(con);
         Ventana.setVisible(true);
     }//GEN-LAST:event_Boton_DatosActionPerformed
 

@@ -4,7 +4,10 @@ package Catedratico;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -22,24 +25,24 @@ import javax.swing.table.TableColumn;
  */
 public class Datos_Catedraticos extends javax.swing.JFrame {
 
-    Connection con;
-    Statement stmt = null;
+    Connection con, conexion;
+    Statement stmt;
     String titulos[] = {"ID","Nombres","Apellidos","Direccion"/*,"Telefono"*/,"DPI","Sexo","Etnia"/*,"Municipio"*/};
     String fila[] = new String [8];
     DefaultTableModel modelo;
     
     public Datos_Catedraticos(Connection v){
         initComponents();
-        con = v;
+        conexion = v;
           try {       
-        if (con!= null)//Verifica si existe conexión
+        //if (con!= null)//Verifica si existe conexión
                    System.out.println("Se ha establecido una conexion a la base de datos");
                
-               stmt = con.createStatement(); 
+               stmt = conexion.createStatement(); 
                ResultSet rs = stmt.executeQuery("select* from catedratico");//...
                
                modelo = new DefaultTableModel(null,titulos);
-            System.out.println("SAAAAAAAAAAAAAAAAAAAAA");
+           // System.out.println("SAAAAAAAAAAAAAAAAAAAAA");
                while(rs.next()) {
                    
                    fila[0] = rs.getString("ID");
@@ -71,9 +74,8 @@ public class Datos_Catedraticos extends javax.swing.JFrame {
                 TableColumn ca = Tabla.getColumn("Etnia");
                 ca.setMaxWidth(75);
                 }
-        catch (Exception e) {
-            
-            JOptionPane.showMessageDialog(null,"Error al extraer los datos de la tabla");
+        catch (SQLException ex) {
+            Logger.getLogger(Datos_Catedraticos.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
@@ -159,7 +161,7 @@ public class Datos_Catedraticos extends javax.swing.JFrame {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         this.dispose();
-        Catedraticos Ventana = new Catedraticos();
+        Catedraticos Ventana = new Catedraticos(con, this);
         Ventana.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
