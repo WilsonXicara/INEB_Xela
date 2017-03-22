@@ -29,6 +29,7 @@ public class CrearCat extends javax.swing.JFrame {
     }
     public CrearCat(Connection conec){
         initComponents();
+        conexion = conec;
         DefaultTableModel modelo = (DefaultTableModel) Datos.getModel();
         try {
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
@@ -37,12 +38,13 @@ public class CrearCat extends javax.swing.JFrame {
                 //Todos los Cat tienen usuario
             }
             else{
+                datosCat.previous();
                 while(datosCat.next() != false){
                     modelo.addRow(new Object[]{datosCat.getString(1),datosCat.getString(2),datosCat.getString(3),datosCat.getString(4)});
                 }
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(CrearCat.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException e) {
+                e.printStackTrace();
         }
     }
     /**
