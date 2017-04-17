@@ -6,6 +6,11 @@
 package ModuloPrestamos;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 /**
@@ -19,6 +24,7 @@ public class ListadoPaquetes extends javax.swing.JFrame {
      */
     DefaultTableModel modelo;
     Connection conexcion;
+    ResultSet Packs = null;
     public ListadoPaquetes() {
         initComponents();
     }
@@ -26,7 +32,24 @@ public class ListadoPaquetes extends javax.swing.JFrame {
         initComponents();
         conexcion = conec;
         modelo = (DefaultTableModel) jTable1.getModel();
-        //Se agregaran todos los valores al principio
+        try {
+            
+            //Se agregaran todos los valores al principio
+            Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            Packs = sentencia.executeQuery("SELECT P.Codigo, L.Codigo, L.Nombre, L.Estado FROM libro L INNER JOIN paquetelibro P ON L.PaqueteLibro_Codigo = P.Id; ");
+            if(Packs.next() == false){
+                //No hay paquetes
+                modelo.addRow(new Object[]{"No existen paquetes creados"});
+            }
+            else{
+                Packs.previous();
+                while(Packs.next() != false){
+                    modelo.addRow(new Object[]{Packs.getString(1),Packs.getString(2),Packs.getString(3),Packs.getString(4)});
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ListadoPaquetes.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -48,16 +71,16 @@ public class ListadoPaquetes extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Listados de Paquetes de Libros");
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel2.setText("Filtrar por:");
 
-        CodigoPaquete.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        CodigoPaquete.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
-        jTable1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jTable1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -68,7 +91,7 @@ public class ListadoPaquetes extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        jRadioButton1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jRadioButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jRadioButton1.setText("Todo");
         jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -76,7 +99,7 @@ public class ListadoPaquetes extends javax.swing.JFrame {
             }
         });
 
-        jRadioButton2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jRadioButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jRadioButton2.setText("Codigo de Paquete");
         jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -119,9 +142,9 @@ public class ListadoPaquetes extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jRadioButton2)
                     .addComponent(CodigoPaquete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(61, 61, 61))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
 
         pack();
