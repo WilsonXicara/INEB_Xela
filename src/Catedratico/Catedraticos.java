@@ -24,8 +24,8 @@ public class Catedraticos extends javax.swing.JFrame {
     
     
 
-    Connection con;
-    Statement stmt;
+    private Connection con;
+    private Statement stmt;
     String var, var2;
     JFrame padre;
     public Catedraticos() {
@@ -41,6 +41,7 @@ public class Catedraticos extends javax.swing.JFrame {
         con = a;
         padre = papi;
         padre.setVisible(false);
+        this.con = a;
     }
 
     /**
@@ -76,7 +77,6 @@ public class Catedraticos extends javax.swing.JFrame {
         Campo_Municipio = new javax.swing.JComboBox<>();
         Campo_Etnia = new javax.swing.JTextField();
         jButton3 = new javax.swing.JButton();
-        Fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -205,9 +205,6 @@ public class Catedraticos extends javax.swing.JFrame {
 
         jButton3.setText("Volver");
         getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 10, 120, -1));
-
-        Fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Catedratico/Imagenes/pizarra.png"))); // NOI18N
-        getContentPane().add(Fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 450));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -395,7 +392,7 @@ public class Catedraticos extends javax.swing.JFrame {
 
     private void Boton_AceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Boton_AceptarActionPerformed
         String cadena2,cadena3,cadena4,cadena5,cadena6,cadena7,cadena8,cadena9;
-        
+       
         cadena2 = Campo_Nombre.getText();
         cadena3 = Campo_Apellidos.getText();
         cadena4 = Campo_Direccion.getText();
@@ -408,45 +405,28 @@ public class Catedraticos extends javax.swing.JFrame {
         //---------------------------------------------------------------------------------------------------------------------------------
        
         try {
-           
-            /*String url = "jdbc:mysql://localhost:3306/sbd_inebxela"/*?zeroDateTimeBehavior=convertToNull"*/;
-            /*String usuario = "root";
-            String contraseña = "6148";
-            
-             Class.forName("com.mysql.jdbc.Driver").newInstance(); 
-             con = DriverManager.getConnection(url,usuario,contraseña); 
-             if ( con != null ) 
-                    System.out.println("Se ha establecido una conexión a la base de datos " +  
-                                       "\n " + url ); */
                  System.out.println("aaaaaa");
                  Statement stmt2 = con.createStatement();
                  System.out.println("bbbbbbbb");
-                 // System.out.println(id2);
                  stmt2.executeUpdate("INSERT INTO catedratico (Nombres,Apellidos,Direccion,DPI, Sexo, Etnia,Municipio_Id) "
                           + "VALUES('"+cadena2+"','"+cadena3+"','"+cadena4+"','"+cadena6+"','"+cadena7+"','"+cadena8+"','"+cadena9+ "')");
                   //int sql= stmt.executeUpdate("SELECT MAX(catedratico.Id)FROM catedratico") /*"SELECT LAST_INSERT_ID() FROM municipio"*/;}// int sql;/*= stmt.executeUpdate("SELECT LAST_INSERT_ID() FROM municipio") /*"SELECT LAST_INSERT_ID() FROM municipio"*/;
                   String id;
                   ResultSet rs = null;
                   
-                 // stmt.executeUpdate("INSERT INTO municipio (Nombre) VALUES('"+cadena9+"')");
                   String sql = "SELECT MAX(catedratico.Id) FROM catedratico";
                   rs = stmt2.executeQuery(sql);
                   int id2 =0;
                     while(rs.next()){
-                   // System.out.println(id);
-                 //  id = rs.getString("Nombre");
                     System.out.println(rs.getInt(1));
                     id2 = rs.getInt(1);
                     }
-                 // int id2 = rs.getInt(1);
+                 
                  
                  stmt2.executeUpdate("INSERT INTO telefono (Telefono,Catedratico_Id) VALUES('"+cadena5+"','"+id2+"')");
                   
                   System.out.println("Los valores han sido agregados a la base de datos ");
-                 //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                 //SELECT catedratico.*, telefono.Telefono, municipio.Nombre FROM catedratico LEFT OUTER JOIN telefono ON catedratico.Id = telefono.Id
-                //LEFT OUTER JOIN municipio ON catedratico.Municipio_Id = municipio.Id;
-        }
+                  }
         catch (SQLException ex) {
            Logger.getLogger(Catedraticos.class.getName()).log(Level.SEVERE, null, ex);
        }
@@ -603,7 +583,6 @@ public class Catedraticos extends javax.swing.JFrame {
     private javax.swing.JTextField Campo_Nombre;
     private javax.swing.JComboBox<String> Campo_Sexo;
     private javax.swing.JTextField Campo_Telefono;
-    private javax.swing.JLabel Fondo;
     private javax.swing.JLabel Titulo;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

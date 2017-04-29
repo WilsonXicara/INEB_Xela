@@ -65,6 +65,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         }
     }
 
+    public ModuloPrincipalAdmin(Connection conexion) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -457,7 +461,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here:
-        Datos_Catedraticos ven = new Datos_Catedraticos(conexcion);
+        Mostrar_Datos ven = new Mostrar_Datos(conexcion);
         ven.setVisible(true);
        // new Catedraticos(conexcion, this).setVisible(true);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
