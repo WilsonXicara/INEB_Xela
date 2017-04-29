@@ -417,6 +417,11 @@ public class Pantalla extends javax.swing.JFrame {
                 cicloItemStateChanged(evt);
             }
         });
+        ciclo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cicloActionPerformed(evt);
+            }
+        });
 
         jLabel12.setText("Año");
 
@@ -693,6 +698,10 @@ public class Pantalla extends javax.swing.JFrame {
         Principal_catedratico a = new Principal_catedratico();
         a.setVisible(true);
     }//GEN-LAST:event_formWindowClosing
+
+    private void cicloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cicloActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cicloActionPerformed
 
     /**
      * @param args the command line arguments
