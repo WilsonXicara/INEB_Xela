@@ -72,6 +72,11 @@ public class ListadoPrestamos extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -92,6 +97,11 @@ public class ListadoPrestamos extends javax.swing.JFrame {
 
         jRadioButton3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jRadioButton3.setText("Todo");
+        jRadioButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton3ActionPerformed(evt);
+            }
+        });
 
         Listado.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         Listado.setModel(new javax.swing.table.DefaultTableModel(
@@ -197,6 +207,37 @@ public class ListadoPrestamos extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
+        // TODO add your handling code here:
+        int filas = Listado.getRowCount();
+        for (int i = 0;filas>i; i++) {
+            modelo.removeRow(0);
+        }
+        try {
+            
+            //Se agregaran todos los valores al principio
+            Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            Packs = sentencia.executeQuery("SELECT L.Codigo, E.CodigoPersonal, E.Nombres, E.Apellidos, P.CodigoBoleta, P.FechaPago  FROM prestamo P INNER JOIN estudiante E ON P.Estudiante_Id = E.Id INNER JOIN paquetelibro L ON P.PaqueteLibro_Id = L.Id;");
+            if(Packs.next() == false){
+                //No hay paquetes
+                modelo.addRow(new Object[]{"No existen paquetes creados"});
+            }
+            else{
+                Packs.previous();
+                while(Packs.next() != false){
+                    modelo.addRow(new Object[]{Packs.getString(1),Packs.getString(2),Packs.getString(3),Packs.getString(4),Packs.getString(5),Packs.getString(6)});
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ListadoPaquetes.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jRadioButton3ActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
