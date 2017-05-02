@@ -47,7 +47,7 @@ public class Principal extends javax.swing.JDialog {
     public Principal(java.awt.Frame parent, boolean modal) throws IOException {
         super(parent, modal);
         initComponents();
-        
+       
           File carpetaPrincipal = new File(CARPETA_PRINCIPAL);
         // Si la carpeta principal no existe se crea para guardar los datos de la base de datos
         if (!carpetaPrincipal.exists()) {
