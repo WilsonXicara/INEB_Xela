@@ -30,6 +30,7 @@ public class ListadoPaquetes extends javax.swing.JFrame {
     }
     public ListadoPaquetes(Connection conec){
         initComponents();
+        String prestado = "";
         conexcion = conec;
         modelo = (DefaultTableModel) Listado.getModel();
         try {
@@ -44,7 +45,14 @@ public class ListadoPaquetes extends javax.swing.JFrame {
             else{
                 Packs.previous();
                 while(Packs.next() != false){
-                    modelo.addRow(new Object[]{Packs.getString(1),Packs.getString(2),Packs.getString(3),Packs.getString(4)});
+                    System.out.println("El pack "+Packs.getString(5));
+                    if(Packs.getString(5) == null){
+                            prestado = "No Prestado";
+                        }
+                    else{
+                            prestado = "Prestado";
+                    }
+                    modelo.addRow(new Object[]{Packs.getString(1),Packs.getString(2),Packs.getString(3),Packs.getString(4),prestado});
                 }
             }
         } catch (SQLException ex) {
@@ -71,6 +79,11 @@ public class ListadoPaquetes extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -165,6 +178,35 @@ public class ListadoPaquetes extends javax.swing.JFrame {
         // TODO add your handling code here:
         //Se agregará todo
         //modelo.addRow(rowData);
+        ResultSet Packs3 = null;
+        String prestado = "";
+        int filas = Listado.getRowCount();
+        for (int i = 0;filas>i; i++) {
+            modelo.removeRow(0);
+        }
+        try {
+            
+            //Se agregaran todos los valores al principio
+            if(Packs.next() == false){
+                //No hay paquetes
+                modelo.addRow(new Object[]{"No existen paquetes creados"});
+            }
+            else{
+                Packs.previous();
+                while(Packs.next() != false){
+                    System.out.println("El pack "+Packs.getString(5));
+                    if(Packs.getString(5) == null){
+                            prestado = "No Prestado";
+                        }
+                        else{
+                            prestado = "Prestado";
+                        }
+                    modelo.addRow(new Object[]{Packs.getString(1),Packs.getString(2),Packs.getString(3),Packs.getString(4),prestado});
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ListadoPaquetes.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jRadioButton1ActionPerformed
 
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
@@ -194,6 +236,7 @@ public class ListadoPaquetes extends javax.swing.JFrame {
                     Packs2.previous();
                     while(Packs2.next() != false){
                         //revisar la comparacion
+                        System.out.println("El pack "+Packs2.getString(5));
                         if(Packs2.getString(5) == null){
                             prestado = "No Prestado";
                         }
@@ -215,6 +258,11 @@ public class ListadoPaquetes extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * @param args the command line arguments

@@ -80,6 +80,11 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -350,7 +355,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        String NoFac, CodPack, CodEst, NomEst, ApeEst, Grad, Fech, Hora,Desc, Instruccion = "";
+        String NoFac, CodPack, CodEst, NomEst, ApeEst, Grad,Desc, Instruccion = "";
         float Efectivo;
         ResultSet resultado = null,resultado2 = null, packetes=null;
         if(vId == 0){
@@ -363,10 +368,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             NoFac = NoFactura.getText();
             CodPack = CodigoPaquete.getText();
             CodEst = CodigoEstudiante.getText();
-            Calendar fechita = Calendar.getInstance();
-            Fech = fechita.get(Calendar.YEAR) + "/" + fechita.get(Calendar.MONTH) + "/" + fechita.get(Calendar.DATE);
             Efectivo = Float.parseFloat(Monto.getText());
-            Hora = fechita.get(Calendar.HOUR) +":" + fechita.get(Calendar.MINUTE);
             //Condicion que si el CodigoEstudiante no existe en la base arrojar un mensaje
             //Condicion si el CodigoPaquete no existe
             try {
@@ -383,7 +385,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                     //Concatenamos la instrucción para insertar a la tabla prestamo.
                     //System.out.println(resultado.next());
                     //System.out.println(resultado2.next());
-                    Instruccion = "INSERT INTO prestamo(PaqueteLibro_ID,Estudiante_ID,CodigoBoleta,FechaPago,Monto) VALUES (" + resultado.getString(1) + "," + resultado2.getString(1) +  "," + "'" + NoFac + "'" + ",'" + Fech + " " + Hora+ "'," + Efectivo + ");"; //Insercion a la Tabla Prestamos
+                    Instruccion = "INSERT INTO prestamo(PaqueteLibro_ID,Estudiante_ID,CodigoBoleta,FechaPago,Monto) VALUES (" + resultado.getString(1) + "," + resultado2.getString(1) +  "," + "'" + NoFac + "'" + ",NOW()," + Efectivo + ");"; //Insercion a la Tabla Prestamos
                      //Insertamos en la base
                     try {
                         PreparedStatement  pst = conexcion.prepareStatement(Instruccion);
@@ -423,6 +425,11 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             vId = Integer.parseInt(Paquetes.getValueAt(Paquetes.getSelectedRow(), 0).toString());
         }
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_formWindowClosed
     public void DatosPaquetes(){
         try {
             Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
