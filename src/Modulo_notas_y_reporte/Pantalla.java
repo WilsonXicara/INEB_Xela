@@ -134,6 +134,7 @@ public class Pantalla extends javax.swing.JFrame {
         //CursoID.requestFocus();
     }
 
+    
     void llenar() {
         try {
             //String j = ciclo.getSelectedItem().toString();
