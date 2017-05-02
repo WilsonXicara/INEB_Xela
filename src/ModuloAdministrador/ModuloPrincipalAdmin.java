@@ -494,7 +494,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
-        new Mostrar_Datos().setVisible(true);
+        new Mostrar_Datos(conexcion).setVisible(true);
         //this.setVisible(false);
         
     }//GEN-LAST:event_jMenuItem2ActionPerformed
