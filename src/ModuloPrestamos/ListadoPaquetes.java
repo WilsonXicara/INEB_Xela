@@ -184,6 +184,7 @@ public class ListadoPaquetes extends javax.swing.JFrame {
                 Packs2 = sentencia.executeQuery("SELECT P.Codigo,L.Codigo,L.Nombre,L.Estado, E.PaqueteLibro_Id FROM paquetelibro P INNER JOIN libro L ON P.Id = L.PaqueteLibro_Codigo LEFT JOIN prestamo E ON E.PaqueteLibro_Id = P.Id WHERE P.Codigo = '" + Cod + "';");
                 if(Packs2.next() == false){
                 //Todos los Cat tienen usuario
+                JOptionPane.showMessageDialog(null, "¡El paquete no existe!");
                 }
                 else{
                     //eliminar las filas de las tablas
@@ -212,6 +213,7 @@ public class ListadoPaquetes extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
