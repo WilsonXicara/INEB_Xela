@@ -38,7 +38,7 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
                          "Seccion"};
     String fila[]= new String [3];
     DefaultTableModel modelo;
-    int idcat, idcurso;
+    int idcat, idcurso, idciclo;
     String Materia = "", A;
     ArrayList<String> Años;
     
@@ -124,8 +124,6 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         Tabla = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
-        Campo_Curso = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
         Campo_Año = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
 
@@ -149,20 +147,13 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 TablaMouseClicked(evt);
             }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                TablaMousePressed(evt);
+            }
         });
         jScrollPane1.setViewportView(Tabla);
 
         jLabel1.setText("Bienvenido:");
-
-        Campo_Curso.setEditable(false);
-        Campo_Curso.setBackground(new java.awt.Color(204, 204, 204));
-
-        jButton1.setText("jButton1");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
 
         Campo_Año.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -177,80 +168,40 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(45, 45, 45)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(45, 45, 45)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(Campo_Usuario, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(Campo_Año, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(204, 204, 204)
-                        .addComponent(jButton1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(189, 189, 189)
-                        .addComponent(Campo_Curso, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(Campo_Usuario, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(Campo_Año, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(101, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Campo_Usuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(Campo_Año, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel2)))
+                        .addComponent(jLabel2))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(Campo_Usuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1)))
                 .addGap(48, 48, 48)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
-                .addComponent(Campo_Curso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton1)
-                .addGap(33, 33, 33))
+                .addContainerGap(150, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        try{
-            Statement stmt2 = conexion.createStatement();
-            String sql = "SELECT * FROM curso WHERE curso.Nombre = '"+Materia+"'";
-            ResultSet respuesta4 = stmt2.executeQuery(sql);
-            int id=0;
-            //System.out.println(id);
-            while (respuesta4.next()){
-                 id = respuesta4.getInt(1);
-                 System.out.println(id); 
-                 idcurso = id;
-             }
-            System.out.println(idcat);
-            Pantalla s = new Pantalla(conexion,idcat, idcurso, respuesta); // Llama a la del Andrés
-            s.setVisible(true);
-            this.dispose();
-        }catch (SQLException ex) {
-            Logger.getLogger(Principal_catedratico.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     private void TablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TablaMouseClicked
         
-        int fila = Tabla.getSelectedRow();
-           int columna = Tabla.getSelectedColumn();
-           
-           String curso= Tabla.getValueAt(fila, columna).toString();
-           //System.out.println(curso);
-           Campo_Curso.setText(curso);
-           Materia = curso;
     }//GEN-LAST:event_TablaMouseClicked
 
     private void Campo_AñoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_Campo_AñoItemStateChanged
@@ -297,6 +248,41 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_Campo_AñoItemStateChanged
 
+    private void TablaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TablaMousePressed
+         try{
+                if(evt.getClickCount() > 1){
+            int fila = Tabla.getSelectedRow();
+            
+            Statement stmt2 = conexion.createStatement();
+            String sql = "SELECT * FROM curso WHERE curso.Nombre = '"+Tabla.getValueAt(fila, 0).toString()+"'";
+            ResultSet respuesta4 = stmt2.executeQuery(sql);
+            int id=0;
+            //System.out.println(id);
+            while (respuesta4.next()){
+                 id = respuesta4.getInt(1);
+                 System.out.println(id); 
+                 idcurso = id;
+             }
+            String sql2 = "SELECT cicloescolar.Id FROM cicloescolar WHERE cicloescolar.Anio = '"+Campo_Año.getSelectedItem().toString()+"'";
+            ResultSet respuesta5 = stmt2.executeQuery(sql2);
+            int id2=0;
+            //System.out.println(id);
+            while (respuesta5.next()){
+                 id2 = respuesta5.getInt(1);
+                 //System.out.println(id); 
+                 idciclo = id2;
+             }
+            
+            System.out.println(idcat);
+            Pantalla s = new Pantalla(conexion,idcat, idcurso, idciclo, respuesta); // Llama a la del Andrés
+            s.setVisible(true);
+            this.dispose();
+                }
+        }catch (SQLException ex) {
+            Logger.getLogger(ModuloPrincipalCatedratico.class.getName()).log(Level.SEVERE, null, ex);
+        }   
+    }//GEN-LAST:event_TablaMousePressed
+
     /**
      * @param args the command line arguments
      */
@@ -334,10 +320,8 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> Campo_Año;
-    private javax.swing.JTextField Campo_Curso;
     private javax.swing.JTextField Campo_Usuario;
     private javax.swing.JTable Tabla;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;

@@ -121,10 +121,10 @@ public class PrincipalEstudiante extends javax.swing.JDialog {
     }//GEN-LAST:event_crear_estudianteActionPerformed
 
     private void ver_estudianteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ver_estudianteActionPerformed
-        //        this.setVisible(false);
+        this.setVisible(false);
         InformacionEstudiante nueva_ventana = new InformacionEstudiante(new javax.swing.JFrame(), true, conexion);
         nueva_ventana.setVisible(true);
-        //        this.setVisible(true);
+        this.setVisible(true);
     }//GEN-LAST:event_ver_estudianteActionPerformed
 
     private void asignar_estudiantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_asignar_estudiantesActionPerformed
