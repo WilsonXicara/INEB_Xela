@@ -56,13 +56,15 @@ public class Principal extends javax.swing.JDialog {
             String nombre = a.getNombre();
             String usuario= a.getUsuario();
             String contraseña= a.getContraseña();
+            String Ip = a.getIp();
             FileWriter ruta = new FileWriter(archivo);
             BufferedWriter escritor = new BufferedWriter(ruta);
             escritor.write(nombre+"\n");
             escritor.write(usuario+"\n");
             escritor.write(contraseña+"\n");
+            escritor.write(Ip+"\n");
             escritor.close();
-            int respuesta = conectar(nombre, usuario, contraseña);
+            int respuesta = conectar(nombre, usuario, contraseña,Ip);
             if(respuesta == 0){
                   JOptionPane.showMessageDialog(this, "Se ha logrado conectar a la base de datos", "Correcto", JOptionPane.INFORMATION_MESSAGE, null);
                   ruta.close();
@@ -82,8 +84,9 @@ public class Principal extends javax.swing.JDialog {
             String nombre = leer.readLine();
             String usuario = leer.readLine();
             String contraseña = leer.readLine();
+            String Ip = leer.readLine();
             leer.close();
-            int respuesta = conectar(nombre, usuario, contraseña);
+            int respuesta = conectar(nombre, usuario, contraseña,Ip);
             if (respuesta == 1){
                  JOptionPane.showMessageDialog(this, "No se ha logrado conectar a la base de datos", "Error", JOptionPane.ERROR_MESSAGE, null);
                    ruta.close();
@@ -233,7 +236,7 @@ public class Principal extends javax.swing.JDialog {
                     }
                     else{
                         Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                        ResultSet resultado = sentencia.executeQuery("SELECT * FROM Usuarios U INNER JOIN Administrador A ON U.Administrador_Id = " + b.getString(6)+";");
+                        ResultSet resultado = sentencia.executeQuery("SELECT * FROM Usuarios U INNER JOIN Administrador A ON U.Administrador_Id = A.Id WHERE U.Administrador_Id = " + b.getString(6)+";");
                         resultado.next();
                         this.dispose();
                         ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, resultado);
@@ -284,7 +287,7 @@ public class Principal extends javax.swing.JDialog {
                         }
                         else{
                             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                            ResultSet resultado = sentencia.executeQuery("SELECT * FROM Usuarios U INNER JOIN Administrador A ON U.Administrador_Id = " + b.getString(6)+";");
+                            ResultSet resultado = sentencia.executeQuery("SELECT * FROM Usuarios U INNER JOIN Administrador A ON U.Administrador_Id = A.Id WHERE U.Administrador_Id = " + b.getString(6)+";");
                             resultado.next();
                             this.dispose();
                             ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, resultado);
@@ -354,11 +357,11 @@ public class Principal extends javax.swing.JDialog {
         });
     }
     
-    private int conectar(String nombre, String usuario,String contraseña){
+    private int conectar(String nombre, String usuario,String contraseña,String Ip){
         int respuesta =0;
         try {
             Class.forName("org.gjt.mm.mysql.Driver");
-            conexion = DriverManager.getConnection("jdbc:mysql://localhost/"+nombre,usuario,contraseña);
+            conexion = DriverManager.getConnection("jdbc:mysql://"+Ip+"/"+nombre,usuario,contraseña);
         } catch (Exception e) {  
             respuesta=1;
                 

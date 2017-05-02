@@ -117,13 +117,11 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
-        menu_asignaciones = new javax.swing.JMenu();
+        item_reasignaciones = new javax.swing.JMenu();
         item_asignaciones = new javax.swing.JMenuItem();
-        item_reasignaciones = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        setPreferredSize(new java.awt.Dimension(1000, 601));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -345,7 +343,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu2);
 
-        menu_asignaciones.setText("Asignaciones");
+        item_reasignaciones.setText("Asignaciones");
 
         item_asignaciones.setText("Asignar Estudiantes");
         item_asignaciones.addActionListener(new java.awt.event.ActionListener() {
@@ -353,17 +351,17 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 item_asignacionesActionPerformed(evt);
             }
         });
-        menu_asignaciones.add(item_asignaciones);
+        item_reasignaciones.add(item_asignaciones);
 
-        item_reasignaciones.setText("Reasignar Estudiantes");
-        item_reasignaciones.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItem8.setText("Reasignar Estudiantes");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                item_reasignacionesActionPerformed(evt);
+                jMenuItem8ActionPerformed(evt);
             }
         });
-        menu_asignaciones.add(item_reasignaciones);
+        item_reasignaciones.add(jMenuItem8);
 
-        jMenuBar1.add(menu_asignaciones);
+        jMenuBar1.add(item_reasignaciones);
 
         setJMenuBar(jMenuBar1);
 
@@ -469,10 +467,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-        this.setVisible(false);
+        this.setEnabled(false);
         InformacionEstudiante nueva_ventana = new InformacionEstudiante(new javax.swing.JFrame(), true, conexcion);
         nueva_ventana.setVisible(true);
-        this.setVisible(true);
+        this.setEnabled(true);
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
@@ -494,17 +492,13 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
-        new Mostrar_Datos().setVisible(true);
+        new Mostrar_Datos(conexcion).setVisible(true);
         //this.setVisible(false);
         
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        //JOptionPane.showConfirmDialog(null, "¿Cerrar Sesión?", "Confirme", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        //new Principal().setVisible(true);
-        //this.setVisible(false);
-        this.dispose();
-        this.enable(false);
+        System.exit(0);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
@@ -532,10 +526,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem9ActionPerformed
 
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
-        this.setVisible(false);
+        this.setEnabled(false);
         CrearEstudiante nueva_ventana = new CrearEstudiante(new javax.swing.JFrame(), true, conexcion);
         nueva_ventana.setVisible(true);
-        this.setVisible(true);
+        this.setEnabled(true);
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
@@ -571,6 +565,20 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         // TODO add your handling code here:
         new CambiarContra(conexcion,User).setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void item_asignacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_asignacionesActionPerformed
+        this.setEnabled(false);
+        PrincipalAsignacionEST asignaciones = new PrincipalAsignacionEST(new javax.swing.JFrame(), true, conexcion, false);
+        asignaciones.setVisible(true);
+        this.setEnabled(true);
+    }//GEN-LAST:event_item_asignacionesActionPerformed
+
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        this.setEnabled(false);
+        PrincipalAsignacionEST asignaciones = new PrincipalAsignacionEST(new javax.swing.JFrame(), true, conexcion, true);
+        asignaciones.setVisible(true);
+        this.setEnabled(true);
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
 
 
     /**
@@ -618,7 +626,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JTextField Usuario;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JMenuItem item_asignaciones;
-    private javax.swing.JMenuItem item_reasignaciones;
+    private javax.swing.JMenu item_reasignaciones;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
@@ -649,8 +657,8 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JMenu menu_asignaciones;
     // End of variables declaration//GEN-END:variables
 }
