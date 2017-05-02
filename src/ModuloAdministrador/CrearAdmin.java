@@ -66,7 +66,6 @@ public class CrearAdmin extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         DPI = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        Sexo = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         Contraseña = new javax.swing.JPasswordField();
         jLabel11 = new javax.swing.JLabel();
@@ -76,6 +75,7 @@ public class CrearAdmin extends javax.swing.JFrame {
         jLabel15 = new javax.swing.JLabel();
         Telefono = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        Sexo = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
@@ -83,6 +83,11 @@ public class CrearAdmin extends javax.swing.JFrame {
         jLabel10.setText("jLabel10");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -126,8 +131,6 @@ public class CrearAdmin extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel6.setText("Sexo");
 
-        Sexo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
         jLabel9.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel9.setText("Contraseña");
 
@@ -156,6 +159,8 @@ public class CrearAdmin extends javax.swing.JFrame {
             }
         });
 
+        Sexo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Masculino", "Femenino" }));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -164,35 +169,36 @@ public class CrearAdmin extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel15)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(Telefono, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(Municipio, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addGap(51, 51, 51)
-                        .addComponent(Sexo))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addGap(59, 59, 59)
                         .addComponent(DPI))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel15)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(Telefono, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel3))
-                                .addGap(30, 30, 30)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(Apellidos, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
-                                    .addComponent(Nombres)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(29, 29, 29)
-                                .addComponent(Direccion, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jLabel6)
+                                .addGap(51, 51, 51)
+                                .addComponent(Sexo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel2)
+                                        .addComponent(jLabel3))
+                                    .addGap(30, 30, 30)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(Apellidos, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                                        .addComponent(Nombres)))
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel4)
+                                    .addGap(29, 29, 29)
+                                    .addComponent(Direccion, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -242,7 +248,7 @@ public class CrearAdmin extends javax.swing.JFrame {
                             .addComponent(DPI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel11))
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
                             .addComponent(Sexo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -250,7 +256,7 @@ public class CrearAdmin extends javax.swing.JFrame {
                         .addComponent(Contraseña, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(ConfirmarContra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
+                .addGap(21, 21, 21)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel7)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -260,7 +266,7 @@ public class CrearAdmin extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel15)
                     .addComponent(Telefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Nota:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 14))); // NOI18N
@@ -314,7 +320,7 @@ public class CrearAdmin extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(51, 51, 51)
                         .addComponent(jButton3)))
-                .addContainerGap(58, Short.MAX_VALUE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
 
         pack();
@@ -327,31 +333,39 @@ public class CrearAdmin extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {                                         
-            String Nom, Apellido, Direc, Dpi,Sex,Tel,Etn,Usuario,Contra;
+            String Nom, Apellido, Direc, Dpi,Sex2,Tel,Etn,Usuario,Contra;
             String Instruccion , Instruccion2, Instruccion3;
-            int Muni, Tip;
+            int Muni, Tip, Sex, bandera = 0;
             ResultSet resultado = null , resultado2 = null;
             Nom = Nombres.getText();
             Apellido = Apellidos.getText();
             Direc = Direccion.getText();
             Dpi = DPI.getText();
-            Sex = Sexo.getText();
+            Sex = Sexo.getSelectedIndex()+1;
             Muni = Municipio.getSelectedIndex() + 1;
             Tel = Telefono.getText();
             Usuario = Username.getText();
             Contra = Contraseña.getText();
-            Instruccion = "INSERT INTO administrador (Nombres,Apellidos,Direccion,Dpi,Sexo,Municipio_Id) VALUES ('" + Nom + "','" + Apellido + "','" + Direc + "','" + Dpi + "','" + Sex + "'," + Muni + ");";
-                //Insertamoso el admin
-            int  a;
-            try (PreparedStatement pst = conexion.prepareStatement(Instruccion)) {
-                a = pst.executeUpdate();
-                if (a>0){
-                    System.out.println("Guardado");
-                    JOptionPane.showMessageDialog(null, "¡Se ha creado el Administrador " + Nom + " " + Apellido + " !");
-                }
-            } catch (SQLException ex) {
-                Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
+            if(Sex == 1){
+                Sex2 = "M";
+                bandera = 1;
             }
+            else if (Sex == 2){
+                Sex2 = "F";
+                bandera = 1;
+            }
+                Instruccion = "INSERT INTO administrador (Nombres,Apellidos,Direccion,Dpi,Sexo,Municipio_Id) VALUES ('" + Nom + "','" + Apellido + "','" + Direc + "','" + Dpi + "','" + Sex + "'," + Muni + ");";
+                    //Insertamoso el admin
+                int  a;
+                try (PreparedStatement pst = conexion.prepareStatement(Instruccion)) {
+                    a = pst.executeUpdate();
+                    if (a>0){
+                        System.out.println("Guardado");
+                        JOptionPane.showMessageDialog(null, "¡Se ha creado el Administrador " + Nom + " " + Apellido + " !");
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
+                }
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             resultado = sentencia.executeQuery("SELECT * FROM administrador WHERE Dpi = '" + Dpi + "';");
             resultado.next();
@@ -382,6 +396,11 @@ public class CrearAdmin extends javax.swing.JFrame {
             Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
@@ -426,7 +445,7 @@ public class CrearAdmin extends javax.swing.JFrame {
     private javax.swing.JTextField Direccion;
     private javax.swing.JComboBox<String> Municipio;
     private javax.swing.JTextField Nombres;
-    private javax.swing.JTextField Sexo;
+    private javax.swing.JComboBox<String> Sexo;
     private javax.swing.JTextField Telefono;
     private javax.swing.JTextField Username;
     private javax.swing.JButton jButton1;
