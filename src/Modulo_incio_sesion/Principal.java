@@ -5,6 +5,7 @@
  */
 package Modulo_incio_sesion;
 
+import Catedratico.ModuloPrincipalCatedratico;
 import Catedratico.Principal_catedratico;
 import Conexion.Conec_BD;
 import Conexion.conexion;
@@ -46,7 +47,7 @@ public class Principal extends javax.swing.JDialog {
     public Principal(java.awt.Frame parent, boolean modal) throws IOException {
         super(parent, modal);
         initComponents();
-        
+       
           File carpetaPrincipal = new File(CARPETA_PRINCIPAL);
         // Si la carpeta principal no existe se crea para guardar los datos de la base de datos
         if (!carpetaPrincipal.exists()) {
@@ -200,10 +201,11 @@ public class Principal extends javax.swing.JDialog {
                 if(contraseña_entrada.equals(contraseña)){
                     if(tipo.equals("3")){
                         this.dispose();
-                        b.previous();
-                        Principal_catedratico s = new Principal_catedratico(conexion, b);
+                       // b.previous();
+                        ModuloPrincipalCatedratico s = new ModuloPrincipalCatedratico(conexion, b);
+                        
                         s.setVisible(true);
-                        this.show(true);
+                       // this.show(true);
                     }
                     else{
                         Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
@@ -250,11 +252,14 @@ public class Principal extends javax.swing.JDialog {
                     tipo = b.getString(4);
                     if(contraseña_entrada.equals(contraseña)){
                         if(tipo.equals("3")){
+                            
+                         //   b.previous();
+             
+                           
                             this.dispose();
-                            b.previous();
-                            Principal_catedratico s = new Principal_catedratico(conexion, b);
+                            ModuloPrincipalCatedratico s = new ModuloPrincipalCatedratico(conexion, b);
                             s.setVisible(true);
-                            this.pack();
+                            //this.pack();
                         }
                         else{
                             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
