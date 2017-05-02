@@ -14,6 +14,9 @@ import java.util.logging.Level;
 import java.sql.Statement;
 import java.util.logging.Logger;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -30,44 +33,81 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
     ResultSet respuesta;
     Statement stmt;
     
-     String titulos [] = {"Nombre del curso"};
-    String fila[]= new String [1];
+    String titulos [] = {"Nombre del curso",
+                         "Grado",
+                         "Seccion"};
+    String fila[]= new String [3];
     DefaultTableModel modelo;
     int idcat, idcurso;
-    String Materia = "";
+    String Materia = "", A;
+    ArrayList<String> Años;
+    
     public ModuloPrincipalCatedratico() {
         initComponents();
     }
     
-    public ModuloPrincipalCatedratico(Connection conex, ResultSet sentencia){
+    public ModuloPrincipalCatedratico(Connection conex, ResultSet sentencia) throws SQLException{
         initComponents();
         conexion = conex;
         respuesta = sentencia;
         ResultSet rs2=null;
+        Calendar fecha = new GregorianCalendar();
+        A = Integer.toString(fecha.get(Calendar.YEAR));
+        LlenarComboBoxx();
+        Llenartabla();
+    }
+    public void LlenarComboBoxx() throws SQLException{
+        boolean existe = false;
+        Años = new ArrayList<String>();
+        Statement stmt3 = conexion.createStatement();
+        ResultSet consulta = stmt3.executeQuery("SELECT Id, anio FROM CicloEscolar ORDER BY anio");
+        while(consulta.next()){
+            String pivote = consulta.getString(2);
+            Años.add(consulta.getString(1));
+            if(pivote.equals(A)) existe = true;
+            Campo_Año.addItem(pivote);
+        }
+        if(existe = true){
+            Campo_Año.setSelectedItem(A);
+        }
+        
+    }
+    
+    public void Llenartabla(){
         try{
            // int a = respuesta.getInt(5);
             Campo_Usuario.setText(respuesta.getString("NombreUsuario"));
             //Campo_Apellidos.setText(String.valueOf(respuesta.getInt(5)));
             idcat = respuesta.getInt(5);
             stmt = conexion.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT curso.Nombre, catedratico.Nombres FROM asignacioncat INNER JOIN catedratico ON asignacioncat.Catedratico_Id = catedratico.Id " +
-            "INNER JOIN curso ON asignacioncat.Curso_Id = curso.Id WHERE catedratico.Id = "+idcat);
+            String Opcion = Campo_Año.getSelectedItem().toString();
+            
+            ResultSet rs = stmt.executeQuery("SELECT curso.Nombre, grado.Nombre, grado.Seccion FROM asignacioncat "
+                    + "INNER JOIN catedratico ON asignacioncat.Catedratico_Id = catedratico.Id " 
+                    + "INNER JOIN curso ON asignacioncat.Curso_Id = curso.Id "
+                    + "INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id "
+                    + "INNER JOIN grado ON asignacioncat.Grado_Id = grado.Id "
+                    + "WHERE catedratico.id = "+idcat+" AND cicloescolar.anio = '"+ Opcion+ "'");
             modelo = new DefaultTableModel (null,titulos);
             //ResultSet rs = stmt.executeQuery("select* from curso");
             while(rs.next()){
                 fila[0] = rs.getString("curso.Nombre");
+                fila[1] = rs.getString("grado.Nombre");
+                fila[2] = rs.getString("grado.Seccion");
                 //fila[1] = rs.getString("catedratico.Nombres");
                 modelo.addRow(fila);
             }
             Tabla.setModel(modelo);
             TableColumn ci = Tabla.getColumn("Nombre del curso");
-            ci.setMaxWidth(700);
+            ci.setMaxWidth(500);
+            TableColumn ci2 = Tabla.getColumn("Grado");
+            ci2.setMaxWidth(100);
+            TableColumn ci3 = Tabla.getColumn("Seccion");
+            ci3.setMaxWidth(100);
             
         }catch (SQLException ex) {
             Logger.getLogger(ModuloPrincipalCatedratico.class.getName()).log(Level.SEVERE, null, ex);
         }
-            
-        
     }
     
 
@@ -86,6 +126,8 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         Campo_Curso = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        Campo_Año = new javax.swing.JComboBox<>();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -122,6 +164,14 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
             }
         });
 
+        Campo_Año.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                Campo_AñoItemStateChanged(evt);
+            }
+        });
+
+        jLabel2.setText("Año:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -129,20 +179,24 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(68, 68, 68)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(45, 45, 45)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(Campo_Usuario, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(Campo_Usuario, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(Campo_Año, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(204, 204, 204)
-                        .addComponent(Campo_Curso, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jButton1))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(215, 215, 215)
-                        .addComponent(jButton1)))
-                .addContainerGap(78, Short.MAX_VALUE))
+                        .addGap(189, 189, 189)
+                        .addComponent(Campo_Curso, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(101, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -150,14 +204,17 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(Campo_Usuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addGap(18, 18, 18)
+                    .addComponent(jLabel1)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(Campo_Año, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2)))
+                .addGap(48, 48, 48)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
                 .addComponent(Campo_Curso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
+                .addGap(18, 18, 18)
                 .addComponent(jButton1)
-                .addContainerGap(93, Short.MAX_VALUE))
+                .addGap(33, 33, 33))
         );
 
         pack();
@@ -196,6 +253,50 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
            Materia = curso;
     }//GEN-LAST:event_TablaMouseClicked
 
+    private void Campo_AñoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_Campo_AñoItemStateChanged
+        // TODO add your handling code here:
+        if(Campo_Año.getSelectedIndex() != 1){
+            int posicion = Campo_Año.getSelectedIndex();
+            String p = Años.get(posicion);
+            try{
+           // int a = respuesta.getInt(5);
+            Campo_Usuario.setText(respuesta.getString("NombreUsuario"));
+            //Campo_Apellidos.setText(String.valueOf(respuesta.getInt(5)));
+            idcat = respuesta.getInt(5);
+            stmt = conexion.createStatement();
+            String Opcion = Campo_Año.getSelectedItem().toString();
+            
+            ResultSet rs = stmt.executeQuery("SELECT curso.Nombre, grado.Nombre, grado.Seccion FROM asignacioncat "
+                    + "INNER JOIN catedratico ON asignacioncat.Catedratico_Id = catedratico.Id " 
+                    + "INNER JOIN curso ON asignacioncat.Curso_Id = curso.Id "
+                    + "INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id "
+                    + "INNER JOIN grado ON asignacioncat.Grado_Id = grado.Id "
+                    + "WHERE catedratico.id = "+idcat+" AND cicloescolar.anio = '"+ Opcion+ "'");
+            modelo = new DefaultTableModel (null,titulos);
+            //ResultSet rs = stmt.executeQuery("select* from curso");
+            while(rs.next()){
+                fila[0] = rs.getString("curso.Nombre");
+                fila[1] = rs.getString("grado.Nombre");
+                fila[2] = rs.getString("grado.Seccion");
+                //fila[1] = rs.getString("catedratico.Nombres");
+                modelo.addRow(fila);
+            }
+            Tabla.setModel(modelo);
+            TableColumn ci = Tabla.getColumn("Nombre del curso");
+            ci.setMaxWidth(500);
+            TableColumn ci2 = Tabla.getColumn("Grado");
+            ci2.setMaxWidth(100);
+            TableColumn ci3 = Tabla.getColumn("Seccion");
+            ci3.setMaxWidth(100);
+            
+            
+        }catch (SQLException ex) {
+            Logger.getLogger(ModuloPrincipalCatedratico.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            //String 
+        }
+    }//GEN-LAST:event_Campo_AñoItemStateChanged
+
     /**
      * @param args the command line arguments
      */
@@ -232,11 +333,13 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> Campo_Año;
     private javax.swing.JTextField Campo_Curso;
     private javax.swing.JTextField Campo_Usuario;
     private javax.swing.JTable Tabla;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }
