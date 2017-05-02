@@ -35,21 +35,7 @@ public class CrearCat extends javax.swing.JFrame {
         initComponents();
         conexion = conec;
         modelo = (DefaultTableModel) Datos.getModel();
-        try {
-            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            datosCat = sentencia.executeQuery("SELECT C.Id,C.Nombres,C.Apellidos,C.DPI FROM catedratico C LEFT JOIN usuarios U ON C.Id = U.Catedratico_Id WHERE U.Id is null;");
-            if(datosCat.next() == false){
-                //Todos los Cat tienen usuario
-            }
-            else{
-                datosCat.previous();
-                while(datosCat.next() != false){
-                    modelo.addRow(new Object[]{datosCat.getString(1),datosCat.getString(2),datosCat.getString(3),datosCat.getString(4)});
-                }
-            }
-        } catch (SQLException e) {
-                e.printStackTrace();
-        }
+        DatosCat(); //revisar la funcion
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -293,6 +279,7 @@ public class CrearCat extends javax.swing.JFrame {
                 if (c>0){
                     System.out.println("Guardado");
                     JOptionPane.showMessageDialog(null, "¡Se ha creado el Usuario " + User.getText() + " de tipo 3!" );
+                    DatosCat(); //revisar la funcion
                 }
             } catch (SQLException ex) {
                 Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
@@ -300,7 +287,23 @@ public class CrearCat extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-
+    public void DatosCat(){
+        try {
+            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            datosCat = sentencia.executeQuery("SELECT C.Id,C.Nombres,C.Apellidos,C.DPI FROM catedratico C LEFT JOIN usuarios U ON C.Id = U.Catedratico_Id WHERE U.Id is null;");
+            if(datosCat.next() == false){
+                //Todos los Cat tienen usuario
+            }
+            else{
+                datosCat.previous();
+                while(datosCat.next() != false){
+                    modelo.addRow(new Object[]{datosCat.getString(1),datosCat.getString(2),datosCat.getString(3),datosCat.getString(4)});
+                }
+            }
+        } catch (SQLException e) {
+                e.printStackTrace();
+        }
+    }
     /**
      * @param args the command line arguments
      */

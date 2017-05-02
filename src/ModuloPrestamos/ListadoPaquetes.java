@@ -31,12 +31,12 @@ public class ListadoPaquetes extends javax.swing.JFrame {
     public ListadoPaquetes(Connection conec){
         initComponents();
         conexcion = conec;
-        modelo = (DefaultTableModel) jTable1.getModel();
+        modelo = (DefaultTableModel) Listado.getModel();
         try {
             
             //Se agregaran todos los valores al principio
             Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            Packs = sentencia.executeQuery("SELECT P.Codigo, L.Codigo, L.Nombre, L.Estado FROM libro L INNER JOIN paquetelibro P ON L.PaqueteLibro_Codigo = P.Id; ");
+            Packs = sentencia.executeQuery("SELECT P.Codigo,L.Codigo,L.Nombre,L.Estado, E.PaqueteLibro_Id FROM paquetelibro P INNER JOIN libro L ON P.Id = L.PaqueteLibro_Codigo LEFT JOIN prestamo E ON E.PaqueteLibro_Id = P.Id;");
             if(Packs.next() == false){
                 //No hay paquetes
                 modelo.addRow(new Object[]{"No existen paquetes creados"});
@@ -65,9 +65,10 @@ public class ListadoPaquetes extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         CodigoPaquete = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        Listado = new javax.swing.JTable();
         jRadioButton1 = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -75,13 +76,13 @@ public class ListadoPaquetes extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Listados de Paquetes de Libros");
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel2.setText("Filtrar por:");
 
-        CodigoPaquete.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        CodigoPaquete.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
-        jTable1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        Listado.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        Listado.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -89,9 +90,9 @@ public class ListadoPaquetes extends javax.swing.JFrame {
                 "Codigo Paquete", "Codigo Libro", "Nombre", "Estado", "Prestado"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(Listado);
 
-        jRadioButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jRadioButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jRadioButton1.setText("Todo");
         jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -99,11 +100,18 @@ public class ListadoPaquetes extends javax.swing.JFrame {
             }
         });
 
-        jRadioButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jRadioButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jRadioButton2.setText("Codigo de Paquete");
         jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRadioButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Regresar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -117,7 +125,8 @@ public class ListadoPaquetes extends javax.swing.JFrame {
                         .addGap(60, 60, 60)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 940, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 940, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(110, 110, 110)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -143,8 +152,10 @@ public class ListadoPaquetes extends javax.swing.JFrame {
                     .addComponent(jRadioButton2)
                     .addComponent(CodigoPaquete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(49, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
+                .addComponent(jButton1)
+                .addContainerGap(38, Short.MAX_VALUE))
         );
 
         pack();
@@ -158,15 +169,50 @@ public class ListadoPaquetes extends javax.swing.JFrame {
 
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
         // TODO add your handling code here:
-        String Cod;
+        String Cod, prestado = "";
+        int filas = Listado.getRowCount();
+        ResultSet Packs2 = null;
         if(CodigoPaquete.getText().equals("")){
             JOptionPane.showMessageDialog(null, "¡El campo está vacio!");
         }
         else{
             Cod = CodigoPaquete.getText();
+            Statement sentencia;
+            try {
+                sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                //revisar la consulta
+                Packs2 = sentencia.executeQuery("SELECT P.Codigo,L.Codigo,L.Nombre,L.Estado, E.PaqueteLibro_Id FROM paquetelibro P INNER JOIN libro L ON P.Id = L.PaqueteLibro_Codigo LEFT JOIN prestamo E ON E.PaqueteLibro_Id = P.Id WHERE P.Codigo = '" + Cod + "';");
+                if(Packs2.next() == false){
+                //Todos los Cat tienen usuario
+                }
+                else{
+                    //eliminar las filas de las tablas
+                    for (int i = 0;filas>i; i++) {
+                        modelo.removeRow(0);
+                    }
+                    Packs2.previous();
+                    while(Packs2.next() != false){
+                        //revisar la comparacion
+                        if(Packs2.getString(5) == null){
+                            prestado = "No Prestado";
+                        }
+                        else{
+                            prestado = "Prestado";
+                        }
+                        modelo.addRow(new Object[]{Packs2.getString(1),Packs2.getString(2),Packs2.getString(3),Packs2.getString(4),prestado});
+                    }
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(ListadoPaquetes.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
             //Se mostrará todo lo que sea con ese codigo
         }
     }//GEN-LAST:event_jRadioButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -205,11 +251,12 @@ public class ListadoPaquetes extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField CodigoPaquete;
+    private javax.swing.JTable Listado;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }
