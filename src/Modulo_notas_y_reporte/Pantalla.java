@@ -140,7 +140,7 @@ public class Pantalla extends javax.swing.JFrame {
             //String j = ciclo.getSelectedItem().toString();
             //conexion = cn.Conectar();
             String[] titulos = {"a","Codigo Personal", "Apellidos", "Nombre", "Nota 1", "Nota 2", "Nota 3", "Nota 4", "Nota Final", "Nota Recuperacion"};
-            String sql = "SELECT Notas.ID, Estudiante.CodigoPersonal, Estudiante.Apellidos, Estudiante.Nombres, notas.Nota1, notas.Nota2, notas.Nota3, notas.Nota4, notas.NotaFinal, notas.NotaRecuperacion FROM notas INNER JOIN estudiante ON notas.Estudiante_Id = estudiante.Id INNER JOIN asignacionest ON asignacionest.Estudiante_Id = estudiante.Id INNER JOIN cicloescolar ON asignacionest.CicloEscolar_Id = cicloescolar.Id WHERE asignacionest.CicloEscolar_Id = " + Id_cicloescolar + " AND notas.Curso_Id = "+ Id_curso +";";
+            String sql = "SELECT Notas.ID, Estudiante.CodigoPersonal, Estudiante.Apellidos, Estudiante.Nombres, notas.Nota1, notas.Nota2, notas.Nota3, notas.Nota4, notas.NotaFinal, notas.NotaRecuperacion FROM notas INNER JOIN estudiante ON notas.Estudiante_Id = estudiante.Id INNER JOIN asignacionest ON asignacionest.Estudiante_Id = estudiante.Id INNER JOIN cicloescolar ON asignacionest.CicloEscolar_Id = cicloescolar.Id WHERE asignacionest.CicloEscolar_Id = " + Id_cicloescolar + " AND notas.Curso_Id = "+ Id_curso +" ORDER BY Estudiante.Apellidos ASC;";
             model = new DefaultTableModel(null, titulos);
             sent = conexion.createStatement();
             ResultSet rs = sent.executeQuery(sql);
