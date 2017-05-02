@@ -135,70 +135,11 @@ public class Crear_Ciclo_Escolar_1 extends javax.swing.JDialog {
             if(eleccion == JOptionPane.YES_OPTION){  
                 String ciclo_copiar;
                 this.dispose();
-                //Obtengo el Id del ciclo a copiar;
-                Crear_Ciclo_Escolar_2 copia = new Crear_Ciclo_Escolar_2(new Frame(), true, base, ciclo_nuevo);
-                copia.setVisible(true);
-                ciclo_copiar = copia.getCiclo_copiar();
-                
-                //Luego llamo a la ventana la cual le da la opcion de copiar todos los cursos y grados o escoger cuales copiar
-                Crear_Ciclo_Escolar_3 elementos = new Crear_Ciclo_Escolar_3(new Frame(),true, base, ciclo_nuevo, ciclo_copiar);
-                elementos.setVisible(true);
-                opciones = new String[2];
-                //Luego pregunto si desea asignar los cursos a los grados
-                opciones[0] = "AHORA";
-                opciones[1] = "MAS TARDE";
-                int asignar = JOptionPane.showOptionDialog(null, "Realizar las asignaciones de cursos a grados", "Asignacion cursos a Grados", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-                if(asignar == JOptionPane.YES_OPTION){
-                    new Asignar_curso_a_grado(new Frame(),true, base, ciclo_nuevo).setVisible(true);
-                }
+                new Importar_datos(new Frame(), true, base, ciclo_nuevo).show();
             }
             //Si la respuesta es no
             else{
                 this.dispose();
-                opciones = new String[2];
-                opciones[0] = "SI";
-                opciones[1] = "NO";
-                int crear_grados = JOptionPane.showOptionDialog(null, "Desea crear grados para el nuevo ciclo ", "Grados", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-                //asignar grados
-                if(crear_grados == JOptionPane.YES_OPTION){
-                    int b = 0;
-                    while(b!=1){
-                        new Crear_Grado(new Frame(),true, base, ciclo_nuevo).setVisible(true);
-                        opciones[0] = "SI";
-                        opciones[1] = "NO";
-                        int respuesta = JOptionPane.showOptionDialog(null, "Desea crear otro grado ", "Grados", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-                        if(respuesta == JOptionPane.NO_OPTION){
-                            b=1;
-                        }
-                    }
-                }
-                //Asignar cursos
-                opciones[0] = "SI";
-                opciones[1] = "NO";
-                int crear_curso = JOptionPane.showOptionDialog(null, "Desea crear cursos para el nuevo ciclo ", "Cursos", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-                //asignar grados
-                if(crear_curso == JOptionPane.YES_OPTION){
-                    int b = 0;
-                    while(b!=1){
-                        new Crear_Curso(new Frame(),true, base, ciclo_nuevo).setVisible(true);
-                        opciones[0] = "SI";
-                        opciones[1] = "NO";
-                        int respuesta = JOptionPane.showOptionDialog(null, "Desea crear otro curso ", "Cursos", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-                        if(respuesta == JOptionPane.NO_OPTION){
-                            b=1;
-                        }
-                    }
-                }
-                //Si creo cursos y grados le pregunto si desea hacer las asignaciones correspondientes
-                if(crear_curso == JOptionPane.YES_OPTION && crear_grados == JOptionPane.YES_OPTION){
-                    opciones[0] = "AHORA";
-                    opciones[1] = "MAS TARDE";
-                    int asignar = JOptionPane.showOptionDialog(null, "Realizar las asignaciones de cursos a grados", "Asignacion cursos a Grados", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
-                    if(asignar == JOptionPane.YES_OPTION){
-                    new Asignar_curso_a_grado(new Frame(),true, base, ciclo_nuevo).setVisible(true);
-                    }
-                }
-                
                 
             }
         } catch (SQLException ex) {
