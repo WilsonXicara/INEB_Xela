@@ -5,12 +5,11 @@
  */
 package ModuloAdministrador;
 import ModuloPrestamos.ModuloPrestamo;
-import Catedratico.Catedraticos;
-import Catedratico.Datos_Catedraticos;
 import Catedratico.Mostrar_Datos;
 import ModuloAsignacionEST.AsignarEstudiante;
 import ModuloAsignacionEST.PrincipalAsignacionEST;
 import ModuloEstudiante.CrearEstudiante;
+import ModuloEstudiante.InformacionEstudiante;
 import ModuloEstudiante.PrincipalEstudiante;
 import ModuloPrestamos.ModuloPaquetes;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
@@ -116,9 +115,11 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
+        menu_asignaciones = new javax.swing.JMenu();
+        item_asignaciones = new javax.swing.JMenuItem();
+        item_reasignaciones = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1000, 601));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -244,6 +245,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         );
 
         jMenu1.setText("Crear");
+        jMenu1.setPreferredSize(new java.awt.Dimension(40, 19));
 
         jMenuItem1.setText("Usuarios");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -261,7 +263,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem2);
 
-        jMenuItem10.setText("Alumno");
+        jMenuItem10.setText("Nuevo Estudiante");
         jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem10ActionPerformed(evt);
@@ -288,6 +290,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Ver");
+        jMenu2.setPreferredSize(new java.awt.Dimension(40, 19));
 
         jMenuItem4.setText("Catedráticos");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
@@ -297,7 +300,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         jMenu2.add(jMenuItem4);
 
-        jMenuItem5.setText("Alumnos");
+        jMenuItem5.setText("Información de Estudiantes");
         jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem5ActionPerformed(evt);
@@ -322,6 +325,26 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jMenu2.add(jMenuItem9);
 
         jMenuBar1.add(jMenu2);
+
+        menu_asignaciones.setText("Asignaciones");
+
+        item_asignaciones.setText("Asignar Estudiantes");
+        item_asignaciones.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                item_asignacionesActionPerformed(evt);
+            }
+        });
+        menu_asignaciones.add(item_asignaciones);
+
+        item_reasignaciones.setText("Reasignar Estudiantes");
+        item_reasignaciones.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                item_reasignacionesActionPerformed(evt);
+            }
+        });
+        menu_asignaciones.add(item_reasignaciones);
+
+        jMenuBar1.add(menu_asignaciones);
 
         setJMenuBar(jMenuBar1);
 
@@ -414,9 +437,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-        PrincipalEstudiante a = new PrincipalEstudiante(conexcion);
-        a.setVisible(true);
-
+        this.setVisible(false);
+        InformacionEstudiante nueva_ventana = new InformacionEstudiante(new javax.swing.JFrame(), true, conexcion);
+        nueva_ventana.setVisible(true);
+        this.setVisible(true);
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
@@ -438,7 +462,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
-        new Catedraticos().setVisible(true);
+        new Mostrar_Datos().setVisible(true);
         //this.setVisible(false);
         
     }//GEN-LAST:event_jMenuItem2ActionPerformed
@@ -474,11 +498,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem9ActionPerformed
 
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
-        //this.setVisible(false);
-        CrearEstudiante nueva_ventana = new CrearEstudiante(this, true, conexcion);
+        this.setVisible(false);
+        CrearEstudiante nueva_ventana = new CrearEstudiante(new javax.swing.JFrame(), true, conexcion);
         nueva_ventana.setVisible(true);
         this.setVisible(true);
-        
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
@@ -503,6 +526,20 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         // TODO add your handling code here:
         new ModuloPaquetes(conexcion).setVisible(true);
     }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void item_asignacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_asignacionesActionPerformed
+        this.setVisible(false);
+        PrincipalAsignacionEST asignaciones = new PrincipalAsignacionEST(new javax.swing.JFrame(), true, conexcion, false);
+        asignaciones.setVisible(true);
+        this.setVisible(true);
+    }//GEN-LAST:event_item_asignacionesActionPerformed
+
+    private void item_reasignacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_reasignacionesActionPerformed
+        this.setVisible(false);
+        PrincipalAsignacionEST asignaciones = new PrincipalAsignacionEST(new javax.swing.JFrame(), true, conexcion, true);
+        asignaciones.setVisible(true);
+        this.setVisible(true);
+    }//GEN-LAST:event_item_reasignacionesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -548,6 +585,8 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JTextField Telefono;
     private javax.swing.JTextField Usuario;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JMenuItem item_asignaciones;
+    private javax.swing.JMenuItem item_reasignaciones;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -578,5 +617,6 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JMenu menu_asignaciones;
     // End of variables declaration//GEN-END:variables
 }

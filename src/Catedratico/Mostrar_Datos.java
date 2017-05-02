@@ -42,6 +42,7 @@ public class Mostrar_Datos extends javax.swing.JFrame {
     DefaultTableModel modelo;
     public Mostrar_Datos() {
         initComponents();
+        //-------------------------------------------------
     }
     
     
@@ -443,6 +444,7 @@ public class Mostrar_Datos extends javax.swing.JFrame {
     private void Boton_Crear_CatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Boton_Crear_CatActionPerformed
         // Boton que crea un nuevo registro para la tabla cátedratico.
         String cadena2,cadena3,cadena4,cadena5,cadena6,cadena7,cadena8,cadena9;
+        int nohacenada;
         cadena2 = Campo_Nombre.getText();
         cadena3 = Campo_Apellidos.getText();
         cadena4 = Campo_Direccion.getText();

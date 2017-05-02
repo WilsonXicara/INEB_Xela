@@ -483,7 +483,7 @@ public class Asignar_curso_a_grado extends javax.swing.JDialog {
             
             
         } catch (SQLException ex) {
-            Logger.getLogger(Crear_Asig_cat.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Asignar_curso_a_grado.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
