@@ -464,8 +464,13 @@ public class Pantalla extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
         this.dispose();
-        Principal_catedratico a = new Principal_catedratico();
-        a.setVisible(true);
+        ModuloPrincipalCatedratico a;
+        try {
+            a = new ModuloPrincipalCatedratico(conexion, b);
+            a.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(Pantalla.class.getName()).log(Level.SEVERE, null, ex);
+        }  
     }//GEN-LAST:event_formWindowClosing
 
     /**
