@@ -53,11 +53,16 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         try {
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             ResultSet cCicloEscolar = sentencia.executeQuery("SELECT Anio FROM CicloEscolar");
-            // Cargo al ArrayList los Ciclos Escolares encontrados en la Base de Datos
-            while(cCicloEscolar.next())
+            // Cargo al ArrayList y al JComboBox los Ciclos Escolares encontrados en la Base de Datos
+            while(cCicloEscolar.next()) {
                 listaCiclos.add(new RegistroCiclo(cCicloEscolar.getString("Anio")));    // Agrego un Ciclo Escolar encontrado
+                ciclo_escolar.addItem(cCicloEscolar.getString("Anio"));
+            } ciclosCargados = true;// Hasta aquí se garantiza la carga de todos los Grados y Ciclos Escolares de la Base de Datos
             
-            // Ahora obtengo los grados asociados a cada Ciclo Escolar cargado desde la Base de Datos
+            ciclo_escolar.setSelectedIndex(-1); // Esta opción es para generar una llamada al itemStateChange en caso de sólo encontrar un ciclo
+            ciclo_escolar.setSelectedIndex(ciclo_escolar.getItemCount() - 1);   // Selecciono por defecto el último Ciclo Esoclar
+            
+            /*/ Ahora obtengo los grados asociados a cada Ciclo Escolar cargado desde la Base de Datos
             int cantidad = listaCiclos.size();
             for(int cont=0; cont<cantidad; cont++) {
                 // El ID de cada ciclo es correlativo a su posición en el ArrayList
@@ -73,7 +78,7 @@ public class InformacionEstudiante extends javax.swing.JDialog {
                 ciclo_escolar.addItem(listaCiclos.get(cont).getAnio());
             } ciclosCargados = true;// Hasta aquí se garantiza la carga de todos los Grados y Ciclos Escolares de la Base de Datos
             ciclo_escolar.setSelectedIndex(ciclo_escolar.getItemCount() - 1);   // Selecciono por defecto el último Ciclo Esoclar
-        } catch (SQLException ex) {
+        */} catch (SQLException ex) {
             Logger.getLogger(InformacionEstudiante.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(this, "Error al intentar obtener el registros de la Base de Datos:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -418,18 +423,35 @@ public class InformacionEstudiante extends javax.swing.JDialog {
      * @param evt 
      */
     private void ciclo_escolarItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ciclo_escolarItemStateChanged
-        // Cada vez que se selecciona un Ciclo Escolar, se actualizan los valores del JComboBox 'grado'
-        if (ciclosCargados) {
-            int index = ciclo_escolar.getSelectedIndex();
-            if (index != -1) {
-                grado.removeAllItems(); // Borro los registros del JComboBox
-                
-                ArrayList<RegistroGrado> grados = listaCiclos.get(index).getGrados();   // Obtengo los Grados asignados al Ciclo Escolar seleccionado
-                int cantidad = grados.size();
-                for(int cont=0; cont<cantidad; cont++)
-                    grado.addItem(grados.get(cont).getGradoSeccion());  // Agrego el Grado
-                grado.addItem("Todos los grados");  // Última opción que permitirá buscar a los estudiantes de todos los grados
+        // Cada vez que se selecciona un nuevo ciclo escolar se deben actualizar 'grado' con los grados del ciclo seleccionado
+        int indexCiclo = ciclo_escolar.getSelectedIndex();
+        if (ciclosCargados && indexCiclo != -1) {
+            grado.removeAllItems();
+            ArrayList<RegistroGrado> listaGrados = listaCiclos.get(indexCiclo).getGrados();
+            int cantidad = listaGrados.size();
+            if (cantidad == 0) {    // Si el ArrayList está vacío, aún no se han cargado los grados de dicho ciclo
+                // Ahora obtengo los Grados asociados a cada Ciclo Escolar seleccionado en el JComboBox correspondiente
+                try {
+                    Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                    ResultSet cGrados = sentencia.executeQuery("SELECT AsignacionCAT.CicloEscolar_Id idCiclo, AsignacionCAT.Grado_Id idGrado, Grado.Nombre, Grado.Seccion, COUNT(AsignacionCAT.Grado_Id) grados FROM AsignacionCAT "
+                            + "INNER JOIN Grado ON AsignacionCAT.Grado_Id = Grado.Id "
+                            + "WHERE AsignacionCAT.CicloEscolar_Id = "+(indexCiclo+1)+" "
+                            + "GROUP BY AsignacionCAT.Grado_Id");
+                    // Cargo al ArrayList todos los Grados del Ciclo Escolar seleccionado. El ID de cada ciclo es correlativo a su posición en el ArrayList
+                    while (cGrados.next())
+                        listaGrados.add(new RegistroGrado(cGrados.getInt("idGrado"), cGrados.getString("Nombre"), cGrados.getString("Seccion")));
+                    // Hasta aquí se garantiza la carga de todos los grados
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Error al intentar obtener los grados:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+//                    Logger.getLogger(PrincipalAsignacionEST.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
+            // Ahora cargo los Grados encontrados al JComboBox
+            cantidad = listaGrados.size();
+            for(int i=0; i<cantidad; i++)
+                grado.addItem(listaGrados.get(i).getGradoSeccion());
+            grado.addItem("Todos los grados");  // Última opción que permitirá buscar a los estudiantes de todos los grados
+            grado.setSelectedIndex((cantidad == 0) ? -1 : 0);
         }
     }//GEN-LAST:event_ciclo_escolarItemStateChanged
     /**APROBADO!!!

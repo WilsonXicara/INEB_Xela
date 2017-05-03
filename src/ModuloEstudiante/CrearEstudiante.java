@@ -253,8 +253,8 @@ public class CrearEstudiante extends javax.swing.JDialog {
             if (contEstudiantes != 0 || contEncargados != 0)
                 JOptionPane.showMessageDialog(this, "Guardado con éxito."
                         + "\nSe ha guardado el registro de:"
-                        + ((contEstudiantes==0)?"\n"+contEstudiantes+" Estudiante"+((contEstudiantes==1)?"":"s"):"")
-                        + ((contEncargados==0)?"\n"+contEncargados+" Encargado"+((contEncargados==1)?"":"s"):""), "Información", JOptionPane.INFORMATION_MESSAGE);
+                        + ((contEstudiantes!=0)?"\n"+contEstudiantes+" Estudiante"+((contEstudiantes==1)?"":"s"):"")
+                        + ((contEncargados!=0)?"\n"+contEncargados+" Encargado"+((contEncargados==1)?"":"s"):""), "Información", JOptionPane.INFORMATION_MESSAGE);
             return true;
         } catch (SQLException ex) {
 //            Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
