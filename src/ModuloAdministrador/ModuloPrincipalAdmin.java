@@ -57,8 +57,12 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             Municipio.setText(resultado.getString("Nombre"));
             //Statement sentencia2 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             resultado2 = sentencia.executeQuery("SELECT * FROM Telefono WHERE Administrador_Id = " + User.getString(6));
-            resultado2.next();
-            Telefono.setText(resultado2.getString("Telefono"));
+            if(resultado2.next()==true){
+                Telefono.setText(resultado2.getString("Telefono"));
+            }
+            else{
+                Telefono.setText("No Disponible");
+            }
         } catch (SQLException ex) {
             Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -112,12 +116,13 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
         menu_ver = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
-        jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
         menu_asignaciones = new javax.swing.JMenu();
         item_asignaciones = new javax.swing.JMenuItem();
         item_reasignaciones = new javax.swing.JMenuItem();
@@ -275,7 +280,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         );
 
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(30, 70, 853, 189);
+        jPanel1.setBounds(30, 70, 855, 195);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         getContentPane().add(jLabel2);
@@ -328,6 +333,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         menu_crear.add(jMenuItem3);
 
+        jMenuItem7.setText("Prestamos");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
+        menu_crear.add(jMenuItem7);
+
         jMenuItem6.setText("Paquete Libro");
         jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -357,14 +370,6 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         menu_ver.add(jMenuItem5);
 
-        jMenuItem7.setText("Prestamos");
-        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem7ActionPerformed(evt);
-            }
-        });
-        menu_ver.add(jMenuItem7);
-
         jMenuItem9.setText("Ciclo Escolar");
         jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -372,6 +377,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             }
         });
         menu_ver.add(jMenuItem9);
+
+        jMenuItem8.setText("Usuarios");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem8ActionPerformed(evt);
+            }
+        });
+        menu_ver.add(jMenuItem8);
 
         jMenuBar1.add(menu_ver);
 
@@ -406,7 +419,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             if(User.getString("Tipo").equals("1")){
                 //Si se puede llamar a la ventana
                 this.setEnabled(false);
-                new Usuarios(conexcion).setVisible(true);
+                new Usuarios(conexcion,this).setVisible(true);
                 //this.dispose();
                 this.setEnabled(true);
             }
@@ -430,8 +443,8 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             String tipo = User.getString("Tipo");
             if(tipo.equals("1")){
                 this.setEnabled(false);
-                new ModuloPrestamo(conexcion).setVisible(true);
-                this.setEnabled(true);
+                new ModuloPrestamo(conexcion,this).setVisible(true);
+                //this.setEnabled(true);
                 //this.setVisible(false);
             }
             else{
@@ -445,9 +458,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
         this.setEnabled(false);
-        new Mostrar_Datos(conexcion).setVisible(true);
+        new Mostrar_Datos(conexcion,this).setVisible(true);
         //this.setVisible(false);
-        this.setEnabled(true);
+        //this.setEnabled(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -457,9 +470,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here:
         this.setEnabled(false);
-        Mostrar_Datos ven = new Mostrar_Datos(conexcion);
+        Mostrar_Datos ven = new Mostrar_Datos(conexcion,this);
         ven.setVisible(true);
-        this.setEnabled(true);
+        //this.setEnabled(true);
        // new Catedraticos(conexcion, this).setVisible(true);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
@@ -507,21 +520,22 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         // TODO add your handling code here:
         this.setEnabled(false);
-        new ModuloPaquetes(conexcion).setVisible(true);
-        this.setEnabled(true);
+        new ModuloPaquetes(conexcion,this).setVisible(true);
+        //this.setEnabled(true);
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-        this.dispose();
+        System.exit(0);
+        //this.dispose();
     }//GEN-LAST:event_formWindowClosing
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         this.setEnabled(false);
-        new CambiarContra(conexcion,User).setVisible(true);
-        this.setEnabled(true);
+        new CambiarContra(conexcion,User,this).setVisible(true);
+        //this.setEnabled(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void item_asignacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_asignacionesActionPerformed
@@ -533,6 +547,23 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         PrincipalAsignacionEST asignaciones = new PrincipalAsignacionEST(new javax.swing.JFrame(), true, conexcion, true);
         asignaciones.setVisible(true);
     }//GEN-LAST:event_item_reasignacionesActionPerformed
+
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        try {
+            // TODO add your handling code here:
+            
+            if(User.getString("Tipo").equals("1")){
+                this.setEnabled(false);
+                new ListadoUsuarios(conexcion,this).setVisible(true);
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
 
 
     /**
@@ -610,6 +641,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JMenu menu_asignaciones;
