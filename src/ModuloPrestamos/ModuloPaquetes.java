@@ -13,6 +13,7 @@ import java.sql.Statement;
 import javax.swing.JOptionPane;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 /**
  *
@@ -25,15 +26,17 @@ public class ModuloPaquetes extends javax.swing.JFrame {
      */
     Connection conexcion;
     int contaLibros = 0;
+    JFrame Ventanita;
     DefaultTableModel modelo;
     public ModuloPaquetes() {
         initComponents();
     }
     
-    public ModuloPaquetes(Connection conec){
+    public ModuloPaquetes(Connection conec,JFrame ventana){
         initComponents();
         conexcion = conec;
         modelo = (DefaultTableModel) Libros.getModel();
+        Ventanita = ventana;
     }
 
     /**
@@ -468,6 +471,7 @@ public class ModuloPaquetes extends javax.swing.JFrame {
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
+        Ventanita.setEnabled(true);
         this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
@@ -482,6 +486,7 @@ public class ModuloPaquetes extends javax.swing.JFrame {
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         // TODO add your handling code here:
+        Ventanita.setEnabled(true);
         this.dispose();
     }//GEN-LAST:event_formWindowClosed
 

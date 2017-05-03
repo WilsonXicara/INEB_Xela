@@ -57,8 +57,12 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             Municipio.setText(resultado.getString("Nombre"));
             //Statement sentencia2 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             resultado2 = sentencia.executeQuery("SELECT * FROM Telefono WHERE Administrador_Id = " + User.getString(6));
-            resultado2.next();
-            Telefono.setText(resultado2.getString("Telefono"));
+            if(resultado2.next()==true){
+                Telefono.setText(resultado2.getString("Telefono"));
+            }
+            else{
+                Telefono.setText("No Disponible");
+            }
         } catch (SQLException ex) {
             Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -275,7 +279,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         );
 
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(30, 70, 853, 189);
+        jPanel1.setBounds(30, 70, 855, 195);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         getContentPane().add(jLabel2);
@@ -406,7 +410,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             if(User.getString("Tipo").equals("1")){
                 //Si se puede llamar a la ventana
                 this.setEnabled(false);
-                new Usuarios(conexcion).setVisible(true);
+                new Usuarios(conexcion,this).setVisible(true);
                 //this.dispose();
                 this.setEnabled(true);
             }
@@ -430,8 +434,8 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             String tipo = User.getString("Tipo");
             if(tipo.equals("1")){
                 this.setEnabled(false);
-                new ModuloPrestamo(conexcion).setVisible(true);
-                this.setEnabled(true);
+                new ModuloPrestamo(conexcion,this).setVisible(true);
+                //this.setEnabled(true);
                 //this.setVisible(false);
             }
             else{
@@ -445,9 +449,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
         this.setEnabled(false);
-        new Mostrar_Datos(conexcion).setVisible(true);
+        new Mostrar_Datos(conexcion,this).setVisible(true);
         //this.setVisible(false);
-        this.setEnabled(true);
+        //this.setEnabled(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -457,9 +461,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here:
         this.setEnabled(false);
-        Mostrar_Datos ven = new Mostrar_Datos(conexcion);
+        Mostrar_Datos ven = new Mostrar_Datos(conexcion,this);
         ven.setVisible(true);
-        this.setEnabled(true);
+        //this.setEnabled(true);
        // new Catedraticos(conexcion, this).setVisible(true);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
@@ -507,8 +511,8 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         // TODO add your handling code here:
         this.setEnabled(false);
-        new ModuloPaquetes(conexcion).setVisible(true);
-        this.setEnabled(true);
+        new ModuloPaquetes(conexcion,this).setVisible(true);
+        //this.setEnabled(true);
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
 
@@ -520,8 +524,8 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         this.setEnabled(false);
-        new CambiarContra(conexcion,User).setVisible(true);
-        this.setEnabled(true);
+        new CambiarContra(conexcion,User,this).setVisible(true);
+        //this.setEnabled(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void item_asignacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_asignacionesActionPerformed

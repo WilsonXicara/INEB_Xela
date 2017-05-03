@@ -348,9 +348,9 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
              }
             
             System.out.println(idcat);
-            Pantalla s = new Pantalla(conexion,idcat, idcurso, idciclo, respuesta); // Llama a la del Andrés
+            Pantalla s = new Pantalla(conexion,idcat, idcurso, idciclo, this); // Llama a la del Andrés
             s.setVisible(true);
-            this.dispose();
+            this.setEnabled(false);
                 }
         }catch (SQLException ex) {
             Logger.getLogger(ModuloPrincipalCatedratico.class.getName()).log(Level.SEVERE, null, ex);
