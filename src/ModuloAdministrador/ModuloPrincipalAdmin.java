@@ -527,7 +527,8 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-        this.dispose();
+        System.exit(0);
+        //this.dispose();
     }//GEN-LAST:event_formWindowClosing
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -548,9 +549,20 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_item_reasignacionesActionPerformed
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-        // TODO add your handling code here:
-        this.setEnabled(false);
-        new ListadoUsuarios(conexcion,this).setVisible(true);
+        try {
+            // TODO add your handling code here:
+            
+            if(User.getString("Tipo").equals("1")){
+                this.setEnabled(false);
+                new ListadoUsuarios(conexcion,this).setVisible(true);
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }//GEN-LAST:event_jMenuItem8ActionPerformed
 
 

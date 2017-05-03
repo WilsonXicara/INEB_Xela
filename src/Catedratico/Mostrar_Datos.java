@@ -521,8 +521,7 @@ public class Mostrar_Datos extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // Botón para volver a la ventana anterior
-            ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, Regresa); // Llama a la del Andrés
-            s.setVisible(true);
+            Ventanita.setEnabled(true);
             this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -592,7 +591,8 @@ public class Mostrar_Datos extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
             //ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, Regresa); // Llama a la del Andrés
-            Ventanita.setVisible(true);
+       
+            Ventanita.setEnabled(true);
             this.dispose();
     }//GEN-LAST:event_formWindowClosing
 

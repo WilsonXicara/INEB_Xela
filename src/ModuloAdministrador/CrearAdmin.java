@@ -337,7 +337,7 @@ public class CrearAdmin extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {                                         
-            String Nom, Apellido, Direc, Dpi,Sex2,Tel,Etn,Usuario,Contra;
+            String Nom, Apellido, Direc, Dpi,Sex2 = "",Tel,Etn,Usuario,Contra;
             String Instruccion , Instruccion2, Instruccion3;
             int Muni, Tip, Sex, bandera = 0;
             ResultSet resultado = null , resultado2 = null;
@@ -362,7 +362,7 @@ public class CrearAdmin extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "¡Hay Campos Vacios");
             }
             else{
-                Instruccion = "INSERT INTO administrador (Nombres,Apellidos,Direccion,Dpi,Sexo,Municipio_Id) VALUES ('" + Nom + "','" + Apellido + "','" + Direc + "','" + Dpi + "','" + Sex + "'," + Muni + ");";
+                Instruccion = "INSERT INTO administrador (Nombres,Apellidos,Direccion,Dpi,Sexo,Municipio_Id) VALUES ('" + Nom + "','" + Apellido + "','" + Direc + "','" + Dpi + "','" + Sex2 + "'," + Muni + ");";
                     //Insertamoso el admin
                 int  a;
                 try (PreparedStatement pst = conexion.prepareStatement(Instruccion)) {
