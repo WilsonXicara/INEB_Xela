@@ -58,7 +58,6 @@ public class Pantalla extends javax.swing.JFrame {
         conexion = conex;
         limpiar();
         deshabilitar();
-        llenar();
         //cargar("");
         Calendar fecha = new GregorianCalendar();
         año = Integer.toString(fecha.get(Calendar.YEAR));
@@ -67,6 +66,7 @@ public class Pantalla extends javax.swing.JFrame {
         Id_curso = cur;
         Id_cat = cat;
         b = a;
+        llenar();
     }
 
     /*public void Cargar_Datos_Estudiante() throws SQLException
