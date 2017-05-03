@@ -26,6 +26,7 @@ public class Mostrar_Datos extends javax.swing.JFrame {
     
     private Connection conexion;
     Statement stmt;
+    ResultSet Regresa;
     
     String titulos[] = { "ID",
                         "Nombres",
@@ -34,7 +35,6 @@ public class Mostrar_Datos extends javax.swing.JFrame {
                         "DPI",
                         "Sexo",
                         "Etnia",
-                        
                        // "Municipio_Id",
                         "Nombre",
                         "Telefono"/*,"Municipio"*/};
@@ -46,14 +46,31 @@ public class Mostrar_Datos extends javax.swing.JFrame {
     }
     
     
-    public Mostrar_Datos(Connection conex){
+    public Mostrar_Datos(Connection conex/*, ResultSet Devolver*/){
         initComponents();
+        this.setLocationRelativeTo(null);
         this.conexion  = conex;
         Llenartabla("");
+        llenarcombobox();
+        //Regresa = Devolver;
     }
 /**
  * Función que llena la tabla con todos los datos de los docentes
  */
+    public void llenarcombobox(){
+        Campo_Municipio.removeAllItems();
+        try {
+            Statement Sentencia = this.conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            ResultSet municipios = Sentencia.executeQuery("SELECT Nombre FROM Municipio");
+            while (municipios.next()) {
+                Campo_Municipio.addItem(municipios.getString("Nombre"));
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al intentar obtener los Municipios\n"+ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(Mostrar_Datos.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+}
     public void Llenartabla(String Condicion){
         String consulta = "";
         if(Condicion.equals("")){
@@ -92,6 +109,7 @@ public class Mostrar_Datos extends javax.swing.JFrame {
                    */
                    modelo.addRow(fila);     
                }
+            
             Tabla_Datos.setModel(modelo);
                 TableColumn ci = Tabla_Datos.getColumn("ID");
                 ci.setMaxWidth(42);
@@ -170,8 +188,18 @@ public class Mostrar_Datos extends javax.swing.JFrame {
         jPopupMenu1.add(jMenu1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        Tabla_Datos = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex,int colIndex){
+                return false;
+            }
+        };
         Tabla_Datos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -181,6 +209,8 @@ public class Mostrar_Datos extends javax.swing.JFrame {
             }
         ));
         Tabla_Datos.setComponentPopupMenu(jPopupMenu1);
+        Tabla_Datos.setFocusable(false);
+        Tabla_Datos.getTableHeader().setReorderingAllowed(false);
         Tabla_Datos.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Tabla_DatosMousePressed(evt);
@@ -428,13 +458,13 @@ public class Mostrar_Datos extends javax.swing.JFrame {
     }//GEN-LAST:event_Campo_TelefonoKeyTyped
 
     private void Campo_ApellidosKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Campo_ApellidosKeyTyped
-        char letra = evt.getKeyChar();
-        if((letra<'a'||letra>'z')&&(letra<'A'||letra>'z')&&(letra<' ' || letra>' ')) evt.consume();
+      //  char letra = evt.getKeyChar();
+      //  if((letra<'a'||letra>'z')&&(letra<'A'||letra>'z')&&(letra<' ' || letra>' ')) evt.consume();
     }//GEN-LAST:event_Campo_ApellidosKeyTyped
 
     private void Campo_NombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Campo_NombreKeyTyped
-        char letra = evt.getKeyChar();
-        if((letra<'a'||letra>'z')&&(letra<'A'||letra>'z')&&(letra<' ' || letra>' ')) evt.consume();
+       // char letra = evt.getKeyChar();
+       // if((letra<'a'||letra>'z')&&(letra<'A'||letra>'z')&&(letra<' ' || letra>' ')) evt.consume();
     }//GEN-LAST:event_Campo_NombreKeyTyped
 
     private void Campo_NombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Campo_NombreActionPerformed
@@ -489,8 +519,9 @@ public class Mostrar_Datos extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // Botón para volver a la ventana anterior
-        ModuloPrincipalAdmin ven = new ModuloPrincipalAdmin();
-        ven.setVisible(true);
+            ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, Regresa); // Llama a la del Andrés
+            s.setVisible(true);
+            this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -555,6 +586,13 @@ public class Mostrar_Datos extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_Tabla_DatosMousePressed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+            ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, Regresa); // Llama a la del Andrés
+            s.setVisible(true);
+            this.dispose();
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments

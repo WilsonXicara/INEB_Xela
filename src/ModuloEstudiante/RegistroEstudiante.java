@@ -5,6 +5,8 @@
  */
 package ModuloEstudiante;
 
+import java.util.Date;
+
 /**
  * Clase que modela un REGISTRO PARA UN ESTUDIANTE. Dicho registro es usado para almacenar temporalmente los datos de los
  * Estudiantes que se van a guardar en la Base de Datos.
@@ -34,6 +36,10 @@ public class RegistroEstudiante {
     public String getDireccion() { return direccion; }
     public String getMunicipio() { return municipio; }
     public String getFechaNacimiento() { return fechaNacimiento; }
+    public Date getDateNacimiento() {
+        String[] fecha = fechaNacimiento.split("-");
+        return new Date(Integer.parseInt(fecha[0])-1900, Integer.parseInt(fecha[1])-1, Integer.parseInt(fecha[2]));
+    }
     public String getSexo() { return sexo; }
     public String getEtnia() { return etnia; }
     public String getTipoCapacidad() { return tipoCapacidad; }

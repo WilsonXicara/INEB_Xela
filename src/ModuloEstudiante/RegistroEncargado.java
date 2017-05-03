@@ -5,6 +5,9 @@
  */
 package ModuloEstudiante;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 /**
  * Clase que modela un REGISTRO PARA UN ENCARGADO. Dicho registro es usado para almacenar temporalmente los datos de los
  * Encargados que se van a guardar en la Base de Datos.
@@ -32,6 +35,10 @@ public class RegistroEncargado {
     public String getDireccion() { return direccion; }
     public String getMunicipio() { return municipio; }
     public String getFechaNacimiento() { return fechaNacimiento; }
+    public Date getDateNacimiento() {
+        String[] fecha = fechaNacimiento.split("-");
+        return new Date(Integer.parseInt(fecha[0])-1900, Integer.parseInt(fecha[1])-1, Integer.parseInt(fecha[2]));
+    }
     public String getTelefono() { return telefono; }
     public String getCelular() { return celular; }
     public String getTrabajo() { return trabajo; }
