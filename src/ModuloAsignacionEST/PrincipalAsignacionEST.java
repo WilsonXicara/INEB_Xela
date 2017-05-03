@@ -86,10 +86,11 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
                     // Ahora cargo el nombre de todos los Ciclos Escolares encontrados al JComboBox 'ciclo_escolar'
                     ciclo_escolar.addItem(listaCiclos.get(cont).getAnio());
                 } ciclosCargados = true;// Hasta aquí se garantiza la carga de todos los Grados y Ciclos Escolares de la Base de Datos
+                ciclo_escolar.setSelectedIndex(-1);
                 ciclo_escolar.setSelectedIndex(ciclo_escolar.getItemCount() - 1);   // Selecciono por defecto el último Ciclo Esoclar
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error al intentar obtener los Ciclos Escolares:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                Logger.getLogger(PrincipalAsignacionEST.class.getName()).log(Level.SEVERE, null, ex);
+//                Logger.getLogger(PrincipalAsignacionEST.class.getName()).log(Level.SEVERE, null, ex);
             }
             cargar_para_reasignacion.setEnabled(true);
         } else  // Se mostrarán los estudiantes que no tienen ninguna asignación
@@ -172,7 +173,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
             crear_asignacion.setEnabled(contador > 1);  // Habilito el botón para Crear las Reasignaciones si hay como minimo un registro
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al intentar extraer datos.\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(PrincipalAsignacionEST.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(PrincipalAsignacionEST.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

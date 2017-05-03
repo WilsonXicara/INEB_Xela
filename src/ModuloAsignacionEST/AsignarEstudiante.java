@@ -90,10 +90,11 @@ public class AsignarEstudiante extends javax.swing.JDialog {
                 // Ahora cargo el nombre de todos los Ciclos Escolares encontrados al JComboBox 'ciclo_escolar'
                 ciclo_escolar.addItem(listaCiclos.get(cont).getAnio());
             } ciclosCargados = true;// Hasta aquí se garantiza la carga de todos los Grados y Ciclos Escolares de la Base de Datos
+            ciclo_escolar.setSelectedIndex(-1); // Esta parte es para generar un cambio de item, en caso de solo tener 1
             ciclo_escolar.setSelectedIndex(ciclo_escolar.getItemCount() - 1);  // Selecciona el último item
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al extraer los Ciclos Escolares:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
         definir_ancho_columnas();
     }
@@ -370,7 +371,7 @@ public class AsignarEstudiante extends javax.swing.JDialog {
                 yaExiste = cAsignacion.next();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error al intentar comprobar la existencia de la Reasignación:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+//                Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         if (cicloEscolarAnterior == cicloEscolarNuevo || yaExiste) {    // Evalúo que el estudiante no se reasigne en el ciclo escolar al que ya fue asignado
@@ -406,7 +407,7 @@ public class AsignarEstudiante extends javax.swing.JDialog {
                     JOptionPane.showMessageDialog(this, ((paraReasignacion)?"Rea":"A")+"signación creada exitosamente", "Información", JOptionPane.INFORMATION_MESSAGE);
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(this, "Error al intentar crear la Asignación:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+//                    Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
                 
@@ -440,7 +441,7 @@ public class AsignarEstudiante extends javax.swing.JDialog {
                     listaCiclos.get(indexCiclo).getGrado(indexGrado).addCursos(listaCursos);
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(this, "Error al mostrar los Cursos:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+//                    Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }   // Hasta aquí, listaCursos contiene los Cursos asociados al Grado y Ciclo Escolar seleccionados
             modelCursos.setRowCount(0);
