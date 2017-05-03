@@ -348,9 +348,9 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
              }
             
             System.out.println(idcat);
-            Pantalla s = new Pantalla(conexion,idcat, idcurso, idciclo, respuesta); // Llama a la del Andrés
+            Pantalla s = new Pantalla(conexion,idcat, idcurso, idciclo, this); // Llama a la del Andrés
             s.setVisible(true);
-            this.dispose();
+            this.setEnabled(false);
                 }
         }catch (SQLException ex) {
             Logger.getLogger(ModuloPrincipalCatedratico.class.getName()).log(Level.SEVERE, null, ex);
@@ -361,13 +361,14 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
         // TODO add your handling code here:
             Cambiar_contra s;
         try {
-            s = new Cambiar_contra(conexion,respuesta);
+            this.setEnabled(false);
+            s = new Cambiar_contra(conexion,respuesta,this);
             s.setVisible(true);// Llama a la del Andrés
         } catch (SQLException ex) {
             Logger.getLogger(ModuloPrincipalCatedratico.class.getName()).log(Level.SEVERE, null, ex);
         }
             
-            this.dispose();
+            //this.dispose();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**

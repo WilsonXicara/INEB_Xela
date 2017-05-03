@@ -57,8 +57,12 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             Municipio.setText(resultado.getString("Nombre"));
             //Statement sentencia2 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             resultado2 = sentencia.executeQuery("SELECT * FROM Telefono WHERE Administrador_Id = " + User.getString(6));
-            resultado2.next();
-            Telefono.setText(resultado2.getString("Telefono"));
+            if(resultado2.next()==true){
+                Telefono.setText(resultado2.getString("Telefono"));
+            }
+            else{
+                Telefono.setText("No Disponible");
+            }
         } catch (SQLException ex) {
             Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -105,32 +109,40 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         Telefono = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        menu_crear = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        menu_ver = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
-        jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
-        item_reasignaciones = new javax.swing.JMenu();
-        item_asignaciones = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
+        menu_asignaciones = new javax.swing.JMenu();
+        item_asignaciones = new javax.swing.JMenuItem();
+        item_reasignaciones = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(901, 592));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
         });
+        getContentPane().setLayout(null);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Menú Administrador");
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(0, 13, 855, 22);
+        getContentPane().add(jLabel11);
+        jLabel11.setBounds(1024, 637, 0, 0);
 
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton1.setText("Cerrar Sesión");
@@ -140,6 +152,22 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
+        getContentPane().add(jButton1);
+        jButton1.setBounds(333, 401, 175, 38);
+        getContentPane().add(jLabel12);
+        jLabel12.setBounds(1024, 537, 0, 0);
+        getContentPane().add(jLabel13);
+        jLabel13.setBounds(1003, 537, 0, 0);
+        getContentPane().add(jLabel14);
+        jLabel14.setBounds(619, 544, 0, 0);
+        getContentPane().add(jLabel15);
+        jLabel15.setBounds(612, 537, 0, 0);
+        getContentPane().add(jLabel16);
+        jLabel16.setBounds(1010, 527, 0, 0);
+        getContentPane().add(jLabel17);
+        jLabel17.setBounds(1017, 527, 0, 0);
+        getContentPane().add(jLabel18);
+        jLabel18.setBounds(262, 637, 256, 0);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Información Administrdor"));
 
@@ -251,7 +279,12 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 .addContainerGap(24, Short.MAX_VALUE))
         );
 
+        getContentPane().add(jPanel1);
+        jPanel1.setBounds(30, 70, 855, 195);
+
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        getContentPane().add(jLabel2);
+        jLabel2.setBounds(0, 539, 0, 0);
 
         jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton2.setText("Cambiar Contraseña");
@@ -260,9 +293,13 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
+        getContentPane().add(jButton2);
+        jButton2.setBounds(330, 340, 175, 37);
+        getContentPane().add(jLabel9);
+        jLabel9.setBounds(599, 268, 0, 260);
 
-        jMenu1.setText("Crear");
-        jMenu1.setPreferredSize(new java.awt.Dimension(40, 19));
+        menu_crear.setText("Crear");
+        menu_crear.setPreferredSize(new java.awt.Dimension(40, 19));
 
         jMenuItem1.setText("Usuarios");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -270,7 +307,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 jMenuItem1ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        menu_crear.add(jMenuItem1);
 
         jMenuItem2.setText("Catedrático");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
@@ -278,7 +315,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 jMenuItem2ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem2);
+        menu_crear.add(jMenuItem2);
 
         jMenuItem10.setText("Nuevo Estudiante");
         jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
@@ -286,7 +323,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 jMenuItem10ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem10);
+        menu_crear.add(jMenuItem10);
 
         jMenuItem3.setText("Ciclo Escolar");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
@@ -294,36 +331,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 jMenuItem3ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem3);
-
-        jMenuItem6.setText("Paquete Libro");
-        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem6ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem6);
-
-        jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("Ver");
-        jMenu2.setPreferredSize(new java.awt.Dimension(40, 19));
-
-        jMenuItem4.setText("Catedráticos");
-        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem4ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem4);
-
-        jMenuItem5.setText("Información de Estudiantes");
-        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem5ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem5);
+        menu_crear.add(jMenuItem3);
 
         jMenuItem7.setText("Prestamos");
         jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
@@ -331,7 +339,36 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 jMenuItem7ActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem7);
+        menu_crear.add(jMenuItem7);
+
+        jMenuItem6.setText("Paquete Libro");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
+        menu_crear.add(jMenuItem6);
+
+        jMenuBar1.add(menu_crear);
+
+        menu_ver.setText("Ver");
+        menu_ver.setPreferredSize(new java.awt.Dimension(40, 19));
+
+        jMenuItem4.setText("Catedráticos");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        menu_ver.add(jMenuItem4);
+
+        jMenuItem5.setText("Información de Estudiantes");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem5ActionPerformed(evt);
+            }
+        });
+        menu_ver.add(jMenuItem5);
 
         jMenuItem9.setText("Ciclo Escolar");
         jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
@@ -339,11 +376,19 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 jMenuItem9ActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem9);
+        menu_ver.add(jMenuItem9);
 
-        jMenuBar1.add(jMenu2);
+        jMenuItem8.setText("Usuarios");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem8ActionPerformed(evt);
+            }
+        });
+        menu_ver.add(jMenuItem8);
 
-        item_reasignaciones.setText("Asignaciones");
+        jMenuBar1.add(menu_ver);
+
+        menu_asignaciones.setText("Asignaciones");
 
         item_asignaciones.setText("Asignar Estudiantes");
         item_asignaciones.addActionListener(new java.awt.event.ActionListener() {
@@ -351,101 +396,19 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 item_asignacionesActionPerformed(evt);
             }
         });
-        item_reasignaciones.add(item_asignaciones);
+        menu_asignaciones.add(item_asignaciones);
 
-        jMenuItem8.setText("Reasignar Estudiantes");
-        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+        item_reasignaciones.setText("Reasignar Estudiantes");
+        item_reasignaciones.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem8ActionPerformed(evt);
+                item_reasignacionesActionPerformed(evt);
             }
         });
-        item_reasignaciones.add(jMenuItem8);
+        menu_asignaciones.add(item_reasignaciones);
 
-        jMenuBar1.add(item_reasignaciones);
+        jMenuBar1.add(menu_asignaciones);
 
         setJMenuBar(jMenuBar1);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel13)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel16)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel17)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel12)))
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(612, 612, 612)
-                .addComponent(jLabel15)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel14)
-                .addGap(417, 417, 417))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(33, 33, 33)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(20, 20, 20))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(262, 262, 262)
-                            .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(527, 527, 527)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel16)
-                            .addComponent(jLabel17))
-                        .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel12)
-                            .addComponent(jLabel13))
-                        .addGap(0, 0, 0)
-                        .addComponent(jLabel15)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel14)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel11))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1)
-                        .addGap(31, 31, 31)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(33, 33, 33)
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(68, 68, 68)
-                                .addComponent(jLabel18))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel2)
-                                .addGap(98, 98, 98)))))
-                .addContainerGap())
-        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -455,8 +418,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             // TODO add your handling code here:
             if(User.getString("Tipo").equals("1")){
                 //Si se puede llamar a la ventana
-                new Usuarios(conexcion).setVisible(true);
+                this.setEnabled(false);
+                new Usuarios(conexcion,this).setVisible(true);
                 //this.dispose();
+                this.setEnabled(true);
             }
             else{
                 JOptionPane.showMessageDialog(null, "¡No tiene permisos para realizar esta acción!");
@@ -467,10 +432,8 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-        this.setEnabled(false);
         InformacionEstudiante nueva_ventana = new InformacionEstudiante(new javax.swing.JFrame(), true, conexcion);
         nueva_ventana.setVisible(true);
-        this.setEnabled(true);
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
@@ -479,7 +442,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             // TODO add your handling code here:
             String tipo = User.getString("Tipo");
             if(tipo.equals("1")){
-                new ModuloPrestamo(conexcion).setVisible(true);
+                this.setEnabled(false);
+                new ModuloPrestamo(conexcion,this).setVisible(true);
+                //this.setEnabled(true);
                 //this.setVisible(false);
             }
             else{
@@ -492,9 +457,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
-        new Mostrar_Datos(conexcion).setVisible(true);
+        this.setEnabled(false);
+        new Mostrar_Datos(conexcion,this).setVisible(true);
         //this.setVisible(false);
-        
+        //this.setEnabled(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -503,8 +469,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here:
-        Mostrar_Datos ven = new Mostrar_Datos(conexcion);
+        this.setEnabled(false);
+        Mostrar_Datos ven = new Mostrar_Datos(conexcion,this);
         ven.setVisible(true);
+        //this.setEnabled(true);
        // new Catedraticos(conexcion, this).setVisible(true);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
@@ -526,20 +494,19 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem9ActionPerformed
 
     private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
-        this.setEnabled(false);
         CrearEstudiante nueva_ventana = new CrearEstudiante(new javax.swing.JFrame(), true, conexcion);
         nueva_ventana.setVisible(true);
-        this.setEnabled(true);
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        this.setVisible(false);
+        //this.setVisible(false);
         Crear_Ciclo_Escolar_1 a;
         try {
             if(User.getString("Tipo").equals("1")){
                 a = new Crear_Ciclo_Escolar_1(new Frame(),true, conexcion);
                 a.setVisible(true);
-                this.setVisible(true);
+                this.setEnabled(false);
+                //this.setVisible(true);
             }
             else{
                 JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
@@ -552,32 +519,50 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         // TODO add your handling code here:
-        new ModuloPaquetes(conexcion).setVisible(true);
+        this.setEnabled(false);
+        new ModuloPaquetes(conexcion,this).setVisible(true);
+        //this.setEnabled(true);
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-        this.dispose();
+        System.exit(0);
+        //this.dispose();
     }//GEN-LAST:event_formWindowClosing
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        new CambiarContra(conexcion,User).setVisible(true);
+        this.setEnabled(false);
+        new CambiarContra(conexcion,User,this).setVisible(true);
+        //this.setEnabled(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void item_asignacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_asignacionesActionPerformed
-        this.setEnabled(false);
         PrincipalAsignacionEST asignaciones = new PrincipalAsignacionEST(new javax.swing.JFrame(), true, conexcion, false);
         asignaciones.setVisible(true);
-        this.setEnabled(true);
     }//GEN-LAST:event_item_asignacionesActionPerformed
 
-    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-        this.setEnabled(false);
+    private void item_reasignacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_reasignacionesActionPerformed
         PrincipalAsignacionEST asignaciones = new PrincipalAsignacionEST(new javax.swing.JFrame(), true, conexcion, true);
         asignaciones.setVisible(true);
-        this.setEnabled(true);
+    }//GEN-LAST:event_item_reasignacionesActionPerformed
+
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        try {
+            // TODO add your handling code here:
+            
+            if(User.getString("Tipo").equals("1")){
+                this.setEnabled(false);
+                new ListadoUsuarios(conexcion,this).setVisible(true);
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }//GEN-LAST:event_jMenuItem8ActionPerformed
 
 
@@ -626,7 +611,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JTextField Usuario;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JMenuItem item_asignaciones;
-    private javax.swing.JMenu item_reasignaciones;
+    private javax.swing.JMenuItem item_reasignaciones;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
@@ -646,8 +631,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
@@ -660,5 +644,8 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JMenu menu_asignaciones;
+    private javax.swing.JMenu menu_crear;
+    private javax.swing.JMenu menu_ver;
     // End of variables declaration//GEN-END:variables
 }

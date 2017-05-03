@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -71,6 +72,8 @@ public class EditarEstudiante extends javax.swing.JDialog {
         
         cargar_encargado_en_campos(false);
         cargar_estudiante_en_campos();
+        estudiante_fechaNacimiento.getJCalendar().setWeekOfYearVisible(false);  // Para no mostrar el número de semana en el Calendario
+        encargado_fechaNacimiento.getJCalendar().setWeekOfYearVisible(false);
     }
     /**APROBADO!!!
      * Método que extrae de la Base de Datos correspondiente al Encargado del Estudiante que se va a editar, y se guarda en
@@ -121,7 +124,7 @@ public class EditarEstudiante extends javax.swing.JDialog {
         estudiante_relacion_encargado.setText(estudiante.getRelacionEncargado());
         estudiante_direccion.setText(estudiante.getDireccion());
         estudiante_municipio.setSelectedIndex(estudiante.getMunicipioId());
-        estudiante_fechaNacimiento.setText(estudiante.getFechaNacimiento());
+        estudiante_fechaNacimiento.setDate(estudiante.getDateNacimiento());;
         estudiante_sexo.setSelectedIndex(("F".equals(estudiante.getSexo())) ? 0: 1);
         estudiante_etnia.setText(estudiante.getEtnia());
         estudiante_capacidad_diferente.setSelectedIndex(!(estudiante.isCapacidadDiferente()) ? 0 : 1);
@@ -137,7 +140,7 @@ public class EditarEstudiante extends javax.swing.JDialog {
         encargado_nombre_completo.setText(regEncargado.getNombre());
         encargado_direccion.setText(regEncargado.getDireccion());
         encargado_municipio.setSelectedIndex(regEncargado.getMunicipioId());
-        encargado_fechaNacimiento.setText(regEncargado.getFechaNacimiento());
+        encargado_fechaNacimiento.setDate(regEncargado.getDateNacimiento());
         encargado_telefono_casa.setText(regEncargado.getTelefono());
         encargado_celular.setText(regEncargado.getCelular());
         encargado_trabajo.setText(regEncargado.getTrabajo());
@@ -154,7 +157,7 @@ public class EditarEstudiante extends javax.swing.JDialog {
         encargado_nombre_completo.setEditable(valorEditable);
         encargado_direccion.setEditable(valorEditable);
         encargado_municipio.setEnabled(valorEditable);
-        encargado_fechaNacimiento.setEditable(valorEditable);
+        encargado_fechaNacimiento.setEnabled(valorEditable);
         estudiante_relacion_encargado.setEditable(valorEditable);
         encargado_telefono_casa.setEditable(valorEditable);
         encargado_celular.setEditable(valorEditable);
@@ -168,7 +171,7 @@ public class EditarEstudiante extends javax.swing.JDialog {
         encargado_nombre_completo.setText("");
         encargado_direccion.setText("");
         encargado_municipio.setSelectedIndex(-1);
-        encargado_fechaNacimiento.setText("");
+        encargado_fechaNacimiento.setDate(null);
         estudiante_relacion_encargado.setText("");
         encargado_telefono_casa.setText("");
         encargado_celular.setText("");
@@ -199,10 +202,34 @@ public class EditarEstudiante extends javax.swing.JDialog {
             throw new ExcepcionDatosIncorrectos("El nombre no puede ser nulo");
         if ("".equals(encargado_direccion.getText()))
             throw new ExcepcionDatosIncorrectos("No se ha especificado la Dirección");
-        if ("".equals(encargado_fechaNacimiento.getText()))
+        if (encargado_fechaNacimiento.getDate() == null)
             throw new ExcepcionDatosIncorrectos("Especifique la Fecha de nacimiento");
         if ("".equals(estudiante_relacion_encargado.getText()))
             throw new ExcepcionDatosIncorrectos("Especifique la relación con el estudiante");
+    }
+    /**APROBADO!!!
+     * Método que verifica que los datos para un nuevo registro Estudiante sean los correctos. Si hay algún dato nulo o
+     * incorrecto lanza una 'ExcepcionDatosIncorrectos '.
+     * @throws ExcepcionDatosIncorrectos 
+     */
+    private void validar_datos_estudiante() throws ExcepcionDatosIncorrectos {
+        // Verificación de la validez de los datos
+        // El Código Personal se valida en la función estudianteYaExiste()
+        if (!Pattern.compile("\\d{13}").matcher(estudiante_cui.getText()).matches())
+            throw new ExcepcionDatosIncorrectos("El Código Único de Identificación tiene un formato incorrecto\nVerifique que sea un código de 13 dígitos (sin letras ni espacios)");
+        if ("".equals(estudiante_nombres.getText()) || "".equals(estudiante_apellidos.getText()))
+            throw new ExcepcionDatosIncorrectos("Los nombres o los apellidos no pueden ser nulos");
+        if ("".equals(estudiante_relacion_encargado.getText()))
+            throw new ExcepcionDatosIncorrectos("Especifique la relación del encargado con el estudiante");
+        if ("".equals(estudiante_direccion.getText()))
+            throw new ExcepcionDatosIncorrectos("No se ha especificado la dirección de estudiante");
+        if (estudiante_fechaNacimiento.getDate() == null)
+            throw new ExcepcionDatosIncorrectos("No se ha especificado la fecha de nacimiento del estudiante");
+        if ("".equals(estudiante_etnia.getText()))
+            throw new ExcepcionDatosIncorrectos("No se ha especificado la comunidad étnica del estudiante");
+        if (estudiante_capacidad_diferente.getSelectedIndex() == 1 && "".equals(estudiante_tipo_capacidad.getText()))
+            throw new ExcepcionDatosIncorrectos("No se ha especificado el tipo de capacidad diferente del estudiante");
+        
     }
 
     /**
@@ -227,7 +254,6 @@ public class EditarEstudiante extends javax.swing.JDialog {
         estudiante_cui = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        estudiante_fechaNacimiento = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -238,12 +264,12 @@ public class EditarEstudiante extends javax.swing.JDialog {
         estudiante_etnia = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         estudiante_capacidad_diferente = new javax.swing.JComboBox<>();
+        estudiante_fechaNacimiento = new com.toedter.calendar.JDateChooser();
         panel_encargado = new javax.swing.JPanel();
         encargado_celular = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
         encargado_dpi = new javax.swing.JTextField();
         encargado_nombre_completo = new javax.swing.JTextField();
-        encargado_fechaNacimiento = new javax.swing.JTextField();
         jLabel21 = new javax.swing.JLabel();
         encargado_direccion = new javax.swing.JTextField();
         jLabel22 = new javax.swing.JLabel();
@@ -260,6 +286,7 @@ public class EditarEstudiante extends javax.swing.JDialog {
         encargado_telefono_casa = new javax.swing.JTextField();
         buscar_dpi_encargado = new javax.swing.JButton();
         guardar_encargado = new javax.swing.JButton();
+        encargado_fechaNacimiento = new com.toedter.calendar.JDateChooser();
         panel_botones = new javax.swing.JPanel();
         cambiar_encargado = new javax.swing.JButton();
         editar_encargado = new javax.swing.JButton();
@@ -301,8 +328,6 @@ public class EditarEstudiante extends javax.swing.JDialog {
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel3.setText("Nombres:");
 
-        estudiante_fechaNacimiento.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel4.setText("Apellidos:");
 
@@ -331,6 +356,9 @@ public class EditarEstudiante extends javax.swing.JDialog {
         estudiante_capacidad_diferente.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         estudiante_capacidad_diferente.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No", "Si" }));
 
+        estudiante_fechaNacimiento.setDateFormatString("yyyy-MM-dd");
+        estudiante_fechaNacimiento.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+
         javax.swing.GroupLayout panel_estudianteLayout = new javax.swing.GroupLayout(panel_estudiante);
         panel_estudiante.setLayout(panel_estudianteLayout);
         panel_estudianteLayout.setHorizontalGroup(
@@ -358,12 +386,12 @@ public class EditarEstudiante extends javax.swing.JDialog {
                                     .addGroup(panel_estudianteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                         .addComponent(estudiante_apellidos, javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(estudiante_nombres, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(estudiante_sexo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(panel_estudianteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel11)
-                                    .addComponent(estudiante_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addComponent(estudiante_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(panel_estudianteLayout.createSequentialGroup()
                         .addGap(15, 15, 15)
                         .addGroup(panel_estudianteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -407,9 +435,9 @@ public class EditarEstudiante extends javax.swing.JDialog {
                     .addComponent(jLabel5)
                     .addComponent(estudiante_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_estudianteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
+                .addGroup(panel_estudianteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_estudianteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(estudiante_sexo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -439,8 +467,6 @@ public class EditarEstudiante extends javax.swing.JDialog {
         encargado_dpi.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         encargado_nombre_completo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        encargado_fechaNacimiento.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jLabel21.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel21.setText("DPI:");
@@ -497,6 +523,9 @@ public class EditarEstudiante extends javax.swing.JDialog {
             }
         });
 
+        encargado_fechaNacimiento.setDateFormatString("yyyy-MM-dd");
+        encargado_fechaNacimiento.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+
         javax.swing.GroupLayout panel_encargadoLayout = new javax.swing.GroupLayout(panel_encargado);
         panel_encargado.setLayout(panel_encargadoLayout);
         panel_encargadoLayout.setHorizontalGroup(
@@ -540,7 +569,7 @@ public class EditarEstudiante extends javax.swing.JDialog {
                             .addComponent(estudiante_relacion_encargado, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(encargado_telefono_casa, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(encargado_celular, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(encargado_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(encargado_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         panel_encargadoLayout.setVerticalGroup(
@@ -562,8 +591,8 @@ public class EditarEstudiante extends javax.swing.JDialog {
                     .addComponent(encargado_direccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel13)
                     .addComponent(encargado_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(3, 3, 3)
-                .addGroup(panel_encargadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGap(6, 6, 6)
+                .addGroup(panel_encargadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel24)
                     .addComponent(encargado_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -658,7 +687,7 @@ public class EditarEstudiante extends javax.swing.JDialog {
                     .addComponent(panel_encargado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panel_botones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         pack();
@@ -676,12 +705,14 @@ public class EditarEstudiante extends javax.swing.JDialog {
         - Si no hay un encargado en campos, no se puede guardar los cambios. */
         if (regEncargado.getID() != 0) {    // Hay un encargado asignado
             try {
+                validar_datos_estudiante();
                 // El nuevo encargado ya ha sido escrito en la Base de Datos. Sólo queda actualizar los datos del Estudiante
                 String actualizarEstudiante = "UPDATE Estudiante SET ";
                 actualizarEstudiante+= "CUI = '"+estudiante_cui.getText()+"', ";
                 actualizarEstudiante+= "Nombres = '"+estudiante_nombres.getText()+"', ";
                 actualizarEstudiante+= "Apellidos = '"+estudiante_apellidos.getText()+"', ";
-                actualizarEstudiante+= "FechaNacimiento = '"+estudiante_fechaNacimiento.getText()+"', ";
+                Calendar fecha = estudiante_fechaNacimiento.getCalendar();
+                actualizarEstudiante+= "FechaNacimiento = '"+""+fecha.get(Calendar.YEAR)+"-"+(fecha.get(Calendar.MONTH)+1)+"-"+fecha.get(Calendar.DAY_OF_MONTH)+"', ";
                 actualizarEstudiante+= "Direccion = '"+estudiante_direccion.getText()+"', ";
                 actualizarEstudiante+= "Sexo = '"+((estudiante_sexo.getSelectedIndex()==0) ? "F" : "M")+"', ";
                 actualizarEstudiante+= "Etnia = '"+estudiante_etnia.getText()+"', ";
@@ -705,6 +736,9 @@ public class EditarEstudiante extends javax.swing.JDialog {
                 // Hasta aquí, se garantiza la actulaización del registro Estudiante
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error al intentar actualizar los datos:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                Logger.getLogger(EditarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExcepcionDatosIncorrectos ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 Logger.getLogger(EditarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else
@@ -757,7 +791,8 @@ public class EditarEstudiante extends javax.swing.JDialog {
                     regEncargado.setNombre(encargado_nombre_completo.getText());
                     regEncargado.setDireccion(encargado_direccion.getText());
                     regEncargado.setMunicipioId(encargado_municipio.getSelectedIndex());
-                    regEncargado.setFechaNacimiento(encargado_fechaNacimiento.getText());
+                    Calendar fecha = encargado_fechaNacimiento.getCalendar();
+                    regEncargado.setFechaNacimiento(""+fecha.get(Calendar.YEAR)+"-"+(fecha.get(Calendar.MONTH)+1)+"-"+fecha.get(Calendar.DAY_OF_MONTH));
                     estudiante.setRelacionEncargado(estudiante_relacion_encargado.getText());
                     regEncargado.setTelefono(encargado_telefono_casa.getText());
                     regEncargado.setCelular(encargado_celular.getText());
@@ -859,7 +894,8 @@ public class EditarEstudiante extends javax.swing.JDialog {
             regEncargado.setNombre(encargado_nombre_completo.getText());
             regEncargado.setDireccion(encargado_direccion.getText());
             regEncargado.setMunicipioId(encargado_municipio.getSelectedIndex());
-            regEncargado.setFechaNacimiento(encargado_fechaNacimiento.getText());
+            Calendar fecha = encargado_fechaNacimiento.getCalendar();
+            regEncargado.setFechaNacimiento(""+fecha.get(Calendar.YEAR)+"-"+(fecha.get(Calendar.MONTH)+1)+"-"+fecha.get(Calendar.DAY_OF_MONTH));
             regEncargado.setTelefono(encargado_telefono_casa.getText());
             regEncargado.setCelular(encargado_celular.getText());
             regEncargado.setTrabajo(encargado_trabajo.getText());
@@ -937,7 +973,7 @@ public class EditarEstudiante extends javax.swing.JDialog {
     private javax.swing.JTextField encargado_celular;
     private javax.swing.JTextField encargado_direccion;
     private javax.swing.JTextField encargado_dpi;
-    private javax.swing.JTextField encargado_fechaNacimiento;
+    private com.toedter.calendar.JDateChooser encargado_fechaNacimiento;
     private javax.swing.JComboBox<String> encargado_municipio;
     private javax.swing.JTextField encargado_nombre_completo;
     private javax.swing.JTextField encargado_telefono_casa;
@@ -948,7 +984,7 @@ public class EditarEstudiante extends javax.swing.JDialog {
     private javax.swing.JTextField estudiante_cui;
     private javax.swing.JTextField estudiante_direccion;
     private javax.swing.JTextField estudiante_etnia;
-    private javax.swing.JTextField estudiante_fechaNacimiento;
+    private com.toedter.calendar.JDateChooser estudiante_fechaNacimiento;
     private javax.swing.JComboBox<String> estudiante_municipio;
     private javax.swing.JTextField estudiante_nombres;
     private javax.swing.JTextField estudiante_relacion_encargado;

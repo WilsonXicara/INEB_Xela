@@ -12,6 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -68,7 +71,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
             sentencia.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al intentar conectarse a la Base de Datos.\n"+ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
         cargar_municipios();/**
         DefaultTableModel model = new DefaultTableModel();
@@ -97,6 +100,8 @@ public class CrearEstudiante extends javax.swing.JDialog {
             @Override
             public void windowDeactivated(WindowEvent we) {}
         });
+        estudiante_fechaNacimiento.getJCalendar().setWeekOfYearVisible(false);  // Para no mostrar el número de semana en el Calendario
+        encargado_fechaNacimiento.getJCalendar().setWeekOfYearVisible(false);
         definir_ancho_columnas();   // Se define el ahcho de columnas en base a valores obtenidos previamente por pruebas
     }
     /**APROBADO!!!
@@ -115,7 +120,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al intentar obtener los Municipios\n"+ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     /**APROBADO!!!
@@ -155,11 +160,9 @@ public class CrearEstudiante extends javax.swing.JDialog {
                     }
                 } catch (SQLException e) {
                     JOptionPane.showMessageDialog(this, "Error al consultar la tabla Estudiante\n"+e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-                    Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, e);
+//                    Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, e);
                 }
             }
-            if (!encontrado)    // Si no lo encuentra en la Tabla ni en la Base de Datos
-                JOptionPane.showMessageDialog(this, "No se encontró un registro que coincida.\nPuede insertar uno nuevo", "Información", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "El Código Personal es incorrecto."
                     + "\n\nEl Código personal consiste de\n1 caracter, 3 dígitos y 3 caracteres (sin espacios).\n\nNo puede ser nulo.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -254,7 +257,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
                         + ((contEncargados==0)?"\n"+contEncargados+" Encargado"+((contEncargados==1)?"":"s"):""), "Información", JOptionPane.INFORMATION_MESSAGE);
             return true;
         } catch (SQLException ex) {
-            Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(this, "Problema al guardar un registro\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -303,7 +306,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
             }
         }
     }
-    /**ÚTIL, PERO NO UTILIZADO!!!
+    /**ÚTIL!!!
      * 
      * @param valorEnable 
      */
@@ -318,13 +321,30 @@ public class CrearEstudiante extends javax.swing.JDialog {
     }
     /**ÚTIL!!!
      * 
+     * @param valorEnable 
+     */
+    private void setEnable_campos_estudiante(boolean valorEnable) {
+        estudiante_cui.setEnabled(valorEnable);
+        estudiante_nombres.setEnabled(valorEnable);
+        estudiante_apellidos.setEnabled(valorEnable);
+        estudiante_nombre_encargado.setEnabled(valorEnable);
+        estudiante_relacion_encargado.setEnabled(valorEnable);
+        estudiante_direccion.setEnabled(valorEnable);
+        estudiante_municipio.setEnabled(valorEnable);
+        estudiante_fechaNacimiento.setEnabled(valorEnable);
+        estudiante_sexo.setEnabled(valorEnable);
+        estudiante_etnia.setEnabled(valorEnable);
+        estudiante_capacidad_diferente.setEnabled(valorEnable);
+    }
+    /**ÚTIL!!!
+     * 
      * @param valorEditable 
      */
     private void setEditable_campos_encargado(boolean valorEditable) {
         encargado_dpi.setEditable(!valorEditable);
         encargado_nombre_completo.setEditable(valorEditable);
         encargado_direccion.setEditable(valorEditable);
-        encargado_fechaNacimiento.setEditable(valorEditable);
+        encargado_fechaNacimiento.setEnabled(valorEditable);
         encargado_telefono_casa.setEditable(valorEditable);
         encargado_celular.setEditable(valorEditable);
         encargado_trabajo.setEditable(valorEditable);
@@ -334,9 +354,9 @@ public class CrearEstudiante extends javax.swing.JDialog {
      * @param valorEditable 
      */
     private void setEditable_campos_estudiante(boolean valorEditable) {
-        /*estudiante_codigo_personal.setEditable(!valorEditable);
+        estudiante_codigo_personal.setEditable(!valorEditable);
         estudiante_cui.setEditable(valorEditable);
-        estudiante_n*/
+        estudiante_nombres.setEditable(valorEditable);
     }
     /**ÚTIL!!!
      * 
@@ -346,7 +366,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
         encargado_nombre_completo.setText("");
         encargado_direccion.setText("");
         encargado_municipio.setSelectedIndex(0);
-        encargado_fechaNacimiento.setText("");
+        encargado_fechaNacimiento.setDate(null);    // Para limpiar la fecha
         encargado_telefono_casa.setText("");
         encargado_celular.setText("");
         encargado_trabajo.setText("");
@@ -364,7 +384,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
        estudiante_nombre_encargado.setSelectedIndex(-1);
        estudiante_relacion_encargado.setText("");
        estudiante_direccion.setText("");
-       estudiante_fechaNacimiento.setText("");
+       estudiante_fechaNacimiento.setDate(null);
        estudiante_sexo.setSelectedIndex(0);
        estudiante_etnia.setText("");
        estudiante_capacidad_diferente.setSelectedIndex(0);
@@ -379,7 +399,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
         encargado_nombre_completo.setText(encargado.getNombre());
         encargado_direccion.setText(encargado.getDireccion());
         encargado_municipio.setSelectedIndex(encargado.getMunicipioId());
-        encargado_fechaNacimiento.setText(encargado.getFechaNacimiento());
+        encargado_fechaNacimiento.setDate(encargado.getDateNacimiento());
         encargado_telefono_casa.setText(encargado.getTelefono());
         encargado_celular.setText(encargado.getCelular());
         encargado_trabajo.setText(encargado.getTrabajo());
@@ -395,7 +415,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
         estudiante_apellidos.setText(estudiante.getApellidos());
         estudiante_relacion_encargado.setText(estudiante.getRelacionEncargado());
         estudiante_direccion.setText(estudiante.getDireccion());
-        estudiante_fechaNacimiento.setText(estudiante.getFechaNacimiento());
+        estudiante_fechaNacimiento.setDate(estudiante.getDateNacimiento());
         estudiante_sexo.setSelectedIndex(("F".equals(estudiante.getSexo())) ? 0 : 1);
         estudiante_etnia.setText(estudiante.getEtnia());
         estudiante_capacidad_diferente.setSelectedIndex((estudiante.isCapacidadDiferente()) ? 1 : 0);
@@ -416,8 +436,12 @@ public class CrearEstudiante extends javax.swing.JDialog {
             throw new ExcepcionDatosIncorrectos("El nombre no puede ser nulo");
         if ("".equals(encargado_direccion.getText()))
             throw new ExcepcionDatosIncorrectos("No se ha especificado la Dirección");
-        if ("".equals(encargado_fechaNacimiento.getText()))
+        if (encargado_fechaNacimiento.getDate() == null)
             throw new ExcepcionDatosIncorrectos("Especifique la Fecha de nacimiento");
+        if (encargado_telefono_casa.getText().length() != 0 && !Pattern.compile("[0-9]{8}").matcher(encargado_telefono_casa.getText()).matches())
+            throw new ExcepcionDatosIncorrectos("Verifique que el Telefono sea de 8 dígitos (sin espacios ni letras)");
+        if (encargado_celular.getText().length() != 0 && !Pattern.compile("[0-9]{8}").matcher(encargado_celular.getText()).matches())
+            throw new ExcepcionDatosIncorrectos("Verifique que el Celular sea de 8 dígitos (sin espacios ni letras)");
     }
     /**APROBADO!!!
      * Método que verifica que los datos para un nuevo registro Estudiante sean los correctos. Si hay algún dato nulo o
@@ -437,7 +461,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
             throw new ExcepcionDatosIncorrectos("Especifique la relación del encargado con el estudiante");
         if ("".equals(estudiante_direccion.getText()))
             throw new ExcepcionDatosIncorrectos("No se ha especificado la dirección de estudiante");
-        if ("".equals(estudiante_fechaNacimiento.getText()))
+        if (estudiante_fechaNacimiento.getDate() == null)
             throw new ExcepcionDatosIncorrectos("No se ha especificado la fecha de nacimiento del estudiante");
         if ("".equals(estudiante_etnia.getText()))
             throw new ExcepcionDatosIncorrectos("No se ha especificado la comunidad étnica del estudiante");
@@ -501,7 +525,6 @@ public class CrearEstudiante extends javax.swing.JDialog {
         estudiante_nombre_encargado = new javax.swing.JComboBox<>();
         estudiante_direccion = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        estudiante_fechaNacimiento = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         estudiante_municipio = new javax.swing.JComboBox<>();
@@ -519,6 +542,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
         eliminar_fila_estudiante = new javax.swing.JButton();
         estudiante_relacion_encargado = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
+        estudiante_fechaNacimiento = new com.toedter.calendar.JDateChooser();
         panel_registros_estudiante = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla_estudiantes = new javax.swing.JTable();
@@ -532,7 +556,6 @@ public class CrearEstudiante extends javax.swing.JDialog {
         jLabel13 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         encargado_municipio = new javax.swing.JComboBox<>();
-        encargado_fechaNacimiento = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
         encargado_telefono_casa = new javax.swing.JTextField();
         jLabel22 = new javax.swing.JLabel();
@@ -545,6 +568,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
         agregar_fila_encargado = new javax.swing.JButton();
         editar_fila_encargado = new javax.swing.JButton();
         eliminar_fila_encargado = new javax.swing.JButton();
+        encargado_fechaNacimiento = new com.toedter.calendar.JDateChooser();
         panel_registros_encargado = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tabla_encargados = new javax.swing.JTable();
@@ -553,7 +577,6 @@ public class CrearEstudiante extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Crear nuevo estudiante");
-        setLocationByPlatform(true);
 
         panel_datos_estudiante.setBackground(new java.awt.Color(153, 153, 255));
 
@@ -566,11 +589,13 @@ public class CrearEstudiante extends javax.swing.JDialog {
         jLabel1.setText("Codigo Personal:");
 
         estudiante_cui.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        estudiante_cui.setEnabled(false);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         jLabel2.setText("CUI:");
 
         estudiante_nombres.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        estudiante_nombres.setEnabled(false);
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         jLabel3.setText("Nombres:");
@@ -584,6 +609,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
         });
 
         estudiante_apellidos.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        estudiante_apellidos.setEnabled(false);
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         jLabel4.setText("Apellidos:");
@@ -592,13 +618,13 @@ public class CrearEstudiante extends javax.swing.JDialog {
         jLabel18.setText("Encargado:");
 
         estudiante_nombre_encargado.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        estudiante_nombre_encargado.setEnabled(false);
 
         estudiante_direccion.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        estudiante_direccion.setEnabled(false);
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         jLabel5.setText("Dirección:");
-
-        estudiante_fechaNacimiento.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         jLabel6.setText("Fecha de Nacimiento:");
@@ -607,20 +633,24 @@ public class CrearEstudiante extends javax.swing.JDialog {
         jLabel11.setText("Municipio:");
 
         estudiante_municipio.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        estudiante_municipio.setEnabled(false);
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         jLabel7.setText("Sexo:");
 
         estudiante_sexo.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         estudiante_sexo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Femenino", "Masculino" }));
+        estudiante_sexo.setEnabled(false);
 
         estudiante_etnia.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        estudiante_etnia.setEnabled(false);
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         jLabel8.setText("Comunidad étnica:");
 
         estudiante_capacidad_diferente.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         estudiante_capacidad_diferente.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No", "Si" }));
+        estudiante_capacidad_diferente.setEnabled(false);
         estudiante_capacidad_diferente.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 estudiante_capacidad_diferenteItemStateChanged(evt);
@@ -690,9 +720,14 @@ public class CrearEstudiante extends javax.swing.JDialog {
         );
 
         estudiante_relacion_encargado.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        estudiante_relacion_encargado.setEnabled(false);
 
         jLabel14.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         jLabel14.setText("Relación con estudiante:");
+
+        estudiante_fechaNacimiento.setDateFormatString("yyyy-MM-dd");
+        estudiante_fechaNacimiento.setEnabled(false);
+        estudiante_fechaNacimiento.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
 
         javax.swing.GroupLayout panel_datos_estudianteLayout = new javax.swing.GroupLayout(panel_datos_estudiante);
         panel_datos_estudiante.setLayout(panel_datos_estudianteLayout);
@@ -738,7 +773,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
                                         .addComponent(buscar_codigoPersonal_estudiante))
                                     .addComponent(estudiante_etnia, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(panel_datos_estudianteLayout.createSequentialGroup()
-                                        .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(36, 36, 36)
                                         .addComponent(jLabel7)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -797,11 +832,12 @@ public class CrearEstudiante extends javax.swing.JDialog {
                     .addComponent(jLabel11)
                     .addComponent(estudiante_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_datos_estudianteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
-                    .addComponent(jLabel7)
-                    .addComponent(estudiante_sexo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(panel_datos_estudianteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panel_datos_estudianteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel6)
+                        .addComponent(jLabel7)
+                        .addComponent(estudiante_sexo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(estudiante_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_datos_estudianteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_datos_estudianteLayout.createSequentialGroup()
@@ -865,7 +901,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
             panel_registros_estudianteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_registros_estudianteLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -880,11 +916,13 @@ public class CrearEstudiante extends javax.swing.JDialog {
         jLabel21.setText("DPI:");
 
         encargado_nombre_completo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        encargado_nombre_completo.setEnabled(false);
 
         jLabel23.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel23.setText("Nombre completo:");
 
         encargado_direccion.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        encargado_direccion.setEnabled(false);
 
         jLabel13.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel13.setText("Dirección:");
@@ -893,13 +931,13 @@ public class CrearEstudiante extends javax.swing.JDialog {
         jLabel17.setText("Municipio:");
 
         encargado_municipio.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        encargado_fechaNacimiento.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        encargado_municipio.setEnabled(false);
 
         jLabel24.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel24.setText("Fecha de Nacimiento:");
 
         encargado_telefono_casa.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        encargado_telefono_casa.setEnabled(false);
 
         jLabel22.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel22.setText("Teléfono:");
@@ -913,11 +951,13 @@ public class CrearEstudiante extends javax.swing.JDialog {
         });
 
         encargado_celular.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        encargado_celular.setEnabled(false);
 
         jLabel15.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel15.setText("Celular:");
 
         encargado_trabajo.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        encargado_trabajo.setEnabled(false);
 
         jLabel16.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel16.setText("Trabajo u oficio:");
@@ -975,6 +1015,10 @@ public class CrearEstudiante extends javax.swing.JDialog {
                 .addContainerGap())
         );
 
+        encargado_fechaNacimiento.setDateFormatString("yyyy-MM-dd");
+        encargado_fechaNacimiento.setEnabled(false);
+        encargado_fechaNacimiento.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+
         javax.swing.GroupLayout panel_datos_encargadoLayout = new javax.swing.GroupLayout(panel_datos_encargado);
         panel_datos_encargado.setLayout(panel_datos_encargadoLayout);
         panel_datos_encargadoLayout.setHorizontalGroup(
@@ -1006,12 +1050,10 @@ public class CrearEstudiante extends javax.swing.JDialog {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(encargado_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(encargado_nombre_completo, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(encargado_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(encargado_celular, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(encargado_telefono_casa, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(panel_datos_encargadoLayout.createSequentialGroup()
-                                        .addComponent(encargado_trabajo, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(13, 13, 13))))
+                                    .addComponent(encargado_trabajo, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(encargado_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(panel_datos_encargadoLayout.createSequentialGroup()
                                 .addGap(217, 217, 217)
                                 .addComponent(jLabel20)))
@@ -1041,9 +1083,9 @@ public class CrearEstudiante extends javax.swing.JDialog {
                     .addComponent(jLabel17)
                     .addComponent(encargado_municipio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_datos_encargadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(encargado_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel24))
+                .addGroup(panel_datos_encargadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel24)
+                    .addComponent(encargado_fechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_datos_encargadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(encargado_telefono_casa, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1056,7 +1098,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
                 .addGroup(panel_datos_encargadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(encargado_trabajo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel16))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
                 .addComponent(panel_botones_encargado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -1188,7 +1230,8 @@ public class CrearEstudiante extends javax.swing.JDialog {
                 nuevoEst.setDireccion(estudiante_direccion.getText());
                 nuevoEst.setMunicipioId(estudiante_municipio.getSelectedIndex());
                 nuevoEst.setMunicipio((String)estudiante_municipio.getSelectedItem());
-                nuevoEst.setFechaNacimiento(estudiante_fechaNacimiento.getText());
+                Calendar fecha = estudiante_fechaNacimiento.getCalendar();
+                nuevoEst.setFechaNacimiento(""+fecha.get(Calendar.YEAR)+"-"+(fecha.get(Calendar.MONTH)+1)+"-"+fecha.get(Calendar.DAY_OF_MONTH));
                 nuevoEst.setSexo((estudiante_sexo.getSelectedIndex() == 0) ? "F" : "M");
                 nuevoEst.setEtnia(estudiante_etnia.getText());
                 nuevoEst.setCapacidadDiferente((estudiante_capacidad_diferente.getSelectedIndex() == 1));
@@ -1203,12 +1246,13 @@ public class CrearEstudiante extends javax.swing.JDialog {
                 listaEstudiantes.add(nuevoEst); // Agrego el nuevo registro al ArrayList listaEstudiantes
                 modelEstudiantes.addRow(nuevoEst.getDatosParaTabla());  // Agrego el nuevo registro a la Tabla de Encargados
                 limpiar_campos_estudiante();
+                setEnable_campos_estudiante(false);
                 agregar_fila_estudiante.setEnabled(false);  // Se podrá agregar un nuevo registro después de comprobar que no sea repetido
                 editar_fila_estudiante.setEnabled(true);    // Se pueden Editar registros siempre que por lo menos exista uno
                 eliminar_fila_estudiante.setEnabled(true);  // Se pueden Eliminar registros siempre que por lo menos exista uno
             } catch (ExcepcionDatosIncorrectos ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+//                Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_agregar_fila_estudianteActionPerformed
@@ -1227,6 +1271,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
                 eliminar_fila_estudiante.setEnabled(false); // Bloqueo el botón de Eliminar
                 indexRegistroEstudianteEditado = rango[0];  // Guardo el index que se va a editar
                 cargar_estudiante_en_campos(editar);    // Cargo los datos del registro en los campos para ser editados
+                setEnable_campos_estudiante(true);
                 estudiante_codigo_personal.setEditable(false);  // El Código Personal no puede ser editado
             }
         } else {    // Cambio el texto del botón para indicar que se guardarán los cambios del registro editado
@@ -1239,7 +1284,8 @@ public class CrearEstudiante extends javax.swing.JDialog {
             editado.setApellidos(estudiante_apellidos.getText());
             editado.setDireccion(estudiante_direccion.getText());
             editado.setMunicipioId(estudiante_municipio.getSelectedIndex());
-            editado.setFechaNacimiento(estudiante_fechaNacimiento.getText());
+            Calendar fecha = estudiante_fechaNacimiento.getCalendar();
+            editado.setFechaNacimiento(""+fecha.get(Calendar.YEAR)+"-"+(fecha.get(Calendar.MONTH)+1)+"-"+fecha.get(Calendar.DAY_OF_MONTH));
             editado.setSexo((estudiante_sexo.getSelectedIndex() == 0) ? "F" : "M");
             editado.setEtnia(estudiante_etnia.getText());
             editado.setCapacidadDiferente((estudiante_capacidad_diferente.getSelectedIndex() == 1));
@@ -1259,6 +1305,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
             eliminar_fila_estudiante.setEnabled(true);  // Habilito el botón de Eliminar
             estudiante_codigo_personal.setEditable(true);
             limpiar_campos_estudiante();    // Borro el contenido de los campos
+            setEnable_campos_estudiante(false);
         }
     }//GEN-LAST:event_editar_fila_estudianteActionPerformed
 
@@ -1281,7 +1328,6 @@ public class CrearEstudiante extends javax.swing.JDialog {
                 tabla_estudiantes.setValueAt(listaEstudiantes.get(i).getNum(), i, 0);
             }
             contadorIdEstudiantesEnBD--;
-            JOptionPane.showMessageDialog(this, "Se eliminó el registro "+(rango[0]+1)+" de la Tabla", "Aviso", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_eliminar_fila_estudianteActionPerformed
 
@@ -1289,7 +1335,9 @@ public class CrearEstudiante extends javax.swing.JDialog {
         /* Evaluo si el Codigo Personal del nuevo registro ya existe en la Tabla de Estudiantes (datos temporales) o en la
         Tabla Estudiante (de la Base de Datos). Si ya existe una coincidencia, la muestro y no se debe crear el nuevo registro. */
         // Habilito o bloqueo el botón, dependiendo del caso
-        agregar_fila_estudiante.setEnabled(!estudianteYaExiste());
+        boolean yaExiste = estudianteYaExiste();
+        agregar_fila_estudiante.setEnabled(!yaExiste);
+        setEnable_campos_estudiante(!yaExiste);
     }//GEN-LAST:event_buscar_codigoPersonal_estudianteActionPerformed
 
     private void buscar_dpi_encargadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscar_dpi_encargadoActionPerformed
@@ -1315,7 +1363,6 @@ public class CrearEstudiante extends javax.swing.JDialog {
             // Si no lo encuentra en la Tabla de Encargados, entonces se buscará en la Base de Datos
             boolean encontradoEnBD = false;
             if (!encontradoEnTabla) {
-                agregar_fila_encargado.setEnabled(true);    // Habilito el botón para poder Agregar el registro
                 try {   // Hago una consulta a la tabla Encargado en busca del campo encargado_dpi.getText() en la columna DPI
                     Statement consulta = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                     ResultSet cEncargado = consulta.executeQuery("SELECT * FROM Encargado WHERE DPI = '"+DPIBuscado+"'");
@@ -1327,29 +1374,28 @@ public class CrearEstudiante extends javax.swing.JDialog {
                         encargado_nombre_completo.setText(cEncargado.getString("Nombre"));
                         encargado_direccion.setText(cEncargado.getString("Direccion"));
                         encargado_municipio.setSelectedIndex(cEncargado.getInt("Municipio_Id")-1);
-                        encargado_fechaNacimiento.setText(cEncargado.getString("FechaNacimiento"));
+                        String[] fecha = cEncargado.getString("FechaNacimiento").split("-");
+                        encargado_fechaNacimiento.setDate(new Date(Integer.parseInt(fecha[0]), Integer.parseInt(fecha[1]), Integer.parseInt(fecha[2])));
                         encargado_trabajo.setText(cEncargado.getString("Trabajo"));
                         ResultSet cTelefono = consulta.executeQuery("SELECT Telefono FROM Telefono WHERE Encargado_Id = "+idEncargadoEnBD+"");
                         if (cTelefono.next()) encargado_telefono_casa.setText(cTelefono.getString("Telefono"));
                         if (cTelefono.next()) encargado_celular.setText(cTelefono.getString("Telefono"));
                         // Hasta aquí ya se han cargado los datos desde la Base de Datos
                         encontradoEnBD = true;
-                        setEditable_campos_encargado(false);
+                        setEnable_campos_encargado(false);  // Deshabilitar los campos de para editar datos
+                        agregar_fila_encargado.setEnabled(true);    // Habilito el botón para poder Agregar el registro
                     }
                 } catch (SQLException e) {
                     JOptionPane.showMessageDialog(this, "Error en:\n"+e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-                    Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, e);
+//                    Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, e);
                 }
             }
             // Si no se encuentra en la Tabla de Encargados ni en la Base de Datos, se debe crear un nuevo Registro
             if (!encontradoEnBD && !encontradoEnTabla) {
                 // CREAR EL NUEVO REGISTRO
-                JOptionPane.showMessageDialog(this,
-                    "No se encontró el DPI buscado."
-                    + "\nPor favor, ingrese los valores para este nuevo registro.", "Resultado", JOptionPane.INFORMATION_MESSAGE);
-                setEditable_campos_encargado(true);
-                limpiar_campos_encargado(false);
-                encargado_dpi.setEditable(true);    // En caso de que quiere ingresar otro DPI
+                setEnable_campos_encargado(true);   // Habilita los campos para poder ingresar datos
+//                limpiar_campos_encargado(false);
+//                encargado_dpi.setEditable(true);    // En caso de que quiere ingresar otro DPI
                 idEncargadoEnBD = 0;    // Para indicar que el nuevo registro aún no está en la BD
                 agregar_fila_encargado.setEnabled(true);    // Habilito el botón para poder Agregar el registro
             }
@@ -1380,7 +1426,8 @@ public class CrearEstudiante extends javax.swing.JDialog {
             nuevoEnc.setDireccion(encargado_direccion.getText());
             nuevoEnc.setMunicipioId(encargado_municipio.getSelectedIndex());
             nuevoEnc.setMunicipio((String)encargado_municipio.getSelectedItem());
-            nuevoEnc.setFechaNacimiento(encargado_fechaNacimiento.getText());
+            Calendar fecha = encargado_fechaNacimiento.getCalendar();
+            nuevoEnc.setFechaNacimiento(""+fecha.get(Calendar.YEAR)+"-"+(fecha.get(Calendar.MONTH)+1)+"-"+fecha.get(Calendar.DAY_OF_MONTH));
             nuevoEnc.setTelefono(encargado_telefono_casa.getText());
             nuevoEnc.setCelular(encargado_celular.getText());
             nuevoEnc.setTrabajo(encargado_trabajo.getText());
@@ -1388,13 +1435,13 @@ public class CrearEstudiante extends javax.swing.JDialog {
             modelEncargados.addRow(nuevoEnc.getDatosParaTabla());   // Agrego el nuevo registro a la Tabla de Encargados
             estudiante_nombre_encargado.addItem(nuevoEnc.getNombre());  // Agrego el Nombre del nuevo Encargado
             limpiar_campos_encargado(true); // Borro los datos de los campos
-            setEditable_campos_encargado(false);    // Para iniciar de nuevo
+            setEnable_campos_encargado(false);    // Para iniciar de nuevo
             agregar_fila_encargado.setEnabled(false);    // Inhabilito el botón para evitar intentar caer en la excepción
             editar_fila_encargado.setEnabled(true);     // Se pueden Editar registros siempre que por lo menos exista uno
             eliminar_fila_encargado.setEnabled(true);   // Se pueden Eliminar registros siempre que por lo menos exista uno
         } catch (ExcepcionDatosIncorrectos ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_agregar_fila_encargadoActionPerformed
 
@@ -1415,7 +1462,8 @@ public class CrearEstudiante extends javax.swing.JDialog {
                     eliminar_fila_encargado.setEnabled(false);  // Bloqueo el botón de Eliminar
                     indexRegistroEncargadoEditado = rango[0]; // Guardo el index que se va a editar
                     cargar_encargado_en_campos(editar); // Cargo los datos del registro en los campos para ser editados
-                    setEditable_campos_encargado(true);
+                    setEnable_campos_encargado(true);
+                    encargado_dpi.setEditable(false);
                     // El DPI no puede ser modificado pues se pueden generar conflictos con datos de la Base de Datos
                 } else
                     JOptionPane.showMessageDialog(this, "No se puede editar este registro.\nSólo se pueden editar registros temporales", "Error", JOptionPane.ERROR_MESSAGE);
@@ -1428,7 +1476,8 @@ public class CrearEstudiante extends javax.swing.JDialog {
             editado.setNombre(encargado_nombre_completo.getText());
             editado.setDireccion(encargado_direccion.getText());
             editado.setMunicipioId(encargado_municipio.getSelectedIndex());
-            editado.setFechaNacimiento(encargado_fechaNacimiento.getText());
+            Calendar fecha = encargado_fechaNacimiento.getCalendar();
+            editado.setFechaNacimiento(""+fecha.get(Calendar.YEAR)+"-"+(fecha.get(Calendar.MONTH)+1)+"-"+fecha.get(Calendar.DAY_OF_MONTH));
             editado.setTelefono(encargado_telefono_casa.getText());
             editado.setCelular(encargado_celular.getText());
             editado.setTrabajo(encargado_trabajo.getText());
@@ -1441,7 +1490,8 @@ public class CrearEstudiante extends javax.swing.JDialog {
                 modelEncargados.setValueAt(nuevosDatos[i], indexRegistroEncargadoEditado, i);
             agregar_fila_encargado.setEnabled(true);   // Habilito el botón de Agregar
             eliminar_fila_encargado.setEnabled(true);  // Habilito el botón de Eliminar
-            setEditable_campos_encargado(false);
+            setEnable_campos_encargado(false);
+            encargado_dpi.setEditable(true);
             limpiar_campos_encargado(true);     // Borro el contenido de los campos
         }
     }//GEN-LAST:event_editar_fila_encargadoActionPerformed
@@ -1504,6 +1554,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
                     eliminar_fila_estudiante.setEnabled(false); // Bloqueo el botón de Eliminar
                     indexRegistroEstudianteEditado = cont;   // Guardo el index que se va a editar
                     cargar_estudiante_en_campos(listaEstudiantes.get(cont));    // Cargo los datos del registro en los campos para ser editados
+                    setEnable_campos_estudiante(true);
                     estudiante_codigo_personal.setEditable(false);  // El Código Personal no puede ser editado
                     cont = cantidad;    // Finalizo el ciclo
                 }
@@ -1538,6 +1589,12 @@ public class CrearEstudiante extends javax.swing.JDialog {
         }
         //</editor-fold>
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -1566,7 +1623,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
     private javax.swing.JTextField encargado_celular;
     private javax.swing.JTextField encargado_direccion;
     private javax.swing.JTextField encargado_dpi;
-    private javax.swing.JTextField encargado_fechaNacimiento;
+    private com.toedter.calendar.JDateChooser encargado_fechaNacimiento;
     private javax.swing.JComboBox<String> encargado_municipio;
     private javax.swing.JTextField encargado_nombre_completo;
     private javax.swing.JTextField encargado_telefono_casa;
@@ -1577,7 +1634,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
     private javax.swing.JTextField estudiante_cui;
     private javax.swing.JTextField estudiante_direccion;
     private javax.swing.JTextField estudiante_etnia;
-    private javax.swing.JTextField estudiante_fechaNacimiento;
+    private com.toedter.calendar.JDateChooser estudiante_fechaNacimiento;
     private javax.swing.JComboBox<String> estudiante_municipio;
     private javax.swing.JComboBox<String> estudiante_nombre_encargado;
     private javax.swing.JTextField estudiante_nombres;

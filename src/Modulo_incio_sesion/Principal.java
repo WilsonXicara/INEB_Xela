@@ -138,7 +138,7 @@ public class Principal extends javax.swing.JDialog {
         jPanel1.setBackground(new java.awt.Color(0, 153, 153));
 
         usuario.setFont(new java.awt.Font("Courier New", 1, 18)); // NOI18N
-        usuario.setText("prueba");
+        usuario.setText("sergio27");
         usuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 usuarioActionPerformed(evt);
@@ -152,7 +152,7 @@ public class Principal extends javax.swing.JDialog {
         jLabel2.setText("Contraseña:");
 
         contraseña.setFont(new java.awt.Font("Courier New", 1, 18)); // NOI18N
-        contraseña.setText("1234");
+        contraseña.setText("hola2");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
