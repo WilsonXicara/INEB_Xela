@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -24,10 +25,11 @@ public class CrearAdmin extends javax.swing.JFrame {
      * Creates new form CrearAdmin
      */
     Connection conexion;
+    JFrame Ventanita;
     public CrearAdmin() {
         initComponents();
     }
-    public CrearAdmin(Connection conec){
+    public CrearAdmin(Connection conec,JFrame ventana){
         initComponents();
         conexion = conec;
         ResultSet munis = null;
@@ -41,6 +43,7 @@ public class CrearAdmin extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
         }
+        Ventanita = ventana;
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -328,12 +331,14 @@ public class CrearAdmin extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
+        Ventanita.setEnabled(true);
         this.dispose();
+        //hola
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {                                         
-            String Nom, Apellido, Direc, Dpi,Sex2,Tel,Etn,Usuario,Contra;
+            String Nom, Apellido, Direc, Dpi,Sex2 = "",Tel,Etn,Usuario,Contra;
             String Instruccion , Instruccion2, Instruccion3;
             int Muni, Tip, Sex, bandera = 0;
             ResultSet resultado = null , resultado2 = null;
@@ -354,7 +359,11 @@ public class CrearAdmin extends javax.swing.JFrame {
                 Sex2 = "F";
                 bandera = 1;
             }
-                Instruccion = "INSERT INTO administrador (Nombres,Apellidos,Direccion,Dpi,Sexo,Municipio_Id) VALUES ('" + Nom + "','" + Apellido + "','" + Direc + "','" + Dpi + "','" + Sex + "'," + Muni + ");";
+            if((Nom.equals(""))||(Apellido.equals(""))||(Direc.equals(""))||(Dpi.equals(""))||(Usuario.equals(""))||(Contra.equals(""))){
+                JOptionPane.showMessageDialog(null, "¡Hay Campos Vacios");
+            }
+            else{
+                Instruccion = "INSERT INTO administrador (Nombres,Apellidos,Direccion,Dpi,Sexo,Municipio_Id) VALUES ('" + Nom + "','" + Apellido + "','" + Direc + "','" + Dpi + "','" + Sex2 + "'," + Muni + ");";
                     //Insertamoso el admin
                 int  a;
                 try (PreparedStatement pst = conexion.prepareStatement(Instruccion)) {
@@ -366,31 +375,32 @@ public class CrearAdmin extends javax.swing.JFrame {
                 } catch (SQLException ex) {
                     Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            resultado = sentencia.executeQuery("SELECT * FROM administrador WHERE Dpi = '" + Dpi + "';");
-            resultado.next();
-            Instruccion2 = "INSERT INTO telefono (Telefono,Administrador_Id) VALUES ('" + Tel + "'," + resultado.getString(1) + ");";
-            Instruccion3 = "INSERT INTO usuarios (NombreUsuario,Contrasenia,Tipo,Administrador_Id) VALUES ('" + Usuario + "','" + Contra + "','2'," + resultado.getString(1) + ");";
-            //Ingresamos el numero telefonico a la tabla telefonos
-            int  b;
-            try (PreparedStatement pst = conexion.prepareStatement(Instruccion2)) {
-                b = pst.executeUpdate();
-                if (b>0){
-                    System.out.println("Guardado");
+                Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                resultado = sentencia.executeQuery("SELECT * FROM administrador WHERE Dpi = '" + Dpi + "';");
+                resultado.next();
+                Instruccion2 = "INSERT INTO telefono (Telefono,Administrador_Id) VALUES ('" + Tel + "'," + resultado.getString(1) + ");";
+                Instruccion3 = "INSERT INTO usuarios (NombreUsuario,Contrasenia,Tipo,Administrador_Id) VALUES ('" + Usuario + "','" + Contra + "','2'," + resultado.getString(1) + ");";
+                //Ingresamos el numero telefonico a la tabla telefonos
+                int  b;
+                try (PreparedStatement pst = conexion.prepareStatement(Instruccion2)) {
+                    b = pst.executeUpdate();
+                    if (b>0){
+                        System.out.println("Guardado");
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (SQLException ex) {
-                Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            //Ingresamos a la tabla usuarios segun el tipo
-            int  c;
-            try (PreparedStatement pst = conexion.prepareStatement(Instruccion3)) {
-                c = pst.executeUpdate();
-                if (c>0){
-                    System.out.println("Guardado");
-                    JOptionPane.showMessageDialog(null, "¡Se ha creado el Usuario " + Usuario + " de tipo 2!" );
+                //Ingresamos a la tabla usuarios segun el tipo
+                int  c;
+                try (PreparedStatement pst = conexion.prepareStatement(Instruccion3)) {
+                    c = pst.executeUpdate();
+                    if (c>0){
+                        System.out.println("Guardado");
+                        JOptionPane.showMessageDialog(null, "¡Se ha creado el Usuario " + Usuario + " de tipo 2!" );
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (SQLException ex) {
-                Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (SQLException ex) {
             Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
@@ -399,6 +409,7 @@ public class CrearAdmin extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
+        Ventanita.setEnabled(true);
         this.dispose();
     }//GEN-LAST:event_formWindowClosing
 

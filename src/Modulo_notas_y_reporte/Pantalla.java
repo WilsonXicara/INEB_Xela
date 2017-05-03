@@ -33,6 +33,7 @@ public class Pantalla extends javax.swing.JFrame {
     int Id_cicloescolar;
     String cicloesc;
     ResultSet est, b;
+    JFrame va;
     /**
      * Creates new form Pantalla
      */
@@ -53,7 +54,7 @@ public class Pantalla extends javax.swing.JFrame {
         posicion = 0;
         //Cargar_Datos_Estudiante();*/
     }
-    public Pantalla(Connection conex, int cat, int cur, int ciclo, ResultSet a) throws SQLException {
+    public Pantalla(Connection conex, int cat, int cur, int ciclo, /*ResultSet a,*/ JFrame v) throws SQLException {
         initComponents();
         conexion = conex;
         limpiar();
@@ -65,7 +66,8 @@ public class Pantalla extends javax.swing.JFrame {
         Id_cicloescolar = ciclo;
         Id_curso = cur;
         Id_cat = cat;
-        b = a;
+        //b = a;
+        va = v;
         llenar();
     }
 
@@ -463,14 +465,11 @@ public class Pantalla extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-        this.dispose();
-        ModuloPrincipalCatedratico a;
-        try {
-            a = new ModuloPrincipalCatedratico(conexion, b);
-            a.setVisible(true);
-        } catch (SQLException ex) {
-            Logger.getLogger(Pantalla.class.getName()).log(Level.SEVERE, null, ex);
-        }  
+           
+        //ModuloPrincipalCatedratico a;
+            //a = new ModuloPrincipalCatedratico(conexion, b);
+         va.setEnabled(true);
+         this.dispose();
     }//GEN-LAST:event_formWindowClosing
 
     /**

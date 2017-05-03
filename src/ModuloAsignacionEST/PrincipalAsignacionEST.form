@@ -74,10 +74,10 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="grado" min="-2" pref="150" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="cargar_para_reasignacion" min="-2" max="-2" attributes="0"/>
+                          <Component id="buscar_para_reasignacion" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="430" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -92,9 +92,9 @@
                       <Component id="etiqueta_grado" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="ciclo_escolar" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="grado" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="cargar_para_reasignacion" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="buscar_para_reasignacion" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="12" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -126,7 +126,7 @@
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>
         </Component>
-        <Component class="javax.swing.JButton" name="cargar_para_reasignacion">
+        <Component class="javax.swing.JButton" name="buscar_para_reasignacion">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Tahoma" size="12" style="1"/>
@@ -135,7 +135,7 @@
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cargar_para_reasignacionActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buscar_para_reasignacionActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="etiqueta_ciclo_escolar">
@@ -206,7 +206,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jScrollPane1" pref="264" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" pref="263" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="crear_asignacion" min="-2" pref="50" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>

@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -27,7 +28,7 @@ public class Mostrar_Datos extends javax.swing.JFrame {
     private Connection conexion;
     Statement stmt;
     ResultSet Regresa;
-    
+    JFrame Ventanita;
     String titulos[] = { "ID",
                         "Nombres",
                         "Apellidos",
@@ -46,13 +47,14 @@ public class Mostrar_Datos extends javax.swing.JFrame {
     }
     
     
-    public Mostrar_Datos(Connection conex/*, ResultSet Devolver*/){
+    public Mostrar_Datos(Connection conex,JFrame ventana){
         initComponents();
         this.setLocationRelativeTo(null);
         this.conexion  = conex;
         Llenartabla("");
         llenarcombobox();
         //Regresa = Devolver;
+        Ventanita = ventana;
     }
 /**
  * Función que llena la tabla con todos los datos de los docentes
@@ -519,8 +521,7 @@ public class Mostrar_Datos extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // Botón para volver a la ventana anterior
-            ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, Regresa); // Llama a la del Andrés
-            s.setVisible(true);
+            Ventanita.setEnabled(true);
             this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -589,8 +590,9 @@ public class Mostrar_Datos extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-            ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, Regresa); // Llama a la del Andrés
-            s.setVisible(true);
+            //ModuloPrincipalAdmin s = new ModuloPrincipalAdmin(conexion, Regresa); // Llama a la del Andrés
+       
+            Ventanita.setEnabled(true);
             this.dispose();
     }//GEN-LAST:event_formWindowClosing
 

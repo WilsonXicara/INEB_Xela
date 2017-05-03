@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -25,13 +26,15 @@ public class Cambiar_contra extends javax.swing.JFrame {
     Connection conexion;
     int idcat;
     ResultSet respuesta;
+    JFrame Ventanita;
     
-    public Cambiar_contra(Connection conex, ResultSet sentencia)throws SQLException{
+    public Cambiar_contra(Connection conex, ResultSet sentencia,JFrame ventana)throws SQLException{
         initComponents();
         conexion = conex;
         respuesta = sentencia;
         this.setLocationRelativeTo(null);
         //idcat = idcatedra;
+        Ventanita = ventana;
     }
     public Cambiar_contra() {
         initComponents();
@@ -155,14 +158,9 @@ public class Cambiar_contra extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
+        Ventanita.setEnabled(true);
         this.dispose();
-        ModuloPrincipalCatedratico ventana;
-        try {
-            ventana = new ModuloPrincipalCatedratico(conexion, respuesta);
-            ventana.setVisible(true);
-        } catch (SQLException ex) {
-            Logger.getLogger(Cambiar_contra.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
         
     }//GEN-LAST:event_formWindowClosing
 
@@ -184,14 +182,9 @@ public class Cambiar_contra extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        Ventanita.setEnabled(true);
          this.dispose();
-        ModuloPrincipalCatedratico ventana;
-        try {
-            ventana = new ModuloPrincipalCatedratico(conexion, respuesta);
-            ventana.setVisible(true);
-        } catch (SQLException ex) {
-            Logger.getLogger(Cambiar_contra.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**

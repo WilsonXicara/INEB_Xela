@@ -6,6 +6,7 @@
 package ModuloAdministrador;
 
 import java.sql.Connection;
+import javax.swing.JFrame;
 
 /**
  *
@@ -18,12 +19,14 @@ public class Usuarios extends javax.swing.JFrame {
      * Creates new form Usuarios
      */
     Connection conexion;
+    JFrame Ventanita;
     public Usuarios() {
         initComponents();
     }
-    public Usuarios(Connection conec){
+    public Usuarios(Connection conec,JFrame ventana){
         initComponents();
         conexion = conec;
+        Ventanita = ventana;
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -110,7 +113,7 @@ public class Usuarios extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         this.setEnabled(false);
-        new CrearAdmin(conexion).setVisible(true);
+        new CrearAdmin(conexion,Ventanita).setVisible(true);
         this.setEnabled(true);
         //this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
