@@ -6,9 +6,10 @@
 package Modulo_Ciclo_Escolar;
 
 import Tipos_tablas.No_editable;
-import Modulo_Ciclo_Escolar.Crear_Grado;
 import java.awt.Frame;
+import java.awt.event.ItemEvent;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,6 +18,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -25,9 +29,33 @@ import java.util.logging.Logger;
 public class Ciclo_Escolar extends javax.swing.JDialog {
 
     Connection base;
-    ArrayList<String>  ID ,Id_grado;
+    //Contienen informacion del ciclo actual
+    ArrayList<String>  ID ;
+    //Contienen informacion de los grados asociados al ciclo dentro de la base
+    ArrayList<String> Id_grado,Nombre_grado;
+    
+    //Contienen informacion de los cursos asociados al ciclo dentro de la base
+    ArrayList<String> Id_curso,Nombre_curso;
+    
+    //Contiene la informacion de los grados que se deasean agregar a la base
+    ArrayList<String> nombre_grados_agregados;
+    ArrayList<String> grados_agregados;
+    ArrayList<String> seccion_agregados;
+    //Contiene la informacion de los grados que se desean eliminar de la base
+    ArrayList<String> Id_grados_borrados;
+    ArrayList<String> nombre_grados_borrados;
+    
+    
+    //Contiene la informacion de los cursos que se desean agregar a la base
+     ArrayList<String> cursos_agregados;
+    //Contiene la informacion de los cursos que se desas eliminar a la base
+      ArrayList<String> id_cursos_borrados;
+      ArrayList<String> nombre_cursos_borrados;
+    
     String año;
-    int posicion;
+    int posicion,pos_cursos,pos_grados;
+    
+    
     /**
      * Creates new form Ciclo_Escolar
      */
@@ -38,11 +66,24 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
     public Ciclo_Escolar(java.awt.Frame parent, boolean modal,Connection base) throws SQLException {
         super(parent, modal);
         initComponents();
+        cursos_agregados = new ArrayList<String>();
+        grados_agregados = new ArrayList<String>();
+        seccion_agregados = new ArrayList<>();
+        id_cursos_borrados = new ArrayList<String>();
+        nombre_cursos_borrados = new ArrayList<String>();
+        Id_grados_borrados = new ArrayList<String>();
+        nombre_grados_borrados = new ArrayList<>();
+        nombre_grados_agregados = new ArrayList<>();
+       
+        
          this.base = base;
          posicion =0;
+         pos_cursos = -1;
+         pos_grados = -1;
         Calendar fecha = new GregorianCalendar();
         año = Integer.toString(fecha.get(Calendar.YEAR));
         Cargar_Datos();
+        
     }
 
     /**
@@ -55,28 +96,128 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
     private void initComponents() {
 
         jMenuItem4 = new javax.swing.JMenuItem();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        Grados = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         ciclo = new javax.swing.JComboBox<>();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         Cursos = new javax.swing.JTable();
-        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        Tx_Nombre_curso = new javax.swing.JTextField();
+        agregar_curso = new javax.swing.JButton();
+        eliminar_curso = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        Tx_Nombre_grado = new javax.swing.JTextField();
+        Tx_seccion = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        Grados = new javax.swing.JTable();
+        agregar_grado = new javax.swing.JButton();
+        eliminar_grado = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         Cursos_asignados = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         jMenuBar2 = new javax.swing.JMenuBar();
         Menu_crear = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        jMenuItem8 = new javax.swing.JMenuItem();
 
         jMenuItem4.setText("jMenuItem4");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        jLabel1.setText("Ciclo Escolar");
+
+        ciclo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cicloItemStateChanged(evt);
+            }
+        });
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Cursos"));
+
+        Cursos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
+
+            }
+        ));
+        Cursos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                CursosMouseClicked(evt);
+            }
+        });
+        Cursos.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                CursosKeyTyped(evt);
+            }
+        });
+        jScrollPane4.setViewportView(Cursos);
+
+        jLabel5.setText("Nombre: ");
+
+        agregar_curso.setText("Agregar");
+        agregar_curso.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                agregar_cursoActionPerformed(evt);
+            }
+        });
+
+        eliminar_curso.setText("Eliminar");
+        eliminar_curso.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                eliminar_cursoActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(Tx_Nombre_curso, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(38, 38, 38)
+                .addComponent(agregar_curso)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(eliminar_curso)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Tx_Nombre_curso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(agregar_curso)
+                    .addComponent(eliminar_curso))
+                .addContainerGap())
+        );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Grados"));
+
+        jLabel2.setText("Sección");
+
+        jLabel3.setText("Nombre");
 
         Grados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -101,41 +242,113 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         });
         jScrollPane3.setViewportView(Grados);
 
-        jLabel1.setText("Ciclo Escolar");
-
-        ciclo.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cicloItemStateChanged(evt);
+        agregar_grado.setText("Agregar");
+        agregar_grado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                agregar_gradoActionPerformed(evt);
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel2.setText("Grados");
-
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel3.setText("Cursos");
-
-        Cursos.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {},
-                {},
-                {},
-                {}
-            },
-            new String [] {
-
-            }
-        ));
-        Cursos.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                CursosKeyTyped(evt);
+        eliminar_grado.setText("Eliminar");
+        eliminar_grado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                eliminar_gradoActionPerformed(evt);
             }
         });
-        jScrollPane4.setViewportView(Cursos);
 
-        jLabel4.setText("Cursos Asignados");
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(32, 32, 32)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(Tx_Nombre_grado, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addGap(10, 10, 10)
+                                    .addComponent(agregar_grado)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(eliminar_grado))
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(jLabel2)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(Tx_seccion, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(3, 3, 3)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(Tx_Nombre_grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(Tx_seccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(agregar_grado)
+                    .addComponent(eliminar_grado))
+                .addGap(0, 16, Short.MAX_VALUE))
+        );
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Cursos Asignados"));
 
         jScrollPane1.setViewportView(Cursos_asignados);
+
+        jButton1.setText("Asignaciones");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(105, 105, 105))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addContainerGap())
+        );
+
+        jButton6.setText("Guardar Cambios");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Exportar Datos");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         Menu_crear.setText("Crear");
 
@@ -147,35 +360,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         });
         Menu_crear.add(jMenuItem1);
 
-        jMenuItem2.setText("Grado");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
-            }
-        });
-        Menu_crear.add(jMenuItem2);
-
-        jMenuItem3.setText("Curso");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
-            }
-        });
-        Menu_crear.add(jMenuItem3);
-
         jMenuBar2.add(Menu_crear);
-
-        jMenu2.setText("Asignaciones");
-
-        jMenuItem8.setText("Asignaciones a Grado");
-        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem8ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem8);
-
-        jMenuBar2.add(jMenu2);
 
         setJMenuBar(jMenuBar2);
 
@@ -184,58 +369,42 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(229, 229, 229)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(23, 23, 23)
-                                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(84, 84, 84)
-                                .addComponent(jLabel3)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(124, 124, 124)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 197, Short.MAX_VALUE)
-                                .addComponent(jLabel4)
-                                .addGap(98, 98, 98)))))
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(229, 229, 229)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton2)
+                .addGap(38, 38, 38)
+                .addComponent(jButton6)
+                .addGap(24, 24, 24))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel3)
-                        .addGap(11, 11, 11)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGap(13, 13, 13)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton6)
+                    .addComponent(jButton2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jPanel1.getAccessibleContext().setAccessibleName("");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -245,39 +414,50 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
     }//GEN-LAST:event_GradosKeyPressed
 
     private void cicloItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cicloItemStateChanged
-        if(ciclo.getSelectedIndex()!=-1){
-        posicion = ciclo.getSelectedIndex();
-        String Id = ID.get(posicion);
-        Statement a;
-        try {
-            a = base.createStatement();
-            ResultSet consulta_Grados = a.executeQuery("SELECT grado.Nombre,grado.Seccion, grado.Id FROM AsignacionCAT INNER JOIN grado ON AsignacionCAT.Grado_Id = grado.Id WHERE AsignacionCAT.CicloEscolar_Id="+Id+" AND AsignacionCAT.Curso_Id is null ANd AsignacionCAT.Catedratico_Id is null;");
-            a = base.createStatement();
-            ResultSet consulta_Curso = a.executeQuery("SELECT curso.Nombre FROM asignacioncat INNER JOIN curso ON asignacioncat.Curso_Id = curso.Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id WHERE asignacioncat.CicloEscolar_Id = "+Id+" AND asignacioncat.Grado_Id is null AND asignacioncat.Catedratico_Id is null;");
-            if(consulta_Grados.next()){
-                Tabla_Grados(consulta_Grados);
+        if(evt.getStateChange() == ItemEvent.SELECTED){
+        int tamaño_cursos = cursos_agregados.size();
+        int tamaño_grados = grados_agregados.size();
+        int tamaño_cursos_borrados = id_cursos_borrados.size();
+        int tamaño_grados_borrados = nombre_grados_borrados.size();
+       
+        if(tamaño_cursos > 0 || tamaño_grados > 0 || tamaño_cursos_borrados > 0 || tamaño_grados_borrados > 0){
+            String[] opciones = new String[2];
+            opciones[0] = "SI";
+            opciones[1] = "NO";
+            //Pregunto si desea guardar los cursos agregados
+            int eleccion = JOptionPane.showOptionDialog(null, "Desea guardar los cambios realizados", "Cambios", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+            if(eleccion == JOptionPane.YES_OPTION) {
+                Guardar_cambios_grados();
+                Guardar_cambios_cursos();
+                posicion = ciclo.getSelectedIndex();
+                cursos_agregados = new ArrayList<String>();
+                id_cursos_borrados = new ArrayList<String>();
+                nombre_cursos_borrados = new ArrayList<String>();
+                Id_grados_borrados = new ArrayList<>();
+                nombre_grados_borrados = new ArrayList<>();
+                
+                grados_agregados = new ArrayList<>();
+                seccion_agregados = new ArrayList<>();
+                nombre_grados_agregados = new ArrayList<>();
+                
+                Cambio_ciclo();
             }
             else{
-                No_editable tabla = new No_editable();
-                tabla.addColumn("Nombre");
-                tabla.addColumn("Sección");
-                Grados.setModel(tabla);
+                posicion = ciclo.getSelectedIndex();
+                cursos_agregados = new ArrayList<String>();
+                id_cursos_borrados = new ArrayList<String>();
+                nombre_cursos_borrados = new ArrayList<String>();
+                Id_grados_borrados = new ArrayList<>();
+                nombre_grados_borrados = new ArrayList<>();
+                
+                grados_agregados = new ArrayList<>();
+                seccion_agregados = new ArrayList<>();
+                nombre_grados_agregados = new ArrayList<>();
+                Cambio_ciclo();
             }
-            if(consulta_Curso.next()){
-                Tabla_cursos(consulta_Curso);
-            }
-            else{
-                No_editable tabla = new No_editable();
-                String[] fila = new String[3];
-                String catedratico, grado;
-                tabla.addColumn("Nombre");
-                tabla.addColumn("Catedratico Asignado");
-                tabla.addColumn("Grado Asignado");
-                Cursos.setModel(tabla);
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
+        }else{
+             posicion = ciclo.getSelectedIndex();
+            Cambio_ciclo();
         }
         }
     }//GEN-LAST:event_cicloItemStateChanged
@@ -286,72 +466,11 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         evt.consume();
     }//GEN-LAST:event_CursosKeyTyped
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        try {
-            this.dispose();
-            Crear_Grado a = new Crear_Grado(new Frame(),true,base,ID.get(posicion));
-            a.setVisible(true);
-            this.pack();
-            Statement   b = base.createStatement();
-            ResultSet consulta_Grados = b.executeQuery("SELECT grado.Nombre,grado.Seccion FROM asignacioncat INNER JOIN grado ON AsignacionCAT.Grado_Id = grado.Id WHERE AsignacionCAT.CicloEscolar_Id="+ID.get(posicion)+" AND AsignacionCAT.Curso_Id is null AND AsignacionCAT.Catedratico_Id is null ;");
-            if(consulta_Grados.next()){
-                Tabla_Grados(consulta_Grados);
-            }
-            else{
-                No_editable tabla = new No_editable();
-                tabla.addColumn("Nombre");
-                tabla.addColumn("Sección");
-                Grados.setModel(tabla);
-            }
-            this.setVisible(true);
-        } catch (SQLException ex) {
-            Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
-
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-       
-        try {
-            this.setVisible(false);
-            Crear_Curso a = new Crear_Curso(new Frame(),true,base,ID.get(posicion));
-            a.setVisible(true);
-             Statement b = base.createStatement();
-            ResultSet consulta_Curso = b.executeQuery("SELECT curso.Nombre FROM asignacioncat INNER JOIN curso ON asignacioncat.Curso_Id = curso.Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id WHERE asignacioncat.CicloEscolar_Id = "+ID.get(posicion)+" AND asignacioncat.Grado_Id is null AND asignacioncat.Catedratico_Id is null;");
-            if(consulta_Curso.next()){
-                Tabla_cursos(consulta_Curso);
-            }
-            else{
-                No_editable tabla = new No_editable();
-                
-                String grado;
-                tabla.addColumn("Nombre");
-                Cursos.setModel(tabla);
-            }
-            this.setVisible(true);
-        } catch (SQLException ex) {
-            Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
-
-    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-        try {
-            this.dispose();
-            new Asignar_curso_a_grado(new Frame(),true,base,ID.get(posicion)).setVisible(true);
-            this.setVisible(true);
-        } catch (SQLException ex) {
-            Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_jMenuItem8ActionPerformed
-
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         try {
-            this.dispose();
             new Crear_Ciclo_Escolar_1(new Frame(),true, base).setVisible(true);
             this.setVisible(true);
             Cargar_Datos();
-            this.pack();
-            
         } catch (SQLException ex) {
             Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -360,12 +479,285 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
     private void GradosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_GradosMouseClicked
         try {
             int grado = Grados.getSelectedRow();
+            pos_grados = grado;
             System.out.println(grado);
-            Tabla_cursos_asignados(Id_grado.get(grado));
+            String aux  = Grados.getValueAt(pos_grados, 0) +" "+Grados.getValueAt(pos_grados, 1);
+            if(Nombre_grado.contains(aux)){
+               int a = Nombre_grado.indexOf(aux);
+            Tabla_cursos_asignados(Id_grado.get(a));
+            }
+            
         } catch (SQLException ex) {
             Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_GradosMouseClicked
+
+    private void agregar_cursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregar_cursoActionPerformed
+        String[] curso = new String[1];
+        curso[0] = Tx_Nombre_curso.getText().trim();
+        if (curso[0].length() > 0) {
+            if(nombre_cursos_borrados.contains(curso[0])){
+                if(!Nombre_curso.contains(curso[0])){
+                    DefaultTableModel aux = (DefaultTableModel) Cursos.getModel();
+                    aux.addRow(curso);
+                    cursos_agregados.add(curso[0]);
+                }else{
+                    DefaultTableModel aux = (DefaultTableModel) Cursos.getModel();
+                    aux.addRow(curso); 
+                }
+                int aux = nombre_cursos_borrados.indexOf(curso[0]);
+                id_cursos_borrados.remove(aux);
+                nombre_cursos_borrados.remove(curso[0]);
+            }
+            else if(!Nombre_curso.contains(curso[0])){
+                if(!cursos_agregados.contains(curso[0])){
+                DefaultTableModel aux = (DefaultTableModel) Cursos.getModel();
+                aux.addRow(curso);
+                cursos_agregados.add(curso[0]);
+                        
+                }else{
+                    JOptionPane.showMessageDialog(this, "El curso ya ha sido agregado", "ERROR", JOptionPane.ERROR_MESSAGE, null);
+                }
+            }else{
+                JOptionPane.showMessageDialog(this, "El curso ya ha sido agregado", "ERROR", JOptionPane.ERROR_MESSAGE, null);
+            }
+            
+        }
+        else{
+            JOptionPane.showMessageDialog(this, "Debe escribir algo en la caja Nombre", "ERROR", JOptionPane.ERROR_MESSAGE, null);
+        }
+              
+    }//GEN-LAST:event_agregar_cursoActionPerformed
+
+    private void agregar_gradoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregar_gradoActionPerformed
+        String Nombre = Tx_Nombre_grado.getText().trim();
+        String Seccion = Tx_seccion.getText().trim();
+        String[] fila = new String[2];
+        fila[0] = Nombre;
+        fila[1] = Seccion;
+        if(Nombre.length()>0 && Seccion.length()>0){
+            
+            if(nombre_grados_borrados.contains(Nombre+" "+Seccion)){
+                DefaultTableModel aux = (DefaultTableModel) Grados.getModel();
+                if(!Nombre_grado.contains(Nombre+" "+Seccion)){
+                    aux.addRow(fila);
+                    nombre_grados_agregados.add(Nombre+" "+Seccion);
+                    grados_agregados.add(Nombre);
+                    seccion_agregados.add(Seccion);
+                }else{
+                    aux.addRow(fila);
+                }
+                int pos = nombre_grados_borrados.indexOf(Nombre+" "+Seccion);
+                nombre_grados_borrados.remove(pos);
+                Id_grados_borrados.remove(pos);
+                
+            }else if(!Nombre_grado.contains(Nombre+" "+Seccion)){
+                if(!nombre_grados_agregados.contains(Nombre+" "+Seccion)){
+                    DefaultTableModel aux = (DefaultTableModel) Grados.getModel();
+                    aux.addRow(fila);
+                    nombre_grados_agregados.add(Nombre+" "+Seccion);
+                    grados_agregados.add(Nombre);
+                    seccion_agregados.add(Seccion);
+                }else{
+                    JOptionPane.showMessageDialog(this, "El grado ya a sido agregado", "ERROR", JOptionPane.ERROR_MESSAGE, null);
+                }
+            }else{
+                 JOptionPane.showMessageDialog(this, "El grado ya a sido agregado", "ERROR", JOptionPane.ERROR_MESSAGE, null);
+            }
+            
+        }else{
+            JOptionPane.showMessageDialog(this, "Debe llenar todas las casillas", "ERROR", JOptionPane.ERROR_MESSAGE, null);
+        }
+        
+    }//GEN-LAST:event_agregar_gradoActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        String[] opciones = new String[2];
+            opciones[0] = "SI";
+            opciones[1] = "NO";
+            //Pregunto si desea guardar los cursos agregados
+            int eleccion = JOptionPane.showOptionDialog(null, "Desea guardar los cambios realizados", "Cambios", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+            if(eleccion == JOptionPane.YES_OPTION) {
+                Guardar_cambios_cursos();
+                Guardar_cambios_grados();
+                posicion = ciclo.getSelectedIndex();
+                cursos_agregados = new ArrayList<String>();
+                id_cursos_borrados = new ArrayList<String>();
+                nombre_cursos_borrados = new ArrayList<String>();
+                
+                Id_grados_borrados = new ArrayList<>();
+                nombre_grados_borrados = new ArrayList<>();
+                
+                grados_agregados = new ArrayList<>();
+                seccion_agregados = new ArrayList<>();
+                nombre_grados_agregados = new ArrayList<>();
+                
+                Cambio_ciclo();
+            }
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void eliminar_cursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminar_cursoActionPerformed
+        if(pos_cursos != -1){
+            String curso = (String) Cursos.getValueAt(pos_cursos, 0);
+            if(Nombre_curso.contains(curso)){
+                String Id = Id_curso.get(Nombre_curso.indexOf(curso));
+                id_cursos_borrados.add(Id);
+                nombre_cursos_borrados.add(curso);
+            }
+            else{
+                cursos_agregados.remove(curso);
+                
+            }
+            DefaultTableModel aux = (DefaultTableModel) Cursos.getModel();
+            aux.removeRow(pos_cursos);
+            pos_cursos = -1;
+        }else{
+             JOptionPane.showMessageDialog(this, "Debe selecionar una fila", "ERROR", JOptionPane.ERROR_MESSAGE, null);
+        }
+    }//GEN-LAST:event_eliminar_cursoActionPerformed
+
+    private void CursosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CursosMouseClicked
+        pos_cursos = Cursos.getSelectedRow();
+        System.out.println(pos_cursos);
+    }//GEN-LAST:event_CursosMouseClicked
+
+    private void eliminar_gradoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminar_gradoActionPerformed
+        if(pos_grados != -1){
+            String Grado = (String) Grados.getValueAt(pos_grados, 0);
+            String seccion = (String) Grados.getValueAt(pos_grados, 1);
+            if(Nombre_grado.contains(Grado+" "+seccion)){
+                String Id  = Id_grado.get(Nombre_grado.indexOf(Grado+" "+seccion));
+                Id_grados_borrados.add(Id);
+                nombre_grados_borrados.add(Grado+" "+seccion);
+            }else{
+                int aux = nombre_grados_agregados.indexOf(Grado+" "+seccion);
+                nombre_grados_agregados.remove(aux);
+                grados_agregados.remove(aux);
+                seccion_agregados.remove(aux);
+            }
+            DefaultTableModel aux = (DefaultTableModel) Grados.getModel();
+            aux.removeRow(pos_grados);
+            pos_grados = -1;
+        }else{
+            JOptionPane.showMessageDialog(this, "Debe selecionar una fila", "ERROR", JOptionPane.ERROR_MESSAGE, null);
+        }
+    }//GEN-LAST:event_eliminar_gradoActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        int tamaño_cursos = cursos_agregados.size();
+        int tamaño_grados = grados_agregados.size();
+        int tamaño_cursos_borrados = id_cursos_borrados.size();
+        int tamaño_grados_borrados = nombre_grados_borrados.size();
+       
+        if(tamaño_cursos > 0 || tamaño_grados > 0 || tamaño_cursos_borrados > 0 || tamaño_grados_borrados > 0){
+            String[] opciones = new String[2];
+            opciones[0] = "SI";
+            opciones[1] = "NO";
+            //Pregunto si desea guardar los cursos agregados
+            int eleccion = JOptionPane.showOptionDialog(null, "Desea guardar los cambios realizados", "Cambios", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+            if(eleccion == JOptionPane.YES_OPTION) {
+                Guardar_cambios_grados();
+                Guardar_cambios_cursos();
+                
+                cursos_agregados = new ArrayList<String>();
+                id_cursos_borrados = new ArrayList<String>();
+                nombre_cursos_borrados = new ArrayList<String>();
+                
+                Id_grados_borrados = new ArrayList<>();
+                nombre_grados_borrados = new ArrayList<>();
+                
+                grados_agregados = new ArrayList<>();
+                seccion_agregados = new ArrayList<>();
+                nombre_grados_agregados = new ArrayList<>();
+                
+                new Importar_datos(new Frame(), true, base, ID.get(posicion)).show();
+                Cambio_ciclo();
+            }
+            else{
+                
+                cursos_agregados = new ArrayList<String>();
+                id_cursos_borrados = new ArrayList<String>();
+                nombre_cursos_borrados = new ArrayList<String>();
+                
+                Id_grados_borrados = new ArrayList<>();
+                nombre_grados_borrados = new ArrayList<>();
+                
+                grados_agregados = new ArrayList<>();
+                seccion_agregados = new ArrayList<>();
+                nombre_grados_agregados = new ArrayList<>();
+                new Importar_datos(new Frame(), true, base, ID.get(posicion)).show();
+                Cambio_ciclo();
+            }
+        }else{
+            new Importar_datos(new Frame(), true, base, ID.get(posicion)).show();
+            Cambio_ciclo();
+        }
+        
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+         int tamaño_cursos = cursos_agregados.size();
+        int tamaño_grados = grados_agregados.size();
+        int tamaño_cursos_borrados = id_cursos_borrados.size();
+        int tamaño_grados_borrados = nombre_grados_borrados.size();
+       
+        if(tamaño_cursos > 0 || tamaño_grados > 0 || tamaño_cursos_borrados > 0 || tamaño_grados_borrados > 0){
+            String[] opciones = new String[2];
+            opciones[0] = "SI";
+            opciones[1] = "NO";
+            //Pregunto si desea guardar los cursos agregados
+            int eleccion = JOptionPane.showOptionDialog(null, "Desea guardar los cambios realizados", "Cambios", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+            if(eleccion == JOptionPane.YES_OPTION) {
+                Guardar_cambios_grados();
+                Guardar_cambios_cursos();
+                
+                cursos_agregados = new ArrayList<String>();
+                id_cursos_borrados = new ArrayList<String>();
+                nombre_cursos_borrados = new ArrayList<String>();
+                
+                Id_grados_borrados = new ArrayList<>();
+                nombre_grados_borrados = new ArrayList<>();
+                
+                grados_agregados = new ArrayList<>();
+                seccion_agregados = new ArrayList<>();
+                nombre_grados_agregados = new ArrayList<>();
+                
+                try {
+                    new Asignar_curso_a_grado(new Frame(), true, base, ID.get(posicion)).show();
+                } catch (SQLException ex) {
+                    Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                Cambio_ciclo();
+            }
+            else{
+                
+                cursos_agregados = new ArrayList<String>();
+                id_cursos_borrados = new ArrayList<String>();
+                nombre_cursos_borrados = new ArrayList<String>();
+                
+                Id_grados_borrados = new ArrayList<>();
+                nombre_grados_borrados = new ArrayList<>();
+                
+                grados_agregados = new ArrayList<>();
+                seccion_agregados = new ArrayList<>();
+                nombre_grados_agregados = new ArrayList<>();
+                try {
+                    new Asignar_curso_a_grado(new Frame(), true, base, ID.get(posicion)).show();
+                } catch (SQLException ex) {
+                    Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                Cambio_ciclo();
+            }
+        }else{
+            try {
+                    new Asignar_curso_a_grado(new Frame(), true, base, ID.get(posicion)).show();
+                } catch (SQLException ex) {
+                    Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            Cambio_ciclo();
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -428,32 +820,41 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
     public void Tabla_Grados(ResultSet consulta) throws SQLException{
         No_editable tabla = new No_editable();
         Id_grado= new ArrayList<String>();
+        Nombre_grado = new ArrayList<String>();
         tabla.addColumn("Nombre");
         tabla.addColumn("Sección");
         String[] fila = new String[2];
         fila[0] = consulta.getString(1);
         fila[1] = consulta.getString(2);
         Id_grado.add(consulta.getString(3));
+        Nombre_grado.add(fila[0]+" "+fila[1]);
         tabla.addRow(fila);
         while(consulta.next()){
             fila[0] = consulta.getString(1);
             fila[1] = consulta.getString(2);
             tabla.addRow(fila);
             Id_grado.add(consulta.getString(3));
+            Nombre_grado.add(fila[0]+" "+fila[1]);
         }
         tabla.isCellEditable(0, 0);
         Grados.setModel(tabla);
     }
     
     public void Tabla_cursos(ResultSet consulta) throws SQLException{
+        Id_curso = new ArrayList<String>();
+        Nombre_curso = new ArrayList<String>();
         No_editable tabla = new No_editable();
         String[] fila = new String[1];
         String catedratico, grado;
         tabla.addColumn("Nombre");
         fila[0] = consulta.getString(1);
+        Nombre_curso.add(fila[0]);
+        Id_curso.add(consulta.getString(2));
         tabla.addRow(fila);
         while (consulta.next()){
             fila[0] = consulta.getString(1);
+            Nombre_curso.add(fila[0]);
+            Id_curso.add(consulta.getString(2));
         tabla.addRow(fila);
         }
     
@@ -480,24 +881,182 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
        Cursos_asignados.setModel(tabla);
     }
     
+    public void Guardar_cambios_grados(){
+        int tamaño_grados = grados_agregados.size();
+        int tamaño_grados_borrados = nombre_grados_borrados.size();
+                     
+        //Se crea la relacion de los nuevos grados
+        Statement Primer_paso;
+        for (int i = 0; i < tamaño_grados; i++) {
+            String Nombre = grados_agregados.get(i);
+            String Seccion = seccion_agregados.get(i);
+           try {
+               // confirmar si ya existe un grado con ese nombre
+               Primer_paso = base.createStatement();
+               ResultSet consulta_1 = Primer_paso.executeQuery("SELECT* FROM grado WHERE grado.Nombre = '"+Nombre+"' AND grado.Seccion = '"+Seccion+"';");
+               //Si ya existe solo se crea una relacion del grado con el ciclo
+               if(consulta_1.next()){
+                   String instruccion_asignacion = "INSERT INTO asignacioncat(asignacioncat.CicloEscolar_Id,asignacioncat.Grado_Id) VALUES ("+ID.get(posicion)+","+consulta_1.getString(1)+");";
+                   PreparedStatement pst = base.prepareStatement(instruccion_asignacion);
+                   pst.executeUpdate();
+
+               }   
+               //Si no existe se crea el registro en grado y luego la relacion del grado con el ciclo
+               else{
+                   //Se crea el grado y obtengo el Id
+                   String instruccion_grado = "INSERT INTO grado(Nombre,Seccion) VALUES('"+Nombre+"','"+Seccion+"');";
+                   PreparedStatement pst = base.prepareStatement(instruccion_grado);
+                   pst.executeUpdate();
+                   Statement aux = base.createStatement();
+                   ResultSet Id = aux.executeQuery("SELECT Id FROM grado WHERE grado.Nombre = '"+Nombre+"' AND grado.Seccion = '"+Seccion+"';");
+                   Id.next();
+
+                   //Creo la relacion del grado con ciclo
+                   String instruccion_asignacion = "INSERT INTO asignacioncat(asignacioncat.CicloEscolar_Id,asignacioncat.Grado_Id) VALUES ("+ID.get(posicion)+","+Id.getString(1)+");";
+                   PreparedStatement psta = base.prepareStatement(instruccion_asignacion);
+                   psta.executeUpdate();
+               }
+               } catch (SQLException ex) {
+               Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
+           }
+        }
+        for (int i = 0; i < tamaño_grados_borrados; i++) {
+            String id = Id_grados_borrados.get(i);
+            
+           try {  
+                   //borro la relacion que tiene el grado con el ciclo
+                   String instruccion_grado = "DELETE FROM asignacioncat WHERE asignacioncat.CicloEscolar_Id = "+ID.get(posicion) +" AND asignacioncat.Grado_Id = "+id+";";
+                   PreparedStatement pst = base.prepareStatement(instruccion_grado);
+                   pst.executeUpdate();
+                   
+               
+               } catch (SQLException ex) {
+               Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
+           }
+        }                
+    }
+    
+    public void Guardar_cambios_cursos(){
+       int tamaño_cursos = cursos_agregados.size();
+       int tamaño_cursos_borrados = id_cursos_borrados.size();
+        for (int i = 0; i < tamaño_cursos; i++) {
+            String Nombre = cursos_agregados.get(i);
+                Statement Primer_paso;
+                try {
+                    // confirmar si ya existe un curso con ese nombre
+                    Primer_paso = base.createStatement();
+                    ResultSet consulta_1 = Primer_paso.executeQuery("SELECT* FROM curso WHERE curso.Nombre = '"+Nombre+"';");
+                    //Si ya existe solo se crea una relacion del curso con el ciclo
+                    if(consulta_1.next()){
+                        String instruccion_asignacion = "INSERT INTO asignacioncat(asignacioncat.CicloEscolar_Id,asignacioncat.Curso_Id) VALUES ("+ID.get(posicion)+","+consulta_1.getString(1)+");";
+                        PreparedStatement pst = base.prepareStatement(instruccion_asignacion);
+                        pst.executeUpdate();
+
+                    }   
+                    //Si no existe se crea el registro en curso y luego la relacion del curso con el ciclo
+                    else{
+                        //Se crea el curso y obtengo el Id
+                        String instruccion_curso = "INSERT INTO curso(Nombre) VALUES('"+Nombre+"');";
+                        PreparedStatement pst = base.prepareStatement(instruccion_curso);
+                        pst.executeUpdate();
+                        Statement aux = base.createStatement();
+                        ResultSet Id = aux.executeQuery("SELECT Id FROM curso WHERE curso.Nombre = '"+Nombre+"';");
+                        Id.next();
+
+                        //Creo la relacion del curso con ciclo
+                        String instruccion_asignacion = "INSERT INTO asignacioncat(asignacioncat.CicloEscolar_Id,asignacioncat.Curso_Id) VALUES ("+ID.get(posicion)+","+Id.getString(1)+");";
+                        PreparedStatement psta = base.prepareStatement(instruccion_asignacion);
+                        psta.executeUpdate();
+                    }
+                    
+                    } catch (SQLException ex) {
+                    Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
+                }
+           
+        }
+        
+        for (int i = 0; i < tamaño_cursos_borrados; i++) {
+            try {
+                    String Id = id_cursos_borrados.get(i);
+                    //Se crea el curso y obtengo el Id
+                        String instruccion_curso = "DELETE FROM asignacioncat WHERE asignacioncat.CicloEscolar_Id = "+ID.get(posicion)+" AND asignacioncat.Curso_Id = "+Id+";";
+                        PreparedStatement pst = base.prepareStatement(instruccion_curso);
+                        pst.executeUpdate();                    
+                    } catch (SQLException ex) {
+                    Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
+                }
+        }
+        
+    }
+    public void Cambio_ciclo(){
+        Id_curso = new ArrayList<String>();
+        Nombre_curso = new ArrayList<String>();
+        Id_grado = new ArrayList<String>();
+        Nombre_grado = new ArrayList<String>();
+        if(posicion != -1){
+        String Id = ID.get(posicion);
+        Statement a;
+        try {
+            a = base.createStatement();
+            ResultSet consulta_Grados = a.executeQuery("SELECT grado.Nombre,grado.Seccion, grado.Id FROM AsignacionCAT INNER JOIN grado ON AsignacionCAT.Grado_Id = grado.Id WHERE AsignacionCAT.CicloEscolar_Id="+Id+" AND AsignacionCAT.Curso_Id is null ANd AsignacionCAT.Catedratico_Id is null;");
+            a = base.createStatement();
+            ResultSet consulta_Curso = a.executeQuery("SELECT curso.Nombre, curso.Id FROM asignacioncat INNER JOIN curso ON asignacioncat.Curso_Id = curso.Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id WHERE asignacioncat.CicloEscolar_Id = "+Id+" AND asignacioncat.Grado_Id is null AND asignacioncat.Catedratico_Id is null;");
+            if(consulta_Grados.next()){
+                Tabla_Grados(consulta_Grados);
+            }
+            else{
+                No_editable tabla = new No_editable();
+                tabla.addColumn("Nombre");
+                tabla.addColumn("Sección");
+                Grados.setModel(tabla);
+            }
+            if(consulta_Curso.next()){
+                Tabla_cursos(consulta_Curso);
+            }
+            else{
+                No_editable tabla = new No_editable();
+                String[] fila = new String[3];
+                String catedratico, grado;
+                tabla.addColumn("Nombre");
+               // tabla.addColumn("Catedratico Asignado");
+               // tabla.addColumn("Grado Asignado");
+                Cursos.setModel(tabla);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        }
+    }
+    
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable Cursos;
     private javax.swing.JTable Cursos_asignados;
     private javax.swing.JTable Grados;
     private javax.swing.JMenu Menu_crear;
+    private javax.swing.JTextField Tx_Nombre_curso;
+    private javax.swing.JTextField Tx_Nombre_grado;
+    private javax.swing.JTextField Tx_seccion;
+    private javax.swing.JButton agregar_curso;
+    private javax.swing.JButton agregar_grado;
     private javax.swing.JComboBox<String> ciclo;
+    private javax.swing.JButton eliminar_curso;
+    private javax.swing.JButton eliminar_grado;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JMenu jMenu2;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
