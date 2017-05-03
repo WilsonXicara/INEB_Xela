@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -24,13 +25,15 @@ public class CambiarContra extends javax.swing.JFrame {
      */
     Connection conexcion;
     ResultSet User;
+    JFrame Ventanita;
     public CambiarContra() {
         initComponents();
     }
-    public CambiarContra(Connection conec, ResultSet admin) {
+    public CambiarContra(Connection conec, ResultSet admin,JFrame ventana) {
         initComponents();
         conexcion = conec;
         User = admin;
+        Ventanita = ventana;
     }
 
     /**
@@ -159,6 +162,7 @@ public class CambiarContra extends javax.swing.JFrame {
                         if (a>0){
                             System.out.println("Guardado");
                             JOptionPane.showMessageDialog(null, "¡Se ha cambiado la contraseña de " + User.getString("NombreUsuario"));
+                            Ventanita.setEnabled(true);
                             this.dispose();
                         }
                     } catch (SQLException ex) {
@@ -179,6 +183,7 @@ public class CambiarContra extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
+        Ventanita.setEnabled(true);
         this.dispose();
     }//GEN-LAST:event_formWindowClosing
 

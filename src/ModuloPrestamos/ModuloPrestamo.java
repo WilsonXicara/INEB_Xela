@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -29,15 +30,17 @@ public class ModuloPrestamo extends javax.swing.JFrame {
     Connection conexcion;
     DefaultTableModel modelo;
     ResultSet Packs = null;
+    JFrame Ventanita;
     int vId = 0;
     public ModuloPrestamo() {
         initComponents();
     }
     
-    public ModuloPrestamo(Connection conec){
+    public ModuloPrestamo(Connection conec,JFrame ventana){
         initComponents();
         modelo = (DefaultTableModel) Paquetes.getModel();
         conexcion = conec;
+        Ventanita = ventana;
         //revisar eso y la funcion si sirven
         DatosPaquetes();
     }
@@ -360,6 +363,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
+        Ventanita.setEnabled(true);
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -378,6 +382,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         // TODO add your handling code here:
+        Ventanita.setEnabled(true);
         this.dispose();
     }//GEN-LAST:event_formWindowClosed
     public void DatosPaquetes(){
