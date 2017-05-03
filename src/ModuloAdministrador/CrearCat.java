@@ -82,7 +82,7 @@ public class CrearCat extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Nombres", "Apellidos", "DPI"
+                "ID", "Nombres", "Apellidos", "DPI"
             }
         ));
         jScrollPane1.setViewportView(Datos);
@@ -257,9 +257,9 @@ public class CrearCat extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "No se ha seleccionado ninguna fila");
         }
         else{
-            nomb = Datos.getValueAt(Datos.getSelectedRow(), 0).toString();
-            ape = Datos.getValueAt(Datos.getSelectedRow(), 1).toString();
-            dpi = Datos.getValueAt(Datos.getSelectedRow(), 2).toString();
+            nomb = Datos.getValueAt(Datos.getSelectedRow(), 1).toString();
+            ape = Datos.getValueAt(Datos.getSelectedRow(), 2).toString();
+            dpi = Datos.getValueAt(Datos.getSelectedRow(), 3).toString();
             Nombre.setText(nomb + " " + ape);
             Dpi.setText(dpi);
             VarId = Integer.parseInt(Datos.getValueAt(Datos.getSelectedRow(), 0).toString());
@@ -289,10 +289,6 @@ public class CrearCat extends javax.swing.JFrame {
                 if (c>0){
                     System.out.println("Guardado");
                     JOptionPane.showMessageDialog(null, "¡Se ha creado el Usuario " + User.getText() + " de tipo 3!" );
-                    int filas = Datos.getRowCount();
-                    for (int i = 0;filas>i; i++) {
-                        modelo.removeRow(0);
-                    }
                     DatosCat(); //revisar la funcion
                 }
             } catch (SQLException ex) {
