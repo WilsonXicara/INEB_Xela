@@ -99,7 +99,7 @@ public class CrearCat extends javax.swing.JFrame {
         });
 
         jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton2.setText("Salir");
+        jButton2.setText("Regresar");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -287,6 +287,10 @@ public class CrearCat extends javax.swing.JFrame {
             try (PreparedStatement pst = conexion.prepareStatement(Instruccion)) {
                 c = pst.executeUpdate();
                 if (c>0){
+                    int filas = Datos.getRowCount();
+                    for (int i = 0;filas>i; i++) {
+                        modelo.removeRow(0);
+                    }
                     System.out.println("Guardado");
                     JOptionPane.showMessageDialog(null, "¡Se ha creado el Usuario " + User.getText() + " de tipo 3!" );
                     DatosCat(); //revisar la funcion

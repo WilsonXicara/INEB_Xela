@@ -109,8 +109,10 @@ public class Usuarios extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        this.setEnabled(false);
         new CrearAdmin(conexion).setVisible(true);
-        this.dispose();
+        this.setEnabled(true);
+        //this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -120,8 +122,10 @@ public class Usuarios extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        this.setEnabled(false);
         new CrearCat(conexion).setVisible(true);
-        this.dispose();
+        this.setEnabled(false);
+        //this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing

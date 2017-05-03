@@ -105,6 +105,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         Telefono = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -127,10 +128,15 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 formWindowClosing(evt);
             }
         });
+        getContentPane().setLayout(null);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Menú Administrador");
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(0, 13, 855, 22);
+        getContentPane().add(jLabel11);
+        jLabel11.setBounds(1024, 637, 0, 0);
 
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton1.setText("Cerrar Sesión");
@@ -140,6 +146,22 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
+        getContentPane().add(jButton1);
+        jButton1.setBounds(333, 401, 175, 38);
+        getContentPane().add(jLabel12);
+        jLabel12.setBounds(1024, 537, 0, 0);
+        getContentPane().add(jLabel13);
+        jLabel13.setBounds(1003, 537, 0, 0);
+        getContentPane().add(jLabel14);
+        jLabel14.setBounds(619, 544, 0, 0);
+        getContentPane().add(jLabel15);
+        jLabel15.setBounds(612, 537, 0, 0);
+        getContentPane().add(jLabel16);
+        jLabel16.setBounds(1010, 527, 0, 0);
+        getContentPane().add(jLabel17);
+        jLabel17.setBounds(1017, 527, 0, 0);
+        getContentPane().add(jLabel18);
+        jLabel18.setBounds(262, 637, 256, 0);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Información Administrdor"));
 
@@ -251,7 +273,12 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 .addContainerGap(24, Short.MAX_VALUE))
         );
 
+        getContentPane().add(jPanel1);
+        jPanel1.setBounds(30, 70, 855, 195);
+
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        getContentPane().add(jLabel2);
+        jLabel2.setBounds(0, 539, 0, 0);
 
         jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton2.setText("Cambiar Contraseña");
@@ -260,6 +287,12 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
+        getContentPane().add(jButton2);
+        jButton2.setBounds(330, 340, 175, 37);
+
+        jLabel9.setIcon(new javax.swing.ImageIcon("C:\\Users\\SERGIO MALDONADO\\Documents\\GitHub\\INEB_Xela\\src\\Imagenes\\login_icon.png")); // NOI18N
+        getContentPane().add(jLabel9);
+        jLabel9.setBounds(599, 268, 256, 260);
 
         jMenu1.setText("Crear");
         jMenu1.setPreferredSize(new java.awt.Dimension(40, 19));
@@ -365,88 +398,6 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
         setJMenuBar(jMenuBar1);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel13)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel16)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel17)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel12)))
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(612, 612, 612)
-                .addComponent(jLabel15)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel14)
-                .addGap(417, 417, 417))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(33, 33, 33)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(20, 20, 20))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(262, 262, 262)
-                            .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(527, 527, 527)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel16)
-                            .addComponent(jLabel17))
-                        .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel12)
-                            .addComponent(jLabel13))
-                        .addGap(0, 0, 0)
-                        .addComponent(jLabel15)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel14)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel11))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1)
-                        .addGap(31, 31, 31)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(33, 33, 33)
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(68, 68, 68)
-                                .addComponent(jLabel18))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel2)
-                                .addGap(98, 98, 98)))))
-                .addContainerGap())
-        );
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -455,8 +406,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             // TODO add your handling code here:
             if(User.getString("Tipo").equals("1")){
                 //Si se puede llamar a la ventana
+                this.setEnabled(false);
                 new Usuarios(conexcion).setVisible(true);
                 //this.dispose();
+                this.setEnabled(true);
             }
             else{
                 JOptionPane.showMessageDialog(null, "¡No tiene permisos para realizar esta acción!");
@@ -479,7 +432,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             // TODO add your handling code here:
             String tipo = User.getString("Tipo");
             if(tipo.equals("1")){
+                this.setEnabled(false);
                 new ModuloPrestamo(conexcion).setVisible(true);
+                this.setEnabled(true);
                 //this.setVisible(false);
             }
             else{
@@ -492,9 +447,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
+        this.setEnabled(false);
         new Mostrar_Datos(conexcion).setVisible(true);
         //this.setVisible(false);
-        
+        this.setEnabled(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -503,8 +459,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here:
+        this.setEnabled(false);
         Mostrar_Datos ven = new Mostrar_Datos(conexcion);
         ven.setVisible(true);
+        this.setEnabled(true);
        // new Catedraticos(conexcion, this).setVisible(true);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
@@ -533,13 +491,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem10ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        this.setVisible(false);
+        //this.setVisible(false);
         Crear_Ciclo_Escolar_1 a;
         try {
             if(User.getString("Tipo").equals("1")){
                 a = new Crear_Ciclo_Escolar_1(new Frame(),true, conexcion);
                 a.setVisible(true);
-                this.setVisible(true);
+                this.setEnabled(false);
+                //this.setVisible(true);
             }
             else{
                 JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
@@ -552,7 +511,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         // TODO add your handling code here:
+        this.setEnabled(false);
         new ModuloPaquetes(conexcion).setVisible(true);
+        this.setEnabled(true);
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
 
@@ -563,7 +524,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        this.setEnabled(false);
         new CambiarContra(conexcion,User).setVisible(true);
+        this.setEnabled(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void item_asignacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_asignacionesActionPerformed
@@ -646,6 +609,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
