@@ -429,6 +429,10 @@ public class ModuloPaquetes extends javax.swing.JFrame {
                                     try (PreparedStatement pst2 = conexcion.prepareStatement(Instruccion2)) {
                                         b = pst2.executeUpdate();
                                         if (b>0){
+                                            int filas = Libros.getRowCount();
+                                            for (int i = 0;filas>i; i++) {
+                                                modelo.removeRow(0);
+                                            }
                                             System.out.println("Guardado");
                                             //JOptionPane.showMessageDialog(null, "¡El libro "+ CodLibro + " se ha agregado al paquete "+ CodPack + " Exitosamente!");
                                             JOptionPane.showMessageDialog(null, "¡Se ha Creado el paquete " + codPaquete + " Exitosamente!");
@@ -456,7 +460,9 @@ public class ModuloPaquetes extends javax.swing.JFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
+        this.setEnabled(false);
         new ListadoPaquetes(conexcion).setVisible(true);
+        this.setEnabled(true);
         //this.dispose();
     }//GEN-LAST:event_jButton5ActionPerformed
 

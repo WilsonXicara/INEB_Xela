@@ -9,7 +9,6 @@ import Catedratico.ModuloPrincipalCatedratico;
 import Conexion.Conec_BD;
 import Conexion.conexion;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
-
 import ModuloAdministrador.ModuloPrincipalAdmin;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -229,10 +228,10 @@ public class Principal extends javax.swing.JDialog {
                 if(contraseña_entrada.equals(contraseña)){
                     if(tipo.equals("3")){
                         this.dispose();
-                        b.previous();
+                        //b.previous();
                         ModuloPrincipalCatedratico s = new ModuloPrincipalCatedratico(conexion, b);
                         s.setVisible(true);
-                        this.show(true);
+                        //this.show(true);
                     }
                     else{
                         Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
@@ -280,10 +279,10 @@ public class Principal extends javax.swing.JDialog {
                     if(contraseña_entrada.equals(contraseña)){
                         if(tipo.equals("3")){
                             this.dispose();
-                            b.previous();
+                            //b.previous();
                             ModuloPrincipalCatedratico s = new ModuloPrincipalCatedratico(conexion, b);
                             s.setVisible(true);
-                            this.pack();
+                            //this.pack();
                         }
                         else{
                             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);

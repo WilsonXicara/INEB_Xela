@@ -94,7 +94,7 @@ public class CrearAdmin extends javax.swing.JFrame {
         jLabel1.setText("Crear Usuario Administrador");
 
         jButton3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton3.setText("Regresar Menú Administrador");
+        jButton3.setText("Regresar");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
