@@ -116,12 +116,13 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
         menu_ver = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
-        jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
         menu_asignaciones = new javax.swing.JMenu();
         item_asignaciones = new javax.swing.JMenuItem();
         item_reasignaciones = new javax.swing.JMenuItem();
@@ -332,6 +333,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         menu_crear.add(jMenuItem3);
 
+        jMenuItem7.setText("Prestamos");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
+        menu_crear.add(jMenuItem7);
+
         jMenuItem6.setText("Paquete Libro");
         jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -361,14 +370,6 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         menu_ver.add(jMenuItem5);
 
-        jMenuItem7.setText("Prestamos");
-        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem7ActionPerformed(evt);
-            }
-        });
-        menu_ver.add(jMenuItem7);
-
         jMenuItem9.setText("Ciclo Escolar");
         jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -376,6 +377,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             }
         });
         menu_ver.add(jMenuItem9);
+
+        jMenuItem8.setText("Usuarios");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem8ActionPerformed(evt);
+            }
+        });
+        menu_ver.add(jMenuItem8);
 
         jMenuBar1.add(menu_ver);
 
@@ -538,6 +547,12 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         asignaciones.setVisible(true);
     }//GEN-LAST:event_item_reasignacionesActionPerformed
 
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        // TODO add your handling code here:
+        this.setEnabled(false);
+        new ListadoUsuarios(conexcion,this).setVisible(true);
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
+
 
     /**
      * @param args the command line arguments
@@ -614,6 +629,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JMenu menu_asignaciones;

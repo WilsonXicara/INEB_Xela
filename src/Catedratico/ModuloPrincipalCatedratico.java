@@ -361,13 +361,14 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
         // TODO add your handling code here:
             Cambiar_contra s;
         try {
-            s = new Cambiar_contra(conexion,respuesta);
+            this.setEnabled(false);
+            s = new Cambiar_contra(conexion,respuesta,this);
             s.setVisible(true);// Llama a la del Andrés
         } catch (SQLException ex) {
             Logger.getLogger(ModuloPrincipalCatedratico.class.getName()).log(Level.SEVERE, null, ex);
         }
             
-            this.dispose();
+            //this.dispose();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
