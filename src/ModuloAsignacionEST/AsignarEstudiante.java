@@ -404,13 +404,12 @@ public class AsignarEstudiante extends javax.swing.JDialog {
                     ciclo_escolar.setEnabled(false);    // Bloqueo el JComboBox para evitar accesos innecesarios a la Base de Datos
                     grado.setEnabled(false);    // Bloqueo el JComboBox para evitar accesos innecesarios a la Base de Datos
                     aula.setEnabled(false);     // Bloqueo el campo donde se ingresa el Aula
-                    JOptionPane.showMessageDialog(this, ((paraReasignacion)?"Rea":"A")+"signación creada exitosamente", "Información", JOptionPane.INFORMATION_MESSAGE);
+                    this.dispose(); // Cierro el JDialog
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(this, "Error al intentar crear la Asignación:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 //                    Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-                
         }
     }//GEN-LAST:event_crear_asignacionActionPerformed
     /**
