@@ -375,31 +375,36 @@ public class CrearAdmin extends javax.swing.JFrame {
                 } catch (SQLException ex) {
                     Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                resultado = sentencia.executeQuery("SELECT * FROM administrador WHERE Dpi = '" + Dpi + "';");
-                resultado.next();
-                Instruccion2 = "INSERT INTO telefono (Telefono,Administrador_Id) VALUES ('" + Tel + "'," + resultado.getString(1) + ");";
-                Instruccion3 = "INSERT INTO usuarios (NombreUsuario,Contrasenia,Tipo,Administrador_Id) VALUES ('" + Usuario + "','" + Contra + "','2'," + resultado.getString(1) + ");";
-                //Ingresamos el numero telefonico a la tabla telefonos
-                int  b;
-                try (PreparedStatement pst = conexion.prepareStatement(Instruccion2)) {
-                    b = pst.executeUpdate();
-                    if (b>0){
-                        System.out.println("Guardado");
-                    }
-                } catch (SQLException ex) {
-                    Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
+                if(Tel.equals("")){
+                    
                 }
-                //Ingresamos a la tabla usuarios segun el tipo
-                int  c;
-                try (PreparedStatement pst = conexion.prepareStatement(Instruccion3)) {
-                    c = pst.executeUpdate();
-                    if (c>0){
-                        System.out.println("Guardado");
-                        JOptionPane.showMessageDialog(null, "¡Se ha creado el Usuario " + Usuario + " de tipo 2!" );
+                else{
+                    Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                    resultado = sentencia.executeQuery("SELECT * FROM administrador WHERE Dpi = '" + Dpi + "';");
+                    resultado.next();
+                    Instruccion2 = "INSERT INTO telefono (Telefono,Administrador_Id) VALUES ('" + Tel + "'," + resultado.getString(1) + ");";
+                    Instruccion3 = "INSERT INTO usuarios (NombreUsuario,Contrasenia,Tipo,Administrador_Id) VALUES ('" + Usuario + "','" + Contra + "','2'," + resultado.getString(1) + ");";
+                    //Ingresamos el numero telefonico a la tabla telefonos
+                    int  b;
+                    try (PreparedStatement pst = conexion.prepareStatement(Instruccion2)) {
+                        b = pst.executeUpdate();
+                        if (b>0){
+                            System.out.println("Guardado");
+                        }
+                    } catch (SQLException ex) {
+                        Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                } catch (SQLException ex) {
-                    Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
+                    //Ingresamos a la tabla usuarios segun el tipo
+                    int  c;
+                    try (PreparedStatement pst = conexion.prepareStatement(Instruccion3)) {
+                        c = pst.executeUpdate();
+                        if (c>0){
+                            System.out.println("Guardado");
+                            JOptionPane.showMessageDialog(null, "¡Se ha creado el Usuario " + Usuario + " de tipo 2!" );
+                        }
+                    } catch (SQLException ex) {
+                        Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         } catch (SQLException ex) {
