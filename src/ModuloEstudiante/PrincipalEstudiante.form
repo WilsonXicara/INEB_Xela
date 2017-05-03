@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.8" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
-    <Property name="title" type="java.lang.String" value="M&#xf3;dulo Estudiante"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -24,18 +23,18 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="214" max="-2" attributes="0"/>
-                      <Component id="ver_estudiante" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="185" max="-2" attributes="0"/>
-                  </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="crear_estudiante" min="-2" pref="393" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
+                      <Component id="ver_estudiante" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
                       <Component id="asignar_estudiantes" min="-2" pref="393" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="reasignar_estudiantes" min="-2" pref="393" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
@@ -48,11 +47,14 @@
               <EmptySpace min="-2" pref="127" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="crear_estudiante" alignment="3" min="-2" pref="65" max="-2" attributes="0"/>
-                  <Component id="asignar_estudiantes" alignment="3" min="-2" pref="65" max="-2" attributes="0"/>
+                  <Component id="ver_estudiante" alignment="3" min="-2" pref="65" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="ver_estudiante" min="-2" pref="65" max="-2" attributes="0"/>
-              <EmptySpace pref="136" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="asignar_estudiantes" alignment="3" min="-2" pref="65" max="-2" attributes="0"/>
+                  <Component id="reasignar_estudiantes" alignment="3" min="-2" pref="65" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace pref="101" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -87,11 +89,23 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Tahoma" size="24" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Asignar Estudiantes"/>
+        <Property name="text" type="java.lang.String" value="Asignar Nuevos Estudiantes"/>
         <Property name="toolTipText" type="java.lang.String" value="Permite crear un nuevo registro para asignar un Estudiante a un Ciclo Escolar y a un Grado.&#xa;Esta funci&#xf3;n es &#xfa;til en caso de que a la hora de crear un nuevo estudiante no se crea la Asignaci&#xf3;n correspondiete (s&#xf3;lo mostrar&#xe1; el listado de los Estudiantes que a&#xfa;n no han sido asignados)."/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="asignar_estudiantesActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="reasignar_estudiantes">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Tahoma" size="24" style="1"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Reasignar Estudiantes"/>
+        <Property name="toolTipText" type="java.lang.String" value="Permite crear un nuevo registro para asignar un Estudiante a un Ciclo Escolar y a un Grado.&#xa;Esta funci&#xf3;n es &#xfa;til en caso de que a la hora de crear un nuevo estudiante no se crea la Asignaci&#xf3;n correspondiete (s&#xf3;lo mostrar&#xe1; el listado de los Estudiantes que a&#xfa;n no han sido asignados)."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="reasignar_estudiantesActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

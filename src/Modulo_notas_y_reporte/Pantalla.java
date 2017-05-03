@@ -5,7 +5,6 @@
  */
 package Modulo_notas_y_reporte;
 
-import Modulo_notas_y_reporte.ModuloCurso;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,8 +30,9 @@ public class Pantalla extends javax.swing.JFrame {
     int posicion;
     int Id_curso;
     int Id_cat;
+    int Id_cicloescolar;
     String cicloesc;
-    ResultSet est;
+    ResultSet est, b;
     /**
      * Creates new form Pantalla
      */
@@ -41,54 +41,34 @@ public class Pantalla extends javax.swing.JFrame {
     
     //es este
     public Pantalla() throws SQLException {
-        initComponents();
-        /*conexion = cn.Conectar();
+        /*initComponents();
+        conexion = cn.Conectar();
         //validar(tipo);
         limpiar();
         deshabilitar();
-        //llenar("");
+        llenar();
         //cargar("");
         Calendar fecha = new GregorianCalendar();
         año = Integer.toString(fecha.get(Calendar.YEAR));
-        Cargar_Datos();
-        Cargar_Datos_2();
         posicion = 0;
         //Cargar_Datos_Estudiante();*/
     }
-    public Pantalla(Connection conex, int cat, int cur) throws SQLException {
+    public Pantalla(Connection conex, int cat, int cur, int ciclo, ResultSet a) throws SQLException {
         initComponents();
-        conexion = cn.Conectar();
+        conexion = conex;
         limpiar();
         deshabilitar();
-        //llenar("");
         //cargar("");
         Calendar fecha = new GregorianCalendar();
         año = Integer.toString(fecha.get(Calendar.YEAR));
-        Cargar_Datos();
         posicion = 0;
-        Cargar_Datos_2();
+        Id_cicloescolar = ciclo;
         Id_curso = cur;
         Id_cat = cat;
+        b = a;
+        llenar();
     }
-    
-    public void Cargar_Datos() throws SQLException
-    {
-        boolean encontrado = false;
-        ID = new ArrayList<String>();
-        Statement a = conexion.createStatement();
-        ResultSet consulta = a.executeQuery("SELECT anio,Id FROM CicloEscolar ORDER BY anio");
-        while(consulta.next())
-        {
-            String nuevo = consulta.getString(1);
-            ID.add(consulta.getString(2));
-            if(nuevo.equals(año)) encontrado = true;
-            ciclo.addItem(nuevo);
-        }
-        if(encontrado == true)
-        {
-            ciclo.setSelectedItem(año);
-        }
-    }
+
     /*public void Cargar_Datos_Estudiante() throws SQLException
     {
         //EstudianteCB.removeAllItems();
@@ -107,24 +87,6 @@ public class Pantalla extends javax.swing.JFrame {
         }
         
     }*/
-    public void Cargar_Datos_2() throws SQLException
-    {
-        boolean encontrado = false;
-        ID1 = new ArrayList<String>();
-        Statement a = conexion.createStatement();
-        ResultSet consulta = a.executeQuery("SELECT anio,Id FROM CicloEscolar ORDER BY anio");
-        while(consulta.next())
-        {
-            String nuevo = consulta.getString(1);
-            ID1.add(consulta.getString(2));
-            if(nuevo.equals(año)) encontrado = true;
-            ciclo1.addItem(nuevo);
-        }
-        if(encontrado == true)
-        {
-            ciclo1.setSelectedItem(año);
-        }
-    }
     
     void validar(int tip)
     {
@@ -172,45 +134,52 @@ public class Pantalla extends javax.swing.JFrame {
         //CursoID.requestFocus();
     }
 
-    void llenar(String valor) {
+    
+    void llenar() {
         try {
-            String j = ciclo.getSelectedItem().toString();
-            conexion = cn.Conectar();
-            String[] titulos = {"ID de Curso", "ID de Estudiante", "Nota 1", "Nota 2", "Nota 3", "Nota 4", "Nota Final", "Nota Recuperacion"};
-            String sql = "SELECT notas.* FROM notas INNER JOIN estudiante ON notas.Estudiante_Id = estudiante.Id INNER JOIN asignacionest ON asignacionest.Estudiante_Id = estudiante.Id INNER JOIN cicloescolar ON asignacionest.CicloEscolar_Id = cicloescolar.Id WHERE cicloescolar.Anio = " + j + " AND notas.Curso_Id LIKE '%"+valor+"%'";
+            //String j = ciclo.getSelectedItem().toString();
+            //conexion = cn.Conectar();
+            String[] titulos = {"a","Codigo Personal", "Apellidos", "Nombre", "Nota 1", "Nota 2", "Nota 3", "Nota 4", "Nota Final", "Nota Recuperacion"};
+            String sql = "SELECT Notas.ID, Estudiante.CodigoPersonal, Estudiante.Apellidos, Estudiante.Nombres, notas.Nota1, notas.Nota2, notas.Nota3, notas.Nota4, notas.NotaFinal, notas.NotaRecuperacion FROM notas INNER JOIN estudiante ON notas.Estudiante_Id = estudiante.Id INNER JOIN asignacionest ON asignacionest.Estudiante_Id = estudiante.Id INNER JOIN cicloescolar ON asignacionest.CicloEscolar_Id = cicloescolar.Id WHERE asignacionest.CicloEscolar_Id = " + Id_cicloescolar + " AND notas.Curso_Id = "+ Id_curso +" ORDER BY Estudiante.Apellidos ASC;";
             model = new DefaultTableModel(null, titulos);
             sent = conexion.createStatement();
             ResultSet rs = sent.executeQuery(sql);
 
-            String[] fila = new String[8];
+            String[] fila = new String[10];
 
             while (rs.next()) {
-                fila[0] = rs.getString("Curso_Id");
-                fila[1] = rs.getString("Estudiante_Id");
-                fila[2] = rs.getString("Nota1");
-                fila[3] = rs.getString("Nota2");
-                fila[4] = rs.getString("Nota3");
-                fila[5] = rs.getString("Nota4");
-                fila[6] = rs.getString("NotaFinal");
-                fila[7] = rs.getString("NotaRecuperacion");
+                fila[0] = rs.getString("Notas.ID");
+                fila[1] = rs.getString("Estudiante.CodigoPersonal");
+                fila[2] = rs.getString("Estudiante.Apellidos");
+                fila[3] = rs.getString("Estudiante.Nombres");
+                fila[4] = rs.getString("Notas.Nota1");
+                fila[5] = rs.getString("Notas.Nota2");
+                fila[6] = rs.getString("Notas.Nota3");
+                fila[7] = rs.getString("Notas.Nota4");
+                fila[8] = rs.getString("Notas.NotaFinal");
+                fila[9] = rs.getString("Notas.NotaRecuperacion");
 
                 model.addRow(fila);
             }
             modificacion.setModel(model);
+            modificacion.getColumnModel().getColumn(0).setMaxWidth(0);
+            modificacion.getColumnModel().getColumn(0).setMinWidth(0);
+            modificacion.getColumnModel().getColumn(0).setPreferredWidth(0);
+            modificacion.getColumnModel().getColumn(0).setResizable(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
     //funcion que obtiene el año del pc
     
-    void cargar(String valor)
+    /*void cargar(String valor)
     {
         try {
-            String j = ciclo.getSelectedItem().toString();
-            conexion = cn.Conectar();
+            //String j = ciclo.getSelectedItem().toString();
+            //conexion = cn.Conectar();
             String [] titulos={"ID (código)", "Nombre", "Código catedrático"};
             String [] fila = new String [3];
-            String sql = "SELECT curso.Id, curso.Nombre, asignacioncat.Catedratico_Id FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id WHERE cicloescolar.anio = '" + j + "' AND Curso.Nombre LIKE '%" + valor + "%';";
+            String sql = "SELECT curso.Id, curso.Nombre, asignacioncat.Catedratico_Id FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id WHERE cicloescolar.anio = '"  + "' AND Curso.Nombre LIKE '%" + valor + "%';";
         
             model = new DefaultTableModel(null, titulos);
             sent = conexion.createStatement();
@@ -228,9 +197,9 @@ public class Pantalla extends javax.swing.JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }  
-    }
+    }*/
     
-    void prueba()
+    /*void prueba()
     {
         if(ciclo.getSelectedIndex()!=-1){
         posicion = ciclo.getSelectedIndex();
@@ -238,8 +207,8 @@ public class Pantalla extends javax.swing.JFrame {
         //cicloesc = Id;
             try {
                 //String j = ciclo.getSelectedItem().toString();
-                conexion = cn.Conectar();
-                String [] titulos={"ID (código)", "Nombre", "Código catedrático"};
+                //conexion = cn.Conectar();
+                String [] titulos={"Catedratico", "Curso", "Código catedrático"};
                 String [] fila = new String [3];
                 String sql = "SELECT curso.Id, curso.Nombre, asignacioncat.Catedratico_Id FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id WHERE asignacioncat.CicloEscolar_Id = " + Id + ";"; // AND Curso.Id = " + Id_curso + "
 
@@ -261,7 +230,7 @@ public class Pantalla extends javax.swing.JFrame {
                 e.printStackTrace();
             }  
         }
-    }
+    }*/
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -274,32 +243,22 @@ public class Pantalla extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jPanel1 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        modificacion = new javax.swing.JTable();
+        Modificar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
         Nota1 = new javax.swing.JTextField();
         Nota2 = new javax.swing.JTextField();
         Nota3 = new javax.swing.JTextField();
         Nota4 = new javax.swing.JTextField();
         Notafinal = new javax.swing.JTextField();
         NotaR = new javax.swing.JTextField();
-        jPanel2 = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        Cursos = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jLabel11 = new javax.swing.JLabel();
-        ciclo = new javax.swing.JComboBox();
-        jLabel12 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        modificacion = new javax.swing.JTable();
-        Modificar = new javax.swing.JButton();
-        ciclo1 = new javax.swing.JComboBox();
-        jLabel9 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -323,139 +282,6 @@ public class Pantalla extends javax.swing.JFrame {
                 formWindowClosing(evt);
             }
         });
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ingreso de notas", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(51, 51, 255))); // NOI18N
-
-        jLabel1.setText("Nota 1");
-
-        jLabel2.setText("Nota 2");
-
-        jLabel3.setText("Nota 3");
-
-        jLabel4.setText("Nota 4");
-
-        jLabel5.setText("Nota final");
-
-        jLabel6.setText("Nota recuperación");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(Notafinal, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(NotaR, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(Nota1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(Nota2, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(Nota3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(Nota4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(Nota1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(Nota2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(Nota3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(Nota4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(Notafinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(NotaR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
-
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Visualizar datos de curso", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), java.awt.Color.blue)); // NOI18N
-
-        Cursos.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-
-            }
-        ));
-        jScrollPane3.setViewportView(Cursos);
-
-        jButton1.setText("Ir");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        jLabel11.setText("Ver estudiantes");
-
-        ciclo.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cicloItemStateChanged(evt);
-            }
-        });
-
-        jLabel12.setText("Año");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel11)
-                        .addGap(55, 55, 55))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(145, 145, 145)
-                .addComponent(jLabel12)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(71, 71, 71))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel11)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Modificación de notas", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), java.awt.Color.blue)); // NOI18N
 
@@ -481,13 +307,17 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
 
-        ciclo1.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                ciclo1ItemStateChanged(evt);
-            }
-        });
+        jLabel1.setText("Nota 1");
 
-        jLabel9.setText("Año");
+        jLabel2.setText("Nota 2");
+
+        jLabel3.setText("Nota 3");
+
+        jLabel4.setText("Nota 4");
+
+        jLabel5.setText("Nota final");
+
+        jLabel6.setText("Nota recuperación");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -496,28 +326,64 @@ public class Pantalla extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 603, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 623, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(Modificar)))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel9)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(ciclo1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(227, 227, 227))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(61, 61, 61)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(13, 13, 13)
+                        .addComponent(jLabel1)
+                        .addGap(48, 48, 48)
+                        .addComponent(jLabel2)
+                        .addGap(51, 51, 51)
+                        .addComponent(jLabel3)
+                        .addGap(52, 52, 52)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(Nota1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(Nota2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(Nota3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(Nota4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(25, 25, 25)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(Notafinal, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addComponent(NotaR, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addGap(33, 33, 33)
+                        .addComponent(jLabel6)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(ciclo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Nota1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Nota2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Nota3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Nota4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Notafinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(NotaR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
                 .addComponent(Modificar))
         );
 
@@ -525,24 +391,11 @@ public class Pantalla extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -593,97 +446,16 @@ public class Pantalla extends javax.swing.JFrame {
             if(n>0)
             {
                 limpiar();
-                //llenar("");
+                llenar();
                 //prueba();
                 JOptionPane.showMessageDialog(null, "Datos modificados");
             }
+            //llenar();
+            //limpiar();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error " + e.getMessage());
         }
     }//GEN-LAST:event_ModificarActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        Ventanavisualizacionestudiante a = null;
-        try {
-            a = new Ventanavisualizacionestudiante();
-        } catch (SQLException ex) {
-            Logger.getLogger(Pantalla.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        a.setVisible(true);
-        //this.setVisible(false);
-        this.dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void cicloItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cicloItemStateChanged
-        // TODO add your handling code here:
-        if(ciclo.getSelectedIndex()!=-1){
-        posicion = ciclo.getSelectedIndex();
-        String Id = ID.get(posicion);
-        //cicloesc = Id;
-            try {
-                //String j = ciclo.getSelectedItem().toString();
-                conexion = cn.Conectar();
-                String [] titulos={"ID (código)", "Nombre", "Código catedrático"};
-                String [] fila = new String [3];
-                String sql = "SELECT curso.Id, curso.Nombre, asignacioncat.Catedratico_Id FROM curso INNER JOIN asignacioncat ON curso.Id = asignacioncat.Curso_Id INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id WHERE asignacioncat.CicloEscolar_Id = " + Id + ";"; // AND Curso.Id = " + Id_curso + " AND asignacioncat.catedratico_Id = Id_cat
-
-                model = new DefaultTableModel(null, titulos);
-                sent = conexion.createStatement();
-                ResultSet rs = sent.executeQuery(sql);
-
-                while (rs.next()) {
-                    fila[0] = rs.getString("Curso.Id");
-                    fila[1] = rs.getString("Curso.Nombre");
-                    fila[2] = rs.getString("AsignacionCAT.Catedratico_Id");
-
-                    model.addRow(fila);
-                }
-                
-                Cursos.setModel(model);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }  
-        }
-        //prueba();
-    }//GEN-LAST:event_cicloItemStateChanged
-
-    private void ciclo1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ciclo1ItemStateChanged
-        // TODO add your handling code here:
-        if(ciclo1.getSelectedIndex()!=-1){
-        posicion = ciclo1.getSelectedIndex();
-        String Id = ID1.get(posicion);
-            try {
-                //String j = ciclo.getSelectedItem().toString();
-                conexion = cn.Conectar();
-                String[] titulos = {"ID Notas", "Curso", "Estudiante", "Nota 1", "Nota 2", "Nota 3", "Nota 4", "Nota Recuperación", "Nota Final"};
-                String sql = "SELECT Notas.Id, curso.Nombre, Estudiante.Nombres, notas.Nota1, notas.Nota2, notas.Nota3, notas.Nota4, notas.NotaRecuperacion, notas.NotaFinal FROM notas INNER JOIN curso ON notas.Curso_Id = curso.Id INNER JOIN estudiante ON notas.Estudiante_Id = estudiante.Id INNER JOIN asignacionest ON asignacionest.Estudiante_Id = estudiante.Id INNER JOIN cicloescolar ON asignacionest.CicloEscolar_Id = cicloescolar.Id WHERE asignacionest.CicloEscolar_Id = " + Id + " ;"; //AND Curso.Id = " + Id_curso + "
-                model = new DefaultTableModel(null, titulos);
-                sent = conexion.createStatement();
-                ResultSet rs = sent.executeQuery(sql);
-
-                String[] fila = new String[9];
-
-                while (rs.next()) {
-                    fila[0] = rs.getString("Notas.Id");
-                    fila[1] = rs.getString("Curso.Nombre");
-                    fila[2] = rs.getString("Estudiante.Nombres");
-                    fila[3] = rs.getString("Notas.Nota1");
-                    fila[4] = rs.getString("Notas.Nota2");
-                    fila[5] = rs.getString("Notas.Nota3");
-                    fila[6] = rs.getString("Notas.Nota4");
-                    fila[7] = rs.getString("Notas.NotaFinal");
-                    fila[8] = rs.getString("Notas.NotaRecuperacion");
-
-                    model.addRow(fila);
-                }
-                modificacion.setModel(model);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } 
-    }//GEN-LAST:event_ciclo1ItemStateChanged
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         // TODO add your handling code here:
@@ -692,8 +464,13 @@ public class Pantalla extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
         this.dispose();
-        Principal_catedratico a = new Principal_catedratico();
-        a.setVisible(true);
+        ModuloPrincipalCatedratico a;
+        try {
+            a = new ModuloPrincipalCatedratico(conexion, b);
+            a.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(Pantalla.class.getName()).log(Level.SEVERE, null, ex);
+        }  
     }//GEN-LAST:event_formWindowClosing
 
     /**
@@ -737,7 +514,6 @@ public class Pantalla extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable Cursos;
     private javax.swing.JButton Modificar;
     private javax.swing.JTextField Nota1;
     private javax.swing.JTextField Nota2;
@@ -745,24 +521,15 @@ public class Pantalla extends javax.swing.JFrame {
     private javax.swing.JTextField Nota4;
     private javax.swing.JTextField NotaR;
     private javax.swing.JTextField Notafinal;
-    private javax.swing.JComboBox ciclo;
-    private javax.swing.JComboBox ciclo1;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable modificacion;
     // End of variables declaration//GEN-END:variables

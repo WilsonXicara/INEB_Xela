@@ -30,7 +30,7 @@ public class Conec_BD {
     JFrame a;
     JDialog ventana;
     JButton aceptar;
-    String nombre,usuario,contraseña;
+    String nombre,usuario,contraseña,Ip;
     
     public Conec_BD(){
         a = new JFrame("Datos Base de Datos");
@@ -44,6 +44,7 @@ public class Conec_BD {
                 nombre = cajas[0].getText();
                 usuario = cajas[1].getText();
                 contraseña = con.getText();
+                Ip = cajas[2].getText();
                 if(nombre.equals("")==false && usuario.equals("")==false && contraseña.equals("")==false){
                     ventana.dispose();
                 }
@@ -54,10 +55,10 @@ public class Conec_BD {
             }
         });
         crear_ventana();
-        panel1.setBounds(10, 10, 400 , 80);
-        aceptar.setBounds(150,90,150,40);
+        panel1.setBounds(10, 10, 400 , 120);
+        aceptar.setBounds(150,130,150,40);
         ventana.setLocation(new Point(300, 300));
-        ventana.setSize(450, 160);
+        ventana.setSize(450, 250);
         ventana.add(panel1);
         ventana.add(aceptar);
         ventana.setResizable(false);
@@ -67,20 +68,24 @@ public class Conec_BD {
     }
     
     public void crear_ventana(){
-        panel1 = new JPanel(new GridLayout(3, 2));
-        etiquetas = new JLabel[3];
-        cajas = new JTextField[2];
+        panel1 = new JPanel(new GridLayout(4, 2));
+        etiquetas = new JLabel[4];
+        cajas = new JTextField[3];
         etiquetas[0] = new JLabel("Nombre de la Base de Datos: ");
         etiquetas[1] = new JLabel("Nombre del usuario: ");
-        etiquetas[2] = new JLabel("Contraseña: ");
+        etiquetas[2] = new JLabel("Direccion IP: ");
+        etiquetas[3] = new JLabel("Contraseña: ");
         cajas[0] = new JTextField();
         cajas[1] = new JTextField();
+        cajas[2] = new JTextField();
         con = new JPasswordField();
         panel1.add(etiquetas[0]);
         panel1.add(cajas[0]);
         panel1.add(etiquetas[1]);
         panel1.add(cajas[1]);
         panel1.add(etiquetas[2]);
+        panel1.add(cajas[2]);
+        panel1.add(etiquetas[3]);
         panel1.add(con);
         
     }
@@ -95,6 +100,10 @@ public class Conec_BD {
 
     public String getContraseña() {
         return contraseña;
+    }
+
+    public String getIp() {
+        return Ip;
     }
     
     

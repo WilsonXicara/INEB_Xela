@@ -6,7 +6,6 @@
 package Modulo_Ciclo_Escolar;
 
 import Tipos_tablas.No_editable;
-import Modulo_Ciclo_Escolar.Crear_Grado;
 import java.awt.Frame;
 import java.awt.event.ItemEvent;
 import java.sql.Connection;
@@ -469,12 +468,9 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         try {
-            this.dispose();
             new Crear_Ciclo_Escolar_1(new Frame(),true, base).setVisible(true);
             this.setVisible(true);
             Cargar_Datos();
-            this.pack();
-            
         } catch (SQLException ex) {
             Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -921,7 +917,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
                    psta.executeUpdate();
                }
                } catch (SQLException ex) {
-               Logger.getLogger(Crear_Grado.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
            }
         }
         for (int i = 0; i < tamaño_grados_borrados; i++) {
@@ -935,7 +931,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
                    
                
                } catch (SQLException ex) {
-               Logger.getLogger(Crear_Grado.class.getName()).log(Level.SEVERE, null, ex);
+               Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
            }
         }                
     }
@@ -974,7 +970,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
                     }
                     
                     } catch (SQLException ex) {
-                    Logger.getLogger(Crear_Grado.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
                 }
            
         }
@@ -987,7 +983,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
                         PreparedStatement pst = base.prepareStatement(instruccion_curso);
                         pst.executeUpdate();                    
                     } catch (SQLException ex) {
-                    Logger.getLogger(Crear_Grado.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
                 }
         }
         

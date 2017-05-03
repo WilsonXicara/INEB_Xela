@@ -58,7 +58,7 @@ public class Importar_datos extends javax.swing.JDialog {
             }
             
         } catch (SQLException ex) {
-            Logger.getLogger(Crear_Ciclo_Escolar_2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Importar_datos.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         
