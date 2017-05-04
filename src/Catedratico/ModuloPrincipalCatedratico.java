@@ -151,6 +151,11 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
         Campo_Usuario.setEditable(false);
         Campo_Usuario.setBackground(new java.awt.Color(204, 204, 204));
 
+        Tabla = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex,int colIndex){
+                return false;
+            }
+        };
         Tabla.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -159,6 +164,7 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
 
             }
         ));
+        Tabla.getTableHeader().setReorderingAllowed(false);
         Tabla.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 TablaMouseClicked(evt);

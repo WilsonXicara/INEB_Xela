@@ -189,7 +189,7 @@ public class Mostrar_Datos extends javax.swing.JFrame {
         });
         jPopupMenu1.add(jMenu1);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -257,6 +257,11 @@ public class Mostrar_Datos extends javax.swing.JFrame {
             }
         });
 
+        Campo_Telefono.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Campo_TelefonoActionPerformed(evt);
+            }
+        });
         Campo_Telefono.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 Campo_TelefonoKeyTyped(evt);
@@ -268,6 +273,12 @@ public class Mostrar_Datos extends javax.swing.JFrame {
 
         Campo6.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         Campo6.setText("Etnia:");
+
+        Campo_DPI.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                Campo_DPIKeyTyped(evt);
+            }
+        });
 
         Campo_Sexo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "F", "M" }));
 
@@ -457,6 +468,10 @@ public class Mostrar_Datos extends javax.swing.JFrame {
     private void Campo_TelefonoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Campo_TelefonoKeyTyped
         char letra = evt.getKeyChar();
         if((letra<'0'||letra>'9')) evt.consume();
+        int limite  = 8;
+        if (Campo_Telefono.getText().length()== limite){
+          evt.consume();
+        }
     }//GEN-LAST:event_Campo_TelefonoKeyTyped
 
     private void Campo_ApellidosKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Campo_ApellidosKeyTyped
@@ -485,13 +500,16 @@ public class Mostrar_Datos extends javax.swing.JFrame {
         cadena7 = Campo_Sexo.getSelectedItem().toString();
         cadena8 = Campo_Etnia.getText().toString();
         cadena9 = Integer.toString(Campo_Municipio.getSelectedIndex()+1);
-        System.out.println("DCE");
         try {
+            if(Campo_DPI.getText().length() <= 12){
+                JOptionPane.showMessageDialog(null,"Error: El campo DPI no posee 13 caracteres.");
+            }else if (Campo_Telefono.getText().length() <= 7){
+                JOptionPane.showMessageDialog(null,"Error: El campo telefono no posee 8 caracteres.");
+            }else{
             PreparedStatement pst = conexion.prepareStatement("INSERT INTO catedratico (Nombres,Apellidos,Direccion,DPI, Sexo, Etnia,Municipio_Id)"
                     + "VALUES('"+cadena2+"','"+cadena3+"','"+cadena4+"','"+cadena6+"','"+cadena7+"','"+cadena8+"','"+cadena9+ "')");
             
             pst.executeUpdate();
-            System.out.println("ABC");
             
             ResultSet rs = null;
             String sql = "SELECT MAX(catedratico.Id) FROM catedratico";
@@ -499,13 +517,15 @@ public class Mostrar_Datos extends javax.swing.JFrame {
                   rs = stmt2.executeQuery(sql);
                   int id2 =0;
                     while(rs.next()){
-                    System.out.println(rs.getInt(1));
+                    //System.out.println(rs.getInt(1));
                     id2 = rs.getInt(1);
                     }
                  stmt2.executeUpdate("INSERT INTO telefono (Telefono,Catedratico_Id) VALUES('"+cadena5+"','"+id2+"')");
                   
-                  System.out.println("Los valores han sido agregados a la base de datos ");
+              //    System.out.println("Los valores han sido agregados a la base de datos ");
+              Llenartabla("");
             JOptionPane.showMessageDialog(null,"Se ha creado un nuevo registro.");
+            
             this.Campo_Id.setText("");
             this.Campo_Nombre.setText("");
             this.Campo_Apellidos.setText("");
@@ -513,7 +533,7 @@ public class Mostrar_Datos extends javax.swing.JFrame {
             this.Campo_Telefono.setText("");
             this.Campo_DPI.setText("");  
             
-            
+            }
         } catch (Exception e) {
             //Logger.getLogger(Mostrar_Datos.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -544,6 +564,9 @@ public class Mostrar_Datos extends javax.swing.JFrame {
             pst.executeUpdate();
             PreparedStatement pst2 = conexion.prepareStatement("UPDATE telefono SET telefono.Telefono = '"+Campo_Telefono.getText()+"' WHERE telefono.Catedratico_Id = "+Campo_Id.getText());
             pst2.executeUpdate();
+            JOptionPane.showMessageDialog(null,"Se ha modificado un nuevo registro.");
+            
+            Llenartabla("");
         } catch (SQLException ex) {
             Logger.getLogger(Mostrar_Datos.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -595,6 +618,21 @@ public class Mostrar_Datos extends javax.swing.JFrame {
             Ventanita.setEnabled(true);
             this.dispose();
     }//GEN-LAST:event_formWindowClosing
+
+    private void Campo_TelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Campo_TelefonoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Campo_TelefonoActionPerformed
+
+    private void Campo_DPIKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Campo_DPIKeyTyped
+        // TODO add your handling code here:
+        char letra = evt.getKeyChar();
+        if((letra<'0'||letra>'9')) evt.consume();
+        
+        int limite  = 13;
+        if (Campo_DPI.getText().length()== limite){
+          evt.consume();
+        }
+    }//GEN-LAST:event_Campo_DPIKeyTyped
 
     /**
      * @param args the command line arguments
