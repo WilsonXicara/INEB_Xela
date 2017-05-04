@@ -33,6 +33,7 @@ public class CrearCat extends javax.swing.JFrame {
     }
     public CrearCat(Connection conec){
         initComponents();
+        this.setLocationRelativeTo(null);
         conexion = conec;
         modelo = (DefaultTableModel) Datos.getModel();
         DatosCat(); //revisar la funcion
@@ -65,7 +66,7 @@ public class CrearCat extends javax.swing.JFrame {
         Contra2 = new javax.swing.JPasswordField();
         jButton3 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -82,13 +83,13 @@ public class CrearCat extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Nombres", "Apellidos", "DPI"
+                "No.", "Nombres", "Apellidos", "DPI"
             }
         ));
         jScrollPane1.setViewportView(Datos);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel2.setText("Catedráticos");
+        jLabel2.setText("Catedráticos Disponibles");
 
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton1.setText("Crear Usuario");
@@ -113,6 +114,11 @@ public class CrearCat extends javax.swing.JFrame {
 
         Nombre.setEditable(false);
         Nombre.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        Nombre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NombreActionPerformed(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel5.setText("DPI");
@@ -273,7 +279,7 @@ public class CrearCat extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "No se ha seleccionado ningun catedrático");
         }
         else{
-            if((User.getText().equals("")) || (Contra.getText().equals("")) || (Contra2.getText().equals(""))){
+            if((User.getText().equals("")==true) || (Contra.getText().equals("")==true) || (Contra2.getText().equals("")==true)){
                 JOptionPane.showMessageDialog(null, "Hay Campos Vacios");
             }
             else if(Contra.getText().equals(Contra2.getText()) == false){
@@ -283,21 +289,27 @@ public class CrearCat extends javax.swing.JFrame {
             else{   //si ninguna se cumplio entonces si se puede crear
                 Instruccion = "INSERT INTO usuarios (NombreUsuario,Contrasenia,Tipo,Catedratico_Id) VALUES ('" + User.getText() + "','" + Contra.getText() + "','3'," + VarId + ");";
                 //Ingresamos a la tabla usuarios segun el tipo
-            int  c;
-            try (PreparedStatement pst = conexion.prepareStatement(Instruccion)) {
-                c = pst.executeUpdate();
-                if (c>0){
-                    int filas = Datos.getRowCount();
-                    for (int i = 0;filas>i; i++) {
-                        modelo.removeRow(0);
+                int  c;
+                try (PreparedStatement pst = conexion.prepareStatement(Instruccion)) {
+                    c = pst.executeUpdate();
+                    if (c>0){
+                        int filas = Datos.getRowCount();
+                        for (int i = 0;filas>i; i++) {
+                            modelo.removeRow(0);
+                        }
+                        System.out.println("Guardado");
+                        JOptionPane.showMessageDialog(null, "¡Se ha creado el Usuario " + User.getText());
+                        DatosCat(); //revisar la funcion
+                        //borrar campos
+                        Nombre.setText("");
+                        Dpi.setText("");
+                        User.setText("");
+                        Contra.setText("");
+                        Contra2.setText("");
                     }
-                    System.out.println("Guardado");
-                    JOptionPane.showMessageDialog(null, "¡Se ha creado el Usuario " + User.getText() + " de tipo 3!" );
-                    DatosCat(); //revisar la funcion
+                } catch (SQLException ex) {
+                    Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (SQLException ex) {
-                Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
-            }
             }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -311,7 +323,12 @@ public class CrearCat extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void NombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NombreActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_NombreActionPerformed
     public void DatosCat(){
+        int cont = 1;
         try {
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             datosCat = sentencia.executeQuery("SELECT C.Id,C.Nombres,C.Apellidos,C.DPI FROM catedratico C LEFT JOIN usuarios U ON C.Id = U.Catedratico_Id WHERE U.Id is null;");
@@ -321,7 +338,8 @@ public class CrearCat extends javax.swing.JFrame {
             else{
                 datosCat.previous();
                 while(datosCat.next() != false){
-                    modelo.addRow(new Object[]{datosCat.getString(1),datosCat.getString(2),datosCat.getString(3),datosCat.getString(4)});
+                    modelo.addRow(new Object[]{cont,datosCat.getString(2),datosCat.getString(3),datosCat.getString(4)});
+                    cont++;
                 }
             }
         } catch (SQLException e) {

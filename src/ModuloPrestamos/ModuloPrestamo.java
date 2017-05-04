@@ -38,6 +38,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
     
     public ModuloPrestamo(Connection conec,JFrame ventana){
         initComponents();
+        this.setLocationRelativeTo(null);
         modelo = (DefaultTableModel) Paquetes.getModel();
         conexcion = conec;
         Ventanita = ventana;
@@ -83,7 +84,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
@@ -248,7 +249,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Id Paquete", "Codigo Paquete", "Descripcion"
+                "No.", "Codigo Paquete", "Descripcion"
             }
         ));
         jScrollPane1.setViewportView(Paquetes);
@@ -386,6 +387,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_formWindowClosed
     public void DatosPaquetes(){
+        int cont = 1;
         try {
             Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             //revisar la consulta
@@ -396,7 +398,8 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             else{
                 Packs.previous();
                 while(Packs.next() != false){
-                    modelo.addRow(new Object[]{Packs.getString(1),Packs.getString(2),Packs.getString(3)});
+                    modelo.addRow(new Object[]{cont,Packs.getString(2),Packs.getString(3)});
+                    cont++;
                 }
             }
         } catch (SQLException e) {
