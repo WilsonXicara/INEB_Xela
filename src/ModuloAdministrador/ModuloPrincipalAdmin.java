@@ -439,21 +439,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
         // TODO add your handling code here:
-        try {
-            // TODO add your handling code here:
-            String tipo = User.getString("Tipo");
-            if(tipo.equals("1")){
                 this.setEnabled(false);
                 new ModuloPrestamo(conexcion,this).setVisible(true);
                 //this.setEnabled(true);
                 //this.setVisible(false);
-            }
-            else{
-                JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed

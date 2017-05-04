@@ -331,7 +331,7 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         String Edit = Editorial.getText();
         String Est = Estado.getText();
         int filas = Libros.getRowCount(), bandera = 0;
-        if(contaLibros <= 4){
+        if(contaLibros < 4){
             if((codLib.equals(""))||(Nom.equals(""))||(Aut.equals(""))||(Edit.equals(""))||(Est.equals(""))){
                 JOptionPane.showMessageDialog(null, "Hay Campos Vacios");
             }
