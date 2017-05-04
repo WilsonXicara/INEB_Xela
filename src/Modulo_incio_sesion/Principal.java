@@ -5,15 +5,10 @@
  */
 package Modulo_incio_sesion;
 
-import Conexion.ConectarBD;
 import Catedratico.ModuloPrincipalCatedratico;
+import Conexion.ConectarBD;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
 import ModuloAdministrador.ModuloPrincipalAdmin;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;

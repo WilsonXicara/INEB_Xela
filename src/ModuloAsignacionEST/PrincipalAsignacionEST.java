@@ -128,7 +128,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
     private void cargar_estudiantes_para_reasignacion(int cicloEscolarId, int gradoId) {
         /* Obtengo la consulta de todos los Estudiantes que tienen una Asignación en el cicloEscolarId y el gradoId seleccionados */
         try {
-            String instruccion = "SELECT Estudiante.Id idEST, Estudiante.CodigoPersonal, Estudiante.CUI, Estudiante.Nombres, Estudiante.Apellidos, Estudiante.Sexo, AsignacionEST.Id idASIG, AsignacionEST.CicloEscolar_Id, CicloEscolar.Anio, AsignacionEST.Grado_Id, Grado.Nombre Grado, Grado.Seccion, AsignacionEST.Aula FROM Estudiante "
+            String instruccion = "SELECT Estudiante.Id idEST, Estudiante.CodigoPersonal, Estudiante.CUI, Estudiante.Nombres, Estudiante.Apellidos, Estudiante.Sexo, AsignacionEST.Id idASIG, AsignacionEST.CicloEscolar_Id, CicloEscolar.Anio, AsignacionEST.Grado_Id, Grado.Nombre Grado, Grado.Seccion FROM Estudiante "
                     + "INNER JOIN AsignacionEST ON Estudiante.Id = AsignacionEST.Estudiante_Id "
                     + "INNER JOIN Grado ON AsignacionEST.Grado_Id = Grado.Id "
                     + "INNER JOIN CicloEscolar ON AsignacionEST.CicloEscolar_Id = CicloEscolar.Id "
@@ -156,7 +156,6 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
                 nuevo.setGradoId(cAsignaciones.getInt("Grado_Id"));
                 nuevo.setGrado(cAsignaciones.getString("Grado"));
                 nuevo.setSeccion(cAsignaciones.getString("Seccion"));
-                nuevo.setAula(cAsignaciones.getString("Aula"));
                 
                 estudiantes.add(nuevo);    // Agregación del nuevo registro al ArrayList
                 modelEstudiantes.addRow(nuevo.getDatosParaTabla()); // Inserto los datos del nuevo registro en la Tabla
@@ -277,14 +276,14 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
 
             },
             new String [] {
-                "No.", "Código Personal", "CUI", "Nombres", "Apellidos", "Asignación Nueva", "Asignación Anterior", "Ciclo Escolar", "Grado", "Sección", "Aula"
+                "No.", "Código Personal", "CUI", "Nombres", "Apellidos", "Asignación Nueva", "Asignación Anterior", "Ciclo Escolar", "Grado", "Sección"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -456,7 +455,6 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
         tabla_estudiantes.getColumnModel().getColumn(7).setPreferredWidth(100);
         tabla_estudiantes.getColumnModel().getColumn(8).setPreferredWidth(100);
         tabla_estudiantes.getColumnModel().getColumn(9).setPreferredWidth(60);
-        tabla_estudiantes.getColumnModel().getColumn(10).setPreferredWidth(75);
     }
     public boolean getHacerVisible() { return hacerVisible; }
     /**

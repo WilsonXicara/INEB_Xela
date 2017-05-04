@@ -65,8 +65,7 @@ public class AsignarEstudiante extends javax.swing.JDialog {
             estudiante.getNombres()+" "+estudiante.getApellidos(),
             (asignacionAnterior)?"SI":"No",
             (asignacionAnterior)?estudiante.getAnio():"",
-            (asignacionAnterior)?estudiante.getGrado()+" "+estudiante.getSeccion():"",
-            (asignacionAnterior)?estudiante.getAula():""
+            (asignacionAnterior)?estudiante.getGrado()+" "+estudiante.getSeccion():""
         });
         // Muestro los Ciclos Escolares a los cuales se podría Asignar o Reasignar
         try {
@@ -137,14 +136,14 @@ public class AsignarEstudiante extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Código Personal", "CUI", "Nombre Completo", "Asignación Anterior", "Ciclo Escolar", "Grado", "Aula"
+                "Código Personal", "CUI", "Nombre Completo", "Asignación Anterior", "Ciclo Escolar", "Grado"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -446,7 +445,6 @@ public class AsignarEstudiante extends javax.swing.JDialog {
         tabla_info_estudiante.getColumnModel().getColumn(3).setPreferredWidth(120);
         tabla_info_estudiante.getColumnModel().getColumn(4).setPreferredWidth(100);
         tabla_info_estudiante.getColumnModel().getColumn(5).setPreferredWidth(85);
-        tabla_info_estudiante.getColumnModel().getColumn(6).setPreferredWidth(85);
         
         // Definición del ancho de las columnas para la Tabla Información Cursos (valores definidos en base a pruebas)
         tabla_info_cursos.getColumnModel().getColumn(0).setPreferredWidth(50);
