@@ -75,8 +75,10 @@ public class Ventanareporte extends javax.swing.JFrame {
     public Ventanareporte(Connection conec, JFrame ventana)
     {
         initComponents();
+        this.setLocationRelativeTo(null);
         conexion = conec;
         va = ventana;
+        año();
         limpiar();
         deshabilitar();
         cargar();
@@ -156,11 +158,13 @@ public class Ventanareporte extends javax.swing.JFrame {
     void deshabilitar() {
         fecha.setEditable(false);
         descrip.setEditable(false); 
+        Guardar.setEnabled(false);
     }
 
     void habilitar() {
         fecha.setEditable(true);
-        descrip.setEditable(true); 
+        descrip.setEditable(true);
+        Guardar.setEnabled(true);
     }
     
     
@@ -187,7 +191,7 @@ public class Ventanareporte extends javax.swing.JFrame {
             String [] titulos={"a", "Apellidos", "Nombre"};
             String [] fila = new String [3];
         
-            String sql = "SELECT Estudiante.ID, Estudiante.Apellidos, Estudiante.Nombres FROM Estudiante INNER JOIN AsignacionEst ON Estudiante.ID = AsignacionEst.Estudiante_ID WHERE AsignacionEst.CicloEscolar_ID = " + ciclo +  " ORDER BY Estudiante.Apellidos ASC;";
+            String sql = "SELECT Estudiante.ID, Estudiante.Apellidos, Estudiante.Nombres FROM Estudiante INNER JOIN AsignacionEst ON Estudiante.ID = AsignacionEst.Estudiante_ID WHERE AsignacionEst.CicloEscolar_ID = " + 5 +  " ORDER BY Estudiante.Apellidos ASC;";
         
             model = new DefaultTableModel(null, titulos);
             sent = conexion.createStatement();
@@ -242,7 +246,7 @@ public class Ventanareporte extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Creación de reporte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), java.awt.Color.black)); // NOI18N
 

@@ -99,6 +99,7 @@ public class Pantalla extends javax.swing.JFrame {
     }
     public Pantalla(Connection conex, int cat, int cur, int ciclo, /*ResultSet a,*/ JFrame v) throws SQLException {
         initComponents();
+        this.setLocationRelativeTo(null);
         conexion = conex;
         limpiar();
         deshabilitar();
@@ -116,7 +117,7 @@ public class Pantalla extends javax.swing.JFrame {
 
             @Override
             public void windowOpened(WindowEvent we) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+               // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
 
             @Override
@@ -126,27 +127,27 @@ public class Pantalla extends javax.swing.JFrame {
 
             @Override
             public void windowClosed(WindowEvent we) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+               // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
 
             @Override
             public void windowIconified(WindowEvent we) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+               // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
 
             @Override
             public void windowDeiconified(WindowEvent we) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+               // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
 
             @Override
             public void windowActivated(WindowEvent we) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+               // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
 
             @Override
             public void windowDeactivated(WindowEvent we) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+               // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
         });
     }
