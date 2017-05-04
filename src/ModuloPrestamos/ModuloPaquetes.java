@@ -93,6 +93,11 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         jLabel4.setText("Descripción");
 
         CodigoPaquete.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        CodigoPaquete.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                CodigoPaqueteKeyTyped(evt);
+            }
+        });
 
         Descripcion.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -158,6 +163,11 @@ public class ModuloPaquetes extends javax.swing.JFrame {
                 CodigoLibroActionPerformed(evt);
             }
         });
+        CodigoLibro.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                CodigoLibroKeyTyped(evt);
+            }
+        });
 
         Nombre.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -175,6 +185,11 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         Editorial.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         Estado.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        Estado.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                EstadoKeyTyped(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -330,7 +345,7 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         String Aut = Autor.getText();
         String Edit = Editorial.getText();
         String Est = Estado.getText();
-        int filas = Libros.getRowCount(), bandera = 0;
+        int filas = Libros.getRowCount(), bandera = 0, bandera2 = 0;
         if(contaLibros < 4){
             if((codLib.equals(""))||(Nom.equals(""))||(Aut.equals(""))||(Edit.equals(""))||(Est.equals(""))){
                 JOptionPane.showMessageDialog(null, "Hay Campos Vacios");
@@ -341,9 +356,18 @@ public class ModuloPaquetes extends javax.swing.JFrame {
                     if(Libros.getValueAt(0, cont).equals(codLib)){
                         bandera = 1;
                     }
+                    if(Libros.getValueAt(1, cont).equals(Nom)){
+                        bandera2 = 1;
+                    }
                 }
-                if(bandera == 1){
-                    JOptionPane.showMessageDialog(null, "Ya Existe el codigo en la tabla");
+                if((bandera == 1)&&(bandera2 == 1)){
+                    JOptionPane.showMessageDialog(null, "El Codigo y el Nombre del libro ya existe en la tabla");
+                }
+                else if(bandera == 1){
+                    JOptionPane.showMessageDialog(null, "El Codigo del libro ya existe en la tabla");
+                }
+                else if(bandera2 == 1){
+                    JOptionPane.showMessageDialog(null, "El Nombre del libro ya existe en la tabla");
                 }
                 else{
                     try {
@@ -373,10 +397,10 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         String Desc = Descripcion.getText();
         String Instruccion = "", Instruccion2 = "";
         String CodPack, CodLibro, Nom, Aut, Edit, EstadoL;
-        ResultSet resultado = null;
-        if(contaLibros == 4){
+        ResultSet resultado = null, paquetito = null;
+        if(modelo.getRowCount() == 4){
             if((codPaquete.equals(""))||(Desc.equals(""))){
-                
+                JOptionPane.showMessageDialog(null, "Hay Campos Vacios");
             }
             else{
                 //si se puede crear los libros y el paquete
@@ -387,13 +411,28 @@ public class ModuloPaquetes extends javax.swing.JFrame {
                     if(resultado.next() == false){  //Si no existe entonces creará un paquete con ese codigo
                         Instruccion = "INSERT INTO PaqueteLibro (Codigo, Descripcion) VALUES (" + "'" + codPaquete + "'"+ "," + "'" + Desc + "'" + ");";
                         try {
+                            
                             PreparedStatement  pst = conexcion.prepareStatement(Instruccion);
+                            System.out.println("hace el preparedStatement");
                             int a = pst.executeUpdate();
+                            System.out.println("int a");
                             pst.close();
+                            System.out.println("pst.close");
                             if (a>0){
+                                System.out.println("entra al if a> 0");
+                                //JOptionPane.showMessageDialog(null, "¡Se ha Creado el paquete prueba1" + codPaquete + " Exitosamente!");
                                 System.out.println("Guardado");
                                 //se agregan los libros
+                                Statement sentencia2 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                                paquetito = sentencia2.executeQuery("SELECT * FROM paquetelibro WHERE paquetelibro.Codigo = '" + codPaquete + "';");
+                                if(paquetito.next() == true){
+                                    System.out.println("paquetito true");
+                                }
+                                else{
+                                    System.out.println("paquetito false");
+                                }
                                 for(int cont = 0; cont < 4; cont++){
+                                    System.out.println("Cont" + cont);
                                     CodPack = codPaquete;
                                     CodLibro = Libros.getValueAt(cont, 0).toString();
                                     Nom = Libros.getValueAt(cont, 1).toString();
@@ -401,28 +440,33 @@ public class ModuloPaquetes extends javax.swing.JFrame {
                                     Edit = Libros.getValueAt(cont,3).toString();
                                     EstadoL = Libros.getValueAt(cont, 4).toString();
                                     //ingresar libros
-                                    Instruccion2 = "INSERT INTO Libro (Codigo,Nombre,Autor,Editorial,Estado,PaqueteLibro_Codigo) VALUES (" + "'" + CodLibro + "'" + "," + "'" + Nom + "'" + "," + "'" + Aut + "'" + "," + "'" + Edit + "'" + "," + "'" + EstadoL + "'" + "," + resultado.getString(1)+ ");";
+                                    Instruccion2 = "INSERT INTO libro (libro.Codigo,libro.Nombre,libro.Autor,libro.Editorial,libro.Estado,libro.PaqueteLibro_Codigo) VALUES ('" + CodLibro + "','" + Nom + "','" + Aut + "','" + Edit + "','" + EstadoL + "'," + paquetito.getString(1)+ ");";
                                     int  b;
                                     try (PreparedStatement pst2 = conexcion.prepareStatement(Instruccion2)) {
                                         b = pst2.executeUpdate();
                                         if (b>0){
-                                            int filas = Libros.getRowCount();
-                                            for (int i = 0;filas>i; i++) {
-                                                modelo.removeRow(0);
-                                            }
+                                            System.out.println("Entra al if b >0");
                                             System.out.println("Guardado");
                                             //JOptionPane.showMessageDialog(null, "¡El libro "+ CodLibro + " se ha agregado al paquete "+ CodPack + " Exitosamente!");
-                                            JOptionPane.showMessageDialog(null, "¡Se ha Creado el paquete " + codPaquete + " Exitosamente!");
+                                            
                                         }
                                     }
                                 }
+                                int filas = Libros.getRowCount();
+                                for (int i = 0;filas>i; i++) {
+                                    modelo.removeRow(0);
+                                }
+                                JOptionPane.showMessageDialog(null, "¡Se ha Creado el paquete " + codPaquete + " Exitosamente!");
                                 //JOptionPane.showMessageDialog(null, "¡Se ha Creado el paquete " + codPaquete + " Exitosamente!");
                             }
                         } catch (SQLException ex) {
                             Logger.getLogger(ModuloPaquetes.class.getName()).log(Level.SEVERE, null, ex);
                             System.out.println("Error en SQLException: "+ex.getMessage());
                         }
-                    }  
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null, "El Paquete ya existe");
+                    }
                 } catch (SQLException e) {
                         e.printStackTrace();
                 }
@@ -463,6 +507,30 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         Ventanita.setEnabled(true);
         this.dispose();
     }//GEN-LAST:event_formWindowClosed
+
+    private void CodigoLibroKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CodigoLibroKeyTyped
+        // TODO add your handling code here:
+        int limite = 5;
+        if(CodigoLibro.getText().length() == limite){
+            evt.consume();
+        }
+    }//GEN-LAST:event_CodigoLibroKeyTyped
+
+    private void CodigoPaqueteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CodigoPaqueteKeyTyped
+        // TODO add your handling code here:int limite = 5;
+        int limite = 5;
+        if(CodigoPaquete.getText().length() == limite){
+            evt.consume();
+        }
+    }//GEN-LAST:event_CodigoPaqueteKeyTyped
+
+    private void EstadoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_EstadoKeyTyped
+        // TODO add your handling code here:
+        int limite = 1;
+        if(Estado.getText().length() == limite){
+            evt.consume();
+        }
+    }//GEN-LAST:event_EstadoKeyTyped
 
     /**
      * @param args the command line arguments

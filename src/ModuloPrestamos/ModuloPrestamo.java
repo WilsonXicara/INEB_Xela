@@ -305,9 +305,9 @@ public class ModuloPrestamo extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        String NoFac, CodPack, CodEst, NomEst, ApeEst, Grad,Desc, Instruccion = "";
+        String NoFac, CodPack, CodEst,Instruccion = "";
         float Efectivo;
-        ResultSet resultado = null,resultado2 = null, packetes=null;
+        ResultSet resultado = null, resultado2 = null, prest = null;
         if(vId == 0){
             JOptionPane.showMessageDialog(null, "¡No ha seleccionado ningun paquete!");
         }
@@ -326,10 +326,15 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                 resultado = sentencia.executeQuery("SELECT * FROM prestamo WHERE CodigoBoleta = '" + NoFac + "';");
                 Statement sentencia2 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 resultado2 = sentencia2.executeQuery("SELECT * FROM estudiante WHERE CodigoPersonal = " + "'" + CodEst + "';");
+                Statement sentencia3 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                prest = sentencia3.executeQuery("SELECT * FROM prestamo WHERE prestamo.PaqueteLibro_Id = '" + CodPack + "';");
                 //Condicion que si el CodigoEstudiante no existe en la base arrojar un mensaje
                 //Condicion si el No Factura ya existe
                 if((false == resultado.next())||(resultado2.next() == false)){
                     JOptionPane.showMessageDialog(null, "Hay Datos incorrectos");
+                }
+                else if(prest.next() == true){
+                    JOptionPane.showMessageDialog(null, "Ya Existe un prestamo con ese paquete");
                 }
                 else{
                     //Concatenamos la instrucción para insertar a la tabla prestamo.
