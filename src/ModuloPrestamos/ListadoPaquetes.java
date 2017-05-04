@@ -30,6 +30,7 @@ public class ListadoPaquetes extends javax.swing.JFrame {
     }
     public ListadoPaquetes(Connection conec){
         initComponents();
+        this.setLocationRelativeTo(null);
         String prestado = "";
         conexcion = conec;
         modelo = (DefaultTableModel) Listado.getModel();
@@ -78,7 +79,7 @@ public class ListadoPaquetes extends javax.swing.JFrame {
         jRadioButton2 = new javax.swing.JRadioButton();
         jButton1 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);

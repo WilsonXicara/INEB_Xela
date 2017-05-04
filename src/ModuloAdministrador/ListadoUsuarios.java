@@ -33,6 +33,7 @@ public class ListadoUsuarios extends javax.swing.JFrame {
     }
     public ListadoUsuarios(Connection conec,JFrame ventana) {
         initComponents();
+        this.setLocationRelativeTo(null);
         int cont = 1;
         String tipo = "";
         conexion = conec;
@@ -79,7 +80,7 @@ public class ListadoUsuarios extends javax.swing.JFrame {
         Usuarios = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
