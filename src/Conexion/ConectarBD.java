@@ -5,7 +5,6 @@
  */
 package Conexion;
 
-import java.awt.HeadlessException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,7 +18,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -33,7 +31,7 @@ public class ConectarBD extends javax.swing.JDialog {
     public static final String SEPARADOR = System.getProperty("file.separator");
     public static final String CARPETA_PRINCIPAL =  System.getProperty("user.home")+ SEPARADOR +"BD";
     public static final String archivo = CARPETA_PRINCIPAL+SEPARADOR+"datos";
-    private final String nombreBD = "sbd_inebxela", usuarioBD = "usuario", contraseñaBD = "usuario";
+    private final String nombreBD = "sbd_inebxela", usuarioBD = "inebxela", contraseñaBD = "inebxela_quetgo";
     private boolean hacerVisible;
     /**
      * Creates new form ConectarBD
@@ -51,7 +49,7 @@ public class ConectarBD extends javax.swing.JDialog {
         // Si la carpeta principal no existe se crea para guardar los datos de la base de datos
         if (!carpetaPrincipal.exists()) {
             carpetaPrincipal.mkdir();
-            etiqueta_titulo.setText("No se encontró la carpeta principal.\nIngrese la Dirección IP del servidor");
+            etiqueta_titulo.setText("No se encontró el archivo principal");
         } else {    // Si la carpeta existe, obtengo la dirección IP del servidor e intento crear la conexión
             try {
                 System.out.println("Buscará el archivo");
@@ -270,7 +268,7 @@ public class ConectarBD extends javax.swing.JDialog {
                 this.dispose(); // Cierro el JDialog
                 
             } catch (ExcepcionDatoIncorrecto ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", HEIGHT);
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 //                Logger.getLogger(ConectarBD.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ClassNotFoundException | SQLException ex) {
                 JOptionPane.showMessageDialog(this, "No se puede conectar con la Base de Datos", "Error", JOptionPane.ERROR_MESSAGE);
