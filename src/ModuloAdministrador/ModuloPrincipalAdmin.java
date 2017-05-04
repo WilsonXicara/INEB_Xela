@@ -10,7 +10,6 @@ import ModuloAsignacionEST.AsignarEstudiante;
 import ModuloAsignacionEST.PrincipalAsignacionEST;
 import ModuloEstudiante.CrearEstudiante;
 import ModuloEstudiante.InformacionEstudiante;
-import ModuloEstudiante.PrincipalEstudiante;
 import ModuloPrestamos.ModuloPaquetes;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
 import Modulo_Ciclo_Escolar.Crear_Ciclo_Escolar_1;
@@ -128,7 +127,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         item_reasignaciones = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(901, 592));
+        setPreferredSize(new java.awt.Dimension(900, 590));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -280,7 +279,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         );
 
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(30, 70, 855, 195);
+        jPanel1.setBounds(30, 70, 853, 189);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         getContentPane().add(jLabel2);
@@ -540,7 +539,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void item_asignacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_asignacionesActionPerformed
         PrincipalAsignacionEST asignaciones = new PrincipalAsignacionEST(new javax.swing.JFrame(), true, conexcion, false);
-        asignaciones.setVisible(true);
+        asignaciones.setVisible(asignaciones.getHacerVisible());
     }//GEN-LAST:event_item_asignacionesActionPerformed
 
     private void item_reasignacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_reasignacionesActionPerformed

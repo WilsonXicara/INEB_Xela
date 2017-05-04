@@ -5,9 +5,8 @@
  */
 package Modulo_incio_sesion;
 
+import Conexion.ConectarBD;
 import Catedratico.ModuloPrincipalCatedratico;
-import Conexion.Conec_BD;
-import Conexion.conexion;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
 import ModuloAdministrador.ModuloPrincipalAdmin;
 import java.io.BufferedReader;
@@ -46,53 +45,15 @@ public class Principal extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         
-          File carpetaPrincipal = new File(CARPETA_PRINCIPAL);
-        // Si la carpeta principal no existe se crea para guardar los datos de la base de datos
-        if (!carpetaPrincipal.exists()) {
-            System.out.println("No se encontró la carpeta principal: "+CARPETA_PRINCIPAL);
-            carpetaPrincipal.mkdir();
-            Conec_BD a = new Conec_BD();
-            String nombre = a.getNombre();
-            String usuario= a.getUsuario();
-            String contraseña= a.getContraseña();
-            String Ip = a.getIp();
-            FileWriter ruta = new FileWriter(archivo);
-            BufferedWriter escritor = new BufferedWriter(ruta);
-            escritor.write(nombre+"\n");
-            escritor.write(usuario+"\n");
-            escritor.write(contraseña+"\n");
-            escritor.write(Ip+"\n");
-            escritor.close();
-            int respuesta = conectar(nombre, usuario, contraseña,Ip);
-            if(respuesta == 0){
-                  JOptionPane.showMessageDialog(this, "Se ha logrado conectar a la base de datos", "Correcto", JOptionPane.INFORMATION_MESSAGE, null);
-                  ruta.close();
-            }
-            else{
-                  JOptionPane.showMessageDialog(this, "La base de datos no existe", "Error", JOptionPane.ERROR_MESSAGE, null);
-                  carpetaPrincipal = new File(CARPETA_PRINCIPAL);
-                  File s = new File(archivo);
-                  s.delete();
-                  carpetaPrincipal.delete();
-                  System.exit(0);
-            }
-        }
-        else{
-            FileReader ruta = new FileReader(archivo);
-            BufferedReader leer = new BufferedReader(ruta);
-            String nombre = leer.readLine();
-            String usuario = leer.readLine();
-            String contraseña = leer.readLine();
-            String Ip = leer.readLine();
-            leer.close();
-            int respuesta = conectar(nombre, usuario, contraseña,Ip);
-            if (respuesta == 1){
-                 JOptionPane.showMessageDialog(this, "No se ha logrado conectar a la base de datos", "Error", JOptionPane.ERROR_MESSAGE, null);
-                   ruta.close();
-                  System.exit(0);
-            }
-        }
+          
         this.setLocationRelativeTo(null);   // Para centrar esta ventana sobre la pantalla.
+        ConectarBD obtenerConexion = new ConectarBD(new javax.swing.JFrame(), true);
+        obtenerConexion.setVisible(obtenerConexion.getHacerVisible());
+        conexion = obtenerConexion.getConexion();
+        if (conexion == null) {
+            JOptionPane.showMessageDialog(this, "No se pudo conectar con la base de datos", "ERROR", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        }
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -113,7 +74,6 @@ public class Principal extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Iniciar Sesión");
-        setLocationByPlatform(true);
 
         saludo.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         saludo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -138,7 +98,7 @@ public class Principal extends javax.swing.JDialog {
         jPanel1.setBackground(new java.awt.Color(0, 153, 153));
 
         usuario.setFont(new java.awt.Font("Courier New", 1, 18)); // NOI18N
-        usuario.setText("sergio27");
+        usuario.setText("admin");
         usuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 usuarioActionPerformed(evt);
@@ -152,7 +112,7 @@ public class Principal extends javax.swing.JDialog {
         jLabel2.setText("Contraseña:");
 
         contraseña.setFont(new java.awt.Font("Courier New", 1, 18)); // NOI18N
-        contraseña.setText("hola2");
+        contraseña.setText("admin");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -334,6 +294,12 @@ public class Principal extends javax.swing.JDialog {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 

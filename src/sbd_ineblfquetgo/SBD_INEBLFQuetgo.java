@@ -5,8 +5,12 @@
  */
 package sbd_ineblfquetgo;
 
-import ModuloEstudiante.PrincipalEstudiante;
-import Conexion.conexion;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -18,8 +22,6 @@ public class SBD_INEBLFQuetgo {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//        PrincipalEstudiante principal = new PrincipalEstudiante(new conexion().Conectar());
-//        principal.setVisible(true);
+        // SIN CÓDIGO
     }
-    
 }
