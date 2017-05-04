@@ -31,6 +31,7 @@ public class CambiarContra extends javax.swing.JFrame {
     }
     public CambiarContra(Connection conec, ResultSet admin,JFrame ventana) {
         initComponents();
+        this.setLocationRelativeTo(null);
         conexcion = conec;
         User = admin;
         Ventanita = ventana;
@@ -55,6 +56,7 @@ public class CambiarContra extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -153,7 +155,7 @@ public class CambiarContra extends javax.swing.JFrame {
             contra2 = Nuevo1.getText();
             contra3 = Nuevo2.getText();
             if(contra1.equals(User.getString("Contrasenia")) == true){
-                if(contra2.equals(contra3)){
+                if(contra2.equals(contra3)==true){
                     //vamos a cambiar la contra
                     Instruccion = "UPDATE usuarios SET usuarios.Contrasenia = '" + contra2 + "'WHERE usuarios.NombreUsuario = '" + User.getString("NombreUsuario") + "';";
                     int  a;

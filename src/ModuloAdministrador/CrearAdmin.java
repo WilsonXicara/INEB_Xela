@@ -31,6 +31,7 @@ public class CrearAdmin extends javax.swing.JFrame {
     }
     public CrearAdmin(Connection conec,JFrame ventana){
         initComponents();
+        this.setLocationRelativeTo(null);
         conexion = conec;
         ResultSet munis = null;
         //Tabla Municipios
@@ -85,7 +86,7 @@ public class CrearAdmin extends javax.swing.JFrame {
 
         jLabel10.setText("jLabel10");
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -130,6 +131,11 @@ public class CrearAdmin extends javax.swing.JFrame {
         jLabel5.setText("DPI");
 
         DPI.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        DPI.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                DPIKeyTyped(evt);
+            }
+        });
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel6.setText("Sexo");
@@ -153,6 +159,11 @@ public class CrearAdmin extends javax.swing.JFrame {
         jLabel15.setText("Telefono");
 
         Telefono.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        Telefono.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                TelefonoKeyTyped(evt);
+            }
+        });
 
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton1.setText("Crear Usuario");
@@ -363,47 +374,65 @@ public class CrearAdmin extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "¡Hay Campos Vacios");
             }
             else{
-                Instruccion = "INSERT INTO administrador (Nombres,Apellidos,Direccion,Dpi,Sexo,Municipio_Id) VALUES ('" + Nom + "','" + Apellido + "','" + Direc + "','" + Dpi + "','" + Sex2 + "'," + Muni + ");";
+                if((Dpi.length()==13)&&(Tel.length()==8)){
+                    Instruccion = "INSERT INTO administrador (Nombres,Apellidos,Direccion,Dpi,Sexo,Municipio_Id) VALUES ('" + Nom + "','" + Apellido + "','" + Direc + "','" + Dpi + "','" + Sex2 + "'," + Muni + ");";
                     //Insertamoso el admin
-                int  a;
-                try (PreparedStatement pst = conexion.prepareStatement(Instruccion)) {
-                    a = pst.executeUpdate();
-                    if (a>0){
-                        System.out.println("Guardado");
-                        JOptionPane.showMessageDialog(null, "¡Se ha creado el Administrador " + Nom + " " + Apellido + " !");
+                    int  a;
+                    try (PreparedStatement pst = conexion.prepareStatement(Instruccion)) {
+                        a = pst.executeUpdate();
+                        if (a>0){
+                            System.out.println("Guardado");
+                            JOptionPane.showMessageDialog(null, "¡Se ha creado el Administrador " + Nom + " " + Apellido + " !");
+                        }
+                    } catch (SQLException ex) {
+                        Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                } catch (SQLException ex) {
-                    Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                if(Tel.equals("")){
-                    
+                    if(Tel.equals("")){
+
+                    }
+                    else{
+                        Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                        resultado = sentencia.executeQuery("SELECT * FROM administrador WHERE Dpi = '" + Dpi + "';");
+                        resultado.next();
+                        Instruccion2 = "INSERT INTO telefono (Telefono,Administrador_Id) VALUES ('" + Tel + "'," + resultado.getString(1) + ");";
+                        Instruccion3 = "INSERT INTO usuarios (NombreUsuario,Contrasenia,Tipo,Administrador_Id) VALUES ('" + Usuario + "','" + Contra + "','2'," + resultado.getString(1) + ");";
+                        //Ingresamos el numero telefonico a la tabla telefonos
+                        int  b;
+                        try (PreparedStatement pst = conexion.prepareStatement(Instruccion2)) {
+                            b = pst.executeUpdate();
+                            if (b>0){
+                                System.out.println("Guardado");
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        //Ingresamos a la tabla usuarios segun el tipo
+                        int  c;
+                        try (PreparedStatement pst = conexion.prepareStatement(Instruccion3)) {
+                            c = pst.executeUpdate();
+                            if (c>0){
+                                System.out.println("Guardado");
+                                JOptionPane.showMessageDialog(null, "¡Se ha creado el Usuario " + Usuario);
+                                Nombres.setText("");
+                                Apellidos.setText("");
+                                Direccion.setText("");
+                                DPI.setText("");
+                                Telefono.setText("");
+                                Username.setText("");
+                                Contraseña.setText("");
+                                ConfirmarContra.setText("");
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
                 }
                 else{
-                    Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                    resultado = sentencia.executeQuery("SELECT * FROM administrador WHERE Dpi = '" + Dpi + "';");
-                    resultado.next();
-                    Instruccion2 = "INSERT INTO telefono (Telefono,Administrador_Id) VALUES ('" + Tel + "'," + resultado.getString(1) + ");";
-                    Instruccion3 = "INSERT INTO usuarios (NombreUsuario,Contrasenia,Tipo,Administrador_Id) VALUES ('" + Usuario + "','" + Contra + "','2'," + resultado.getString(1) + ");";
-                    //Ingresamos el numero telefonico a la tabla telefonos
-                    int  b;
-                    try (PreparedStatement pst = conexion.prepareStatement(Instruccion2)) {
-                        b = pst.executeUpdate();
-                        if (b>0){
-                            System.out.println("Guardado");
-                        }
-                    } catch (SQLException ex) {
-                        Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
+                    if(Dpi.length()==13){
+                        JOptionPane.showMessageDialog(null, "El telefono debe ser de 8 caracteres");
                     }
-                    //Ingresamos a la tabla usuarios segun el tipo
-                    int  c;
-                    try (PreparedStatement pst = conexion.prepareStatement(Instruccion3)) {
-                        c = pst.executeUpdate();
-                        if (c>0){
-                            System.out.println("Guardado");
-                            JOptionPane.showMessageDialog(null, "¡Se ha creado el Usuario " + Usuario + " de tipo 2!" );
-                        }
-                    } catch (SQLException ex) {
-                        Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
+                    else{
+                        JOptionPane.showMessageDialog(null, "El DPI debe ser de 13 caracteres");
                     }
                 }
             }
@@ -417,6 +446,22 @@ public class CrearAdmin extends javax.swing.JFrame {
         Ventanita.setEnabled(true);
         this.dispose();
     }//GEN-LAST:event_formWindowClosing
+
+    private void DPIKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_DPIKeyTyped
+        // TODO add your handling code here:
+        char letra = evt.getKeyChar();
+        if((letra<'0')||(letra>'9')){
+            evt.consume();
+        }
+    }//GEN-LAST:event_DPIKeyTyped
+
+    private void TelefonoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TelefonoKeyTyped
+        // TODO add your handling code here:
+        char letra = evt.getKeyChar();
+        if((letra<'0')||(letra>'9')){
+            evt.consume();
+        }
+    }//GEN-LAST:event_TelefonoKeyTyped
 
     /**
      * @param args the command line arguments

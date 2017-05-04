@@ -40,6 +40,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     
     public ModuloPrincipalAdmin(Connection conec, ResultSet admin){
         initComponents();
+        this.setLocationRelativeTo(null);
         conexcion = conec;
         User = admin;
         ResultSet resultado = null, resultado2 = null;
