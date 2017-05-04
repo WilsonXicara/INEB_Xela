@@ -281,7 +281,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         );
 
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(30, 70, 855, 195);
+        jPanel1.setBounds(30, 70, 853, 189);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         getContentPane().add(jLabel2);
@@ -471,9 +471,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             // TODO add your handling code here:
             String tipo = User.getString("Tipo");
             if(tipo.equals("1")){
-                this.setVisible(false);
+                this.setEnabled(false);
                 new Ciclo_Escolar(new Frame(),true, conexcion).setVisible(true);
-                this.setVisible(true);
+                this.setEnabled(true);
             }
             else{
                 JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
@@ -493,9 +493,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         Crear_Ciclo_Escolar_1 a;
         try {
             if(User.getString("Tipo").equals("1")){
+                this.setEnabled(false);
                 a = new Crear_Ciclo_Escolar_1(new Frame(),true, conexcion);
                 a.setVisible(true);
-                this.setEnabled(false);
+                this.setEnabled(true);
                 //this.setVisible(true);
             }
             else{
