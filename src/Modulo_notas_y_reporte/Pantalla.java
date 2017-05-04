@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import Catedratico.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 //import modulo.prestamo.libro.MóduloCurso;
 
 /**
@@ -31,9 +33,10 @@ public class Pantalla extends javax.swing.JFrame {
     int Id_curso;
     int Id_cat;
     int Id_cicloescolar;
-    String cicloesc;
+    String cicloesc, nf;
     ResultSet est, b;
     JFrame va;
+    float Notafinal, n1,n2,n3,n4;
     /**
      * Creates new form Pantalla
      */
@@ -43,15 +46,55 @@ public class Pantalla extends javax.swing.JFrame {
     //es este
     public Pantalla() throws SQLException {
         /*initComponents();
+        this.setLocationRelativeTo(null);
         conexion = cn.Conectar();
         //validar(tipo);
         limpiar();
         deshabilitar();
-        llenar();
+        Id_cicloescolar = 5;
+        Id_curso = 13;
         //cargar("");
         Calendar fecha = new GregorianCalendar();
         año = Integer.toString(fecha.get(Calendar.YEAR));
         posicion = 0;
+        llenar();
+        this.addWindowListener(new WindowListener() {
+
+            @Override
+            public void windowOpened(WindowEvent we) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void windowClosing(WindowEvent we) {
+                cerrar();
+            }
+
+            @Override
+            public void windowClosed(WindowEvent we) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void windowIconified(WindowEvent we) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent we) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void windowActivated(WindowEvent we) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent we) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        });
         //Cargar_Datos_Estudiante();*/
     }
     public Pantalla(Connection conex, int cat, int cur, int ciclo, /*ResultSet a,*/ JFrame v) throws SQLException {
@@ -69,6 +112,43 @@ public class Pantalla extends javax.swing.JFrame {
         //b = a;
         va = v;
         llenar();
+        this.addWindowListener(new WindowListener() {
+
+            @Override
+            public void windowOpened(WindowEvent we) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void windowClosing(WindowEvent we) {
+                cerrar();
+            }
+
+            @Override
+            public void windowClosed(WindowEvent we) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void windowIconified(WindowEvent we) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent we) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void windowActivated(WindowEvent we) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent we) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        });
     }
 
     /*public void Cargar_Datos_Estudiante() throws SQLException
@@ -89,6 +169,62 @@ public class Pantalla extends javax.swing.JFrame {
         }
         
     }*/
+    public void cerrar()
+    {
+        if((Nota1.getText() != "0")||(Nota2.getText() != "0")||(Nota3.getText() != "0")||(Nota4.getText() != "0")||(NotaR.getText() != "0"))
+        {
+            String[] opciones = new String[]{"SI", "NO"};
+            int opcion = JOptionPane.showOptionDialog(this,"Desea guardar los cambios realizados", "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+            //System.out.println(opcion);
+            if(opcion == JOptionPane.YES_OPTION)
+            {
+                try {
+                    String sql = "UPDATE Notas SET Nota1 =?, Nota2 =?, Nota3 =?, Nota4 =?, NotaFinal =?, NotaRecuperacion =? WHERE Notas.Id =?";
+                    int fila = modificacion.getSelectedRow();
+                    String dao = (String)modificacion.getValueAt(fila, 0);
+                    PreparedStatement ps = conexion.prepareStatement(sql);
+                    String a = Integer.toString(Id_curso);
+                    n1 = Integer.parseInt(Nota1.getText());
+                    n2 = Integer.parseInt(Nota2.getText());
+                    n3 = Integer.parseInt(Nota3.getText());
+                    n4 = Integer.parseInt(Nota4.getText());
+                    Notafinal = ((n1+n2+n3+n4)/4);
+                    nf = Float.toString(Notafinal);
+                    if(((n1>=0)&&(n1<=100))&&((n2>=0)&&(n2<=100))&&((n3>=0)&&(n3<=100))&&((n4>=0)&&(n4<=100)))
+                    {
+                        ps.setString(1, Nota1.getText());
+                        ps.setString(2, Nota2.getText());
+                        ps.setString(3, Nota3.getText());
+                        ps.setString(4, Nota4.getText());
+                        ps.setString(5, nf);
+                        ps.setString(6, NotaR.getText());
+                        ps.setString(7, dao);
+
+                        int n = ps.executeUpdate();
+                        if(n>0)
+                        {
+                            limpiar();
+                            llenar();
+                            //prueba();
+                            JOptionPane.showMessageDialog(null, "Datos modificados");
+                        } 
+                    }
+                    else
+                    {
+                        JOptionPane.showMessageDialog(null, "Una de las notas no tiene un valor entre '0' y '100'");
+                    }
+
+                    //llenar();
+                    //limpiar();
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Error " + e.getMessage());
+                }
+                
+            }
+        }
+        va.setEnabled(true);
+        this.dispose();
+    }
     
     void validar(int tip)
     {
@@ -109,7 +245,6 @@ public class Pantalla extends javax.swing.JFrame {
         Nota2.setText("0");
         Nota3.setText("0");
         Nota4.setText("0");
-        Notafinal.setText("0");
         NotaR.setText("0");
     }
 
@@ -120,8 +255,8 @@ public class Pantalla extends javax.swing.JFrame {
         Nota2.setEditable(false);
         Nota3.setEditable(false);
         Nota4.setEditable(false);
-        Notafinal.setEditable(false);
         NotaR.setEditable(false);
+        Modificar.setEnabled(false);
     }
 
     void habilitar() {
@@ -131,8 +266,8 @@ public class Pantalla extends javax.swing.JFrame {
         Nota2.setEditable(true);
         Nota3.setEditable(true);
         Nota4.setEditable(true);
-        Notafinal.setEditable(true);
         NotaR.setEditable(true);
+        Modificar.setEnabled(true);
         //CursoID.requestFocus();
     }
 
@@ -168,6 +303,7 @@ public class Pantalla extends javax.swing.JFrame {
             modificacion.getColumnModel().getColumn(0).setMinWidth(0);
             modificacion.getColumnModel().getColumn(0).setPreferredWidth(0);
             modificacion.getColumnModel().getColumn(0).setResizable(false);
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -247,20 +383,33 @@ public class Pantalla extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        modificacion = new javax.swing.JTable();
-        Modificar = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        modificacion = new JTable(){
+            @Override
+            public boolean isCellEditable(int rowIndex, int colIndex) {
+
+                return false; //Las celdas no son editables.
+
+            }
+        };
+        jPanel1 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        Nota1 = new javax.swing.JTextField();
-        Nota2 = new javax.swing.JTextField();
-        Nota3 = new javax.swing.JTextField();
         Nota4 = new javax.swing.JTextField();
-        Notafinal = new javax.swing.JTextField();
-        NotaR = new javax.swing.JTextField();
+        Nota3 = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        Nota2 = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        Nota1 = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
+        NotaR = new javax.swing.JTextField();
+        Modificar = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        Codigo = new javax.swing.JTextField();
+        Ape = new javax.swing.JTextField();
+        Nom = new javax.swing.JTextField();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -285,7 +434,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Modificación de notas", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), java.awt.Color.blue)); // NOI18N
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Estudiantes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), java.awt.Color.black)); // NOI18N
 
         modificacion.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -302,6 +451,64 @@ public class Pantalla extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(modificacion);
 
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2)
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ingreso de notas", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, java.awt.Color.black));
+
+        jLabel4.setText("Nota 4");
+
+        Nota4.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                Nota4KeyTyped(evt);
+            }
+        });
+
+        Nota3.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                Nota3KeyTyped(evt);
+            }
+        });
+
+        jLabel3.setText("Nota 3");
+
+        Nota2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                Nota2KeyTyped(evt);
+            }
+        });
+
+        jLabel2.setText("Nota 2");
+
+        jLabel1.setText("Nota 1");
+
+        Nota1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                Nota1KeyTyped(evt);
+            }
+        });
+
+        jLabel6.setText("Nota recuperación");
+
+        NotaR.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                NotaRKeyTyped(evt);
+            }
+        });
+
         Modificar.setText("Modificar");
         Modificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -309,84 +516,133 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("Nota 1");
-
-        jLabel2.setText("Nota 2");
-
-        jLabel3.setText("Nota 3");
-
-        jLabel4.setText("Nota 4");
-
-        jLabel5.setText("Nota final");
-
-        jLabel6.setText("Nota recuperación");
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 623, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(Nota2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Nota3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(Nota1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
+                        .addComponent(jLabel6)
+                        .addGap(18, 18, 18)
+                        .addComponent(NotaR, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(Nota4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(Modificar)))
                 .addContainerGap())
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(61, 61, 61)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(13, 13, 13)
-                        .addComponent(jLabel1)
-                        .addGap(48, 48, 48)
-                        .addComponent(jLabel2)
-                        .addGap(51, 51, 51)
-                        .addComponent(jLabel3)
-                        .addGap(52, 52, 52)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(Nota1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(Nota2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(Nota3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(Nota4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(25, 25, 25)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(Notafinal, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(31, 31, 31)
-                        .addComponent(NotaR, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(33, 33, 33)
-                        .addComponent(jLabel6)))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(9, 9, 9)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(Nota1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6)
+                    .addComponent(NotaR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(Nota2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(Nota3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(Nota4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Modificar))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Seleccionado", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, java.awt.Color.black));
+
+        jLabel5.setText("Nombres");
+
+        jLabel7.setText("Apellidos");
+
+        jLabel8.setText("Código Personal");
+
+        Codigo.setEditable(false);
+        Codigo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CodigoActionPerformed(evt);
+            }
+        });
+
+        Ape.setEditable(false);
+        Ape.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ApeActionPerformed(evt);
+            }
+        });
+
+        Nom.setEditable(false);
+        Nom.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NomActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(47, 47, 47)
+                        .addComponent(Codigo, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(70, 70, 70)
+                        .addComponent(jLabel8)))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Nota1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Nota2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Nota3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Nota4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Notafinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(NotaR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
-                .addComponent(Modificar))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(40, 40, 40)
+                        .addComponent(jLabel7))
+                    .addComponent(Ape, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(Nom, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(60, 60, 60)
+                        .addComponent(jLabel5)))
+                .addContainerGap(51, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel7)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Codigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Ape, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Nom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(53, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -394,10 +650,22 @@ public class Pantalla extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -420,8 +688,10 @@ public class Pantalla extends javax.swing.JFrame {
                 Nota2.setText(rs.getString("Nota2"));
                 Nota3.setText(rs.getString("Nota3"));
                 Nota4.setText(rs.getString("Nota4"));
-                Notafinal.setText(rs.getString("NotaFinal"));
                 NotaR.setText(rs.getString("NotaRecuperacion"));
+                Codigo.setText((String)modificacion.getValueAt(fila, 1));
+                Ape.setText((String)modificacion.getValueAt(fila, 2));
+                Nom.setText((String)modificacion.getValueAt(fila, 3));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -436,22 +706,38 @@ public class Pantalla extends javax.swing.JFrame {
             String dao = (String)modificacion.getValueAt(fila, 0);
             PreparedStatement ps = conexion.prepareStatement(sql);
             String a = Integer.toString(Id_curso);
-            ps.setString(1, Nota1.getText());
-            ps.setString(2, Nota2.getText());
-            ps.setString(3, Nota3.getText());
-            ps.setString(4, Nota4.getText());
-            ps.setString(5, Notafinal.getText());
-            ps.setString(6, NotaR.getText());
-            ps.setString(7, dao);
-            
-            int n = ps.executeUpdate();
-            if(n>0)
+            n1 = Integer.parseInt(Nota1.getText());
+            n2 = Integer.parseInt(Nota2.getText());
+            n3 = Integer.parseInt(Nota3.getText());
+            n4 = Integer.parseInt(Nota4.getText());
+            Notafinal = ((n1+n2+n3+n4)/4);
+            nf = Float.toString(Notafinal);
+            if(((n1>=0)&&(n1<=100))&&((n2>=0)&&(n2<=100))&&((n3>=0)&&(n3<=100))&&((n4>=0)&&(n4<=100)))
             {
-                limpiar();
-                llenar();
-                //prueba();
-                JOptionPane.showMessageDialog(null, "Datos modificados");
+                ps.setString(1, Nota1.getText());
+                ps.setString(2, Nota2.getText());
+                ps.setString(3, Nota3.getText());
+                ps.setString(4, Nota4.getText());
+                ps.setString(5, nf);
+                ps.setString(6, NotaR.getText());
+                ps.setString(7, dao);
+
+                int n = ps.executeUpdate();
+                if(n>0)
+                {
+                    limpiar();
+                    llenar();
+                    //prueba();
+                    deshabilitar();
+                    
+                    JOptionPane.showMessageDialog(null, "Datos modificados");
+                } 
             }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Una de las notas no tiene un valor entre '0' y '100'");
+            }
+            
             //llenar();
             //limpiar();
         } catch (Exception e) {
@@ -468,9 +754,50 @@ public class Pantalla extends javax.swing.JFrame {
            
         //ModuloPrincipalCatedratico a;
             //a = new ModuloPrincipalCatedratico(conexion, b);
-         va.setEnabled(true);
-         this.dispose();
+        
     }//GEN-LAST:event_formWindowClosing
+
+    private void CodigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CodigoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CodigoActionPerformed
+
+    private void ApeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ApeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ApeActionPerformed
+
+    private void NomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NomActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_NomActionPerformed
+
+    private void Nota1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Nota1KeyTyped
+        // TODO add your handling code here:
+        char letra = evt.getKeyChar();
+        if((letra<'0'||letra>'9')) evt.consume();
+    }//GEN-LAST:event_Nota1KeyTyped
+
+    private void Nota2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Nota2KeyTyped
+        // TODO add your handling code here:
+        char letra = evt.getKeyChar();
+        if((letra<'0'||letra>'9')) evt.consume();
+    }//GEN-LAST:event_Nota2KeyTyped
+
+    private void Nota3KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Nota3KeyTyped
+        // TODO add your handling code here:
+        char letra = evt.getKeyChar();
+        if((letra<'0'||letra>'9')) evt.consume();
+    }//GEN-LAST:event_Nota3KeyTyped
+
+    private void Nota4KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_Nota4KeyTyped
+        // TODO add your handling code here:
+        char letra = evt.getKeyChar();
+        if((letra<'0'||letra>'9')) evt.consume();
+    }//GEN-LAST:event_Nota4KeyTyped
+
+    private void NotaRKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_NotaRKeyTyped
+        // TODO add your handling code here:
+        char letra = evt.getKeyChar();
+        if((letra<'0'||letra>'9')) evt.consume();
+    }//GEN-LAST:event_NotaRKeyTyped
 
     /**
      * @param args the command line arguments
@@ -513,19 +840,25 @@ public class Pantalla extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField Ape;
+    private javax.swing.JTextField Codigo;
     private javax.swing.JButton Modificar;
+    private javax.swing.JTextField Nom;
     private javax.swing.JTextField Nota1;
     private javax.swing.JTextField Nota2;
     private javax.swing.JTextField Nota3;
     private javax.swing.JTextField Nota4;
     private javax.swing.JTextField NotaR;
-    private javax.swing.JTextField Notafinal;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

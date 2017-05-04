@@ -15,6 +15,7 @@ import ModuloPrestamos.ModuloPaquetes;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
 import Modulo_Ciclo_Escolar.Crear_Ciclo_Escolar_1;
 import Modulo_incio_sesion.Principal;
+import Modulo_notas_y_reporte.Ventanareporte;
 import java.awt.Frame;
 import java.io.IOException;
 import java.sql.Connection;
@@ -118,6 +119,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
+        Reporte = new javax.swing.JMenuItem();
         menu_ver = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
@@ -280,7 +282,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         );
 
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(30, 70, 855, 195);
+        jPanel1.setBounds(30, 70, 853, 189);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         getContentPane().add(jLabel2);
@@ -348,6 +350,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             }
         });
         menu_crear.add(jMenuItem6);
+
+        Reporte.setText("Reporte");
+        Reporte.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ReporteActionPerformed(evt);
+            }
+        });
+        menu_crear.add(Reporte);
 
         jMenuBar1.add(menu_crear);
 
@@ -565,6 +575,13 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jMenuItem8ActionPerformed
 
+    private void ReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReporteActionPerformed
+        // TODO add your handling code here:
+        this.setEnabled(false);
+        Ventanareporte ventana = new Ventanareporte(conexcion,this);
+        ventana.setVisible(true);
+    }//GEN-LAST:event_ReporteActionPerformed
+
 
     /**
      * @param args the command line arguments
@@ -606,6 +623,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JTextField Direccion;
     private javax.swing.JTextField Municipio;
     private javax.swing.JTextField Nombre;
+    private javax.swing.JMenuItem Reporte;
     private javax.swing.JTextField Sexo;
     private javax.swing.JTextField Telefono;
     private javax.swing.JTextField Usuario;
