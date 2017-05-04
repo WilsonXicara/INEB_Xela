@@ -114,8 +114,6 @@ public class AsignarEstudiante extends javax.swing.JDialog {
         tabla_info_estudiante = new javax.swing.JTable();
         panel_info_asignacion = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        aula = new javax.swing.JTextField();
         ciclo_escolar = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         grado = new javax.swing.JComboBox<>();
@@ -190,11 +188,6 @@ public class AsignarEstudiante extends javax.swing.JDialog {
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel3.setText("Grado:");
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel4.setText("Aula:");
-
-        aula.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-
         ciclo_escolar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         ciclo_escolar.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -263,7 +256,6 @@ public class AsignarEstudiante extends javax.swing.JDialog {
             .addGroup(panel_info_asignacionLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(etiqueta_info_asignacion)
                     .addGroup(panel_info_asignacionLayout.createSequentialGroup()
                         .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panel_info_asignacionLayout.createSequentialGroup()
@@ -273,21 +265,21 @@ public class AsignarEstudiante extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(aula, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(jLabel3)))
                             .addGroup(panel_info_asignacionLayout.createSequentialGroup()
-                                .addGap(78, 78, 78)
+                                .addGap(34, 34, 34)
                                 .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(18, 18, 18)
                         .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
                             .addGroup(panel_info_asignacionLayout.createSequentialGroup()
                                 .addComponent(jLabel5)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
-                .addContainerGap())
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(panel_info_asignacionLayout.createSequentialGroup()
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                .addContainerGap())))
+                    .addGroup(panel_info_asignacionLayout.createSequentialGroup()
+                        .addComponent(etiqueta_info_asignacion)
+                        .addContainerGap())))
         );
         panel_info_asignacionLayout.setVerticalGroup(
             panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -298,15 +290,13 @@ public class AsignarEstudiante extends javax.swing.JDialog {
                 .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3)
-                    .addComponent(jLabel4)
                     .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_info_asignacionLayout.createSequentialGroup()
                         .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(aula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 107, Short.MAX_VALUE)
                         .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
@@ -383,27 +373,23 @@ public class AsignarEstudiante extends javax.swing.JDialog {
                     ((estudiante.getSexo().equals("F"))?"La":"El")+" estudiante no puede ser asignad"+((estudiante.getSexo().equals("F"))?"a":"o")+" al Ciclo "+cicloEscolarNuevo
                             + "\npues es anterior al Ciclo "+cicloEscolarAnterior+" al que ya fue asignad"+((estudiante.getSexo().equals("F"))?"a":"o."),
                     "Error", JOptionPane.ERROR_MESSAGE);
-        } else if (aula.getText().length() == 0)
-            JOptionPane.showMessageDialog(this, "No se le ha asignado un aula "+((estudiante.getSexo().equals("F"))?"a la":"al")+" estudiante.", "Error", JOptionPane.ERROR_MESSAGE);
-        else {  // Se realizará la Asignación/Reasignación
+        } else {  // Se realizará la Asignación/Reasignación
             int opcion = JOptionPane.showOptionDialog(this,
                     "Se creará la "+((paraReasignacion)?"Rea":"A")+"signación de "+estudiante.getNombres()+" "+estudiante.getApellidos()+":"
                             + "\nCiclo:  "+(String)ciclo_escolar.getSelectedItem()+""
                             + "\nGrado:  "+(String)grado.getSelectedItem()+""
-                            + "\nAula:   "+aula.getText()+""
                             + "\n\nEstá seguro que desea continuar?",
                     "Aviso", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             if (opcion == JOptionPane.YES_OPTION) {
                 int indexCiclo = ciclo_escolar.getSelectedIndex(), indexGrado = grado.getSelectedIndex();
                 try {
-                    String nuevaAsignacion = "INSERT INTO AsignacionEst(CicloEscolar_Id, Grado_Id, Estudiante_Id, Aula) VALUES("
-                            +(indexCiclo+1)+","+listaCiclos.get(indexCiclo).getGrado(indexGrado).getID()+","+estudiante.getID()+",'"+ aula.getText()+"')";
+                    String nuevaAsignacion = "INSERT INTO AsignacionEst(CicloEscolar_Id, Grado_Id, Estudiante_Id) VALUES("
+                            +(indexCiclo+1)+","+listaCiclos.get(indexCiclo).getGrado(indexGrado).getID()+","+estudiante.getID()+")";
                     conexion.prepareStatement(nuevaAsignacion).executeUpdate(); // Inserto y actulizo
                     estudiante.setAsignacionNueva(true);    // Actualizo el registro del estudiante para indicar que ya fue reasignado
                     crear_asignacion.setEnabled(false);     // Bloqueo el botón para evitar que se vuelva a asignar
                     ciclo_escolar.setEnabled(false);    // Bloqueo el JComboBox para evitar accesos innecesarios a la Base de Datos
                     grado.setEnabled(false);    // Bloqueo el JComboBox para evitar accesos innecesarios a la Base de Datos
-                    aula.setEnabled(false);     // Bloqueo el campo donde se ingresa el Aula
                     this.dispose(); // Cierro el JDialog
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(this, "Error al intentar crear la Asignación:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -464,7 +450,7 @@ public class AsignarEstudiante extends javax.swing.JDialog {
         
         // Definición del ancho de las columnas para la Tabla Información Cursos (valores definidos en base a pruebas)
         tabla_info_cursos.getColumnModel().getColumn(0).setPreferredWidth(50);
-        tabla_info_cursos.getColumnModel().getColumn(1).setPreferredWidth(250);
+        tabla_info_cursos.getColumnModel().getColumn(1).setPreferredWidth(350);
     }
     /**
      * @param args the command line arguments
@@ -512,7 +498,6 @@ public class AsignarEstudiante extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField aula;
     private javax.swing.JComboBox<String> ciclo_escolar;
     private javax.swing.JButton crear_asignacion;
     private javax.swing.JLabel etiqueta_info_asignacion;
@@ -520,7 +505,6 @@ public class AsignarEstudiante extends javax.swing.JDialog {
     private javax.swing.JComboBox<String> grado;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

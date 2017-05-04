@@ -386,7 +386,7 @@ public class InformacionEstudiante extends javax.swing.JDialog {
 
             modelEncontrados.setRowCount(0);    // Eliminación de todos los registros de la tabla_encontrados
             listaEncontrados.clear();   // Eliminación de todos los registros de listaEstudiantes
-
+            
             extraer_y_mostrar_registros(cicloSelec+1, gradoId, filtro, campoBusqueda);
         }
     }//GEN-LAST:event_buscarActionPerformed
@@ -415,6 +415,8 @@ public class InformacionEstudiante extends javax.swing.JDialog {
      */
     private void filtro_busquedaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_filtro_busquedaItemStateChanged
         campo_busqueda.setEnabled(!(filtro_busqueda.getSelectedIndex() == 0));
+        if (filtro_busqueda.getSelectedIndex()==0)
+            campo_busqueda.setText("");
     }//GEN-LAST:event_filtro_busquedaItemStateChanged
     /**
      * Acción que permite mostrar en el JComboBox 'grado' los grados asignados al ciclo escolar seleccionado. Para evita hacer
@@ -476,14 +478,14 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             /* Realizo la búsqueda según el filtro, el Ciclo Escolar y el Grado especificados */
             switch (filtro) {
                 case 1: // Búsqueda por Código Personal
-                    instruccion+= " AND CodigoPersonal = "+campoBusqueda;
+                    instruccion+= " AND CodigoPersonal = '"+campoBusqueda + "'";
                 break;
                 case 2: // Búsqueda por Apellidos
-                    instruccion+= " AND Apellidos = "+campoBusqueda;
+                    instruccion+= " AND Apellidos = '"+campoBusqueda + "'";
                 break;
                 
                 case 3: // Búsqueda por Nombres
-                    instruccion+= " AND Nombres = "+campoBusqueda;
+                    instruccion+= " AND Nombres = '"+campoBusqueda + "'";
                 break;
                 default:    // Sin especificar (devuelve todos los datos del CicloEscolar especificado)
                 break;
@@ -527,6 +529,8 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             int cantidadColumnas = columnas.getColumnCount();
             for(int i=1; i<=cantidadColumnas; i++)
                 tabla.addColumn(columnas.getColumnLabel(i));**/
+            String mensaje = "Se encontró "+contNum+" registro"+((contNum!=1)?"s":"")+" en "+((gradoId==0)?"todos los grados":"el grado "+(String)grado.getSelectedItem())+" del ciclo escolar "+ciclo_escolar.getItemAt(cicloEscolarId-1)+((filtro!=0)?" (Búsqueda por: "+(String)filtro_busqueda.getSelectedItem()+" = '"+campoBusqueda+"')":"");
+            etiqueta_encontrados.setText(mensaje);
             
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al intentar extraer los datos especificados:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
