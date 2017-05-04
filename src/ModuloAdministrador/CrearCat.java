@@ -279,7 +279,7 @@ public class CrearCat extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "No se ha seleccionado ningun catedrático");
         }
         else{
-            if((User.getText().equals("")) || (Contra.getText().equals("")) || (Contra2.getText().equals(""))){
+            if((User.getText().equals("")==true) || (Contra.getText().equals("")==true) || (Contra2.getText().equals("")==true)){
                 JOptionPane.showMessageDialog(null, "Hay Campos Vacios");
             }
             else if(Contra.getText().equals(Contra2.getText()) == false){
@@ -289,27 +289,27 @@ public class CrearCat extends javax.swing.JFrame {
             else{   //si ninguna se cumplio entonces si se puede crear
                 Instruccion = "INSERT INTO usuarios (NombreUsuario,Contrasenia,Tipo,Catedratico_Id) VALUES ('" + User.getText() + "','" + Contra.getText() + "','3'," + VarId + ");";
                 //Ingresamos a la tabla usuarios segun el tipo
-            int  c;
-            try (PreparedStatement pst = conexion.prepareStatement(Instruccion)) {
-                c = pst.executeUpdate();
-                if (c>0){
-                    int filas = Datos.getRowCount();
-                    for (int i = 0;filas>i; i++) {
-                        modelo.removeRow(0);
+                int  c;
+                try (PreparedStatement pst = conexion.prepareStatement(Instruccion)) {
+                    c = pst.executeUpdate();
+                    if (c>0){
+                        int filas = Datos.getRowCount();
+                        for (int i = 0;filas>i; i++) {
+                            modelo.removeRow(0);
+                        }
+                        System.out.println("Guardado");
+                        JOptionPane.showMessageDialog(null, "¡Se ha creado el Usuario " + User.getText());
+                        DatosCat(); //revisar la funcion
+                        //borrar campos
+                        Nombre.setText("");
+                        Dpi.setText("");
+                        User.setText("");
+                        Contra.setText("");
+                        Contra2.setText("");
                     }
-                    System.out.println("Guardado");
-                    JOptionPane.showMessageDialog(null, "¡Se ha creado el Usuario " + User.getText());
-                    DatosCat(); //revisar la funcion
-                    //borrar campos
-                    Nombre.setText("");
-                    Dpi.setText("");
-                    User.setText("");
-                    Contra.setText("");
-                    Contra2.setText("");
+                } catch (SQLException ex) {
+                    Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (SQLException ex) {
-                Logger.getLogger(CrearAdmin.class.getName()).log(Level.SEVERE, null, ex);
-            }
             }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
