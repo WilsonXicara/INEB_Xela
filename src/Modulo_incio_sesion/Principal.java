@@ -88,7 +88,7 @@ public class Principal extends javax.swing.JDialog {
             }
         });
 
-        jPanel1.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel1.setBackground(new java.awt.Color(169, 50, 38));
 
         usuario.setFont(new java.awt.Font("Courier New", 1, 18)); // NOI18N
         usuario.setText("admin");
