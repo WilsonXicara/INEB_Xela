@@ -5,6 +5,8 @@
  */
 package Modulo_notas_y_reporte;
 import Modulo_notas_y_reporte.ModuloCurso;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -22,22 +24,130 @@ public class Ventanareporte extends javax.swing.JFrame {
     Statement sent;
     ModuloCurso cn = new ModuloCurso();
     String id_estudiante;
-    
+    String ciclo;
+    JFrame va;
     
     public Ventanareporte() {
         initComponents();
         conexion = cn.Conectar();
+        año();
         limpiar();
         deshabilitar();
         cargar();
+        this.addWindowListener(new WindowListener() {
+
+            @Override
+            public void windowOpened(WindowEvent we) {
+                
+            }
+
+            @Override
+            public void windowClosing(WindowEvent we) {
+                cerrar();
+            }
+
+            @Override
+            public void windowClosed(WindowEvent we) {
+                
+            }
+
+            @Override
+            public void windowIconified(WindowEvent we) {
+                
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent we) {
+                
+            }
+
+            @Override
+            public void windowActivated(WindowEvent we) {
+                
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent we) {
+                
+            }
+        });
     }
-    public Ventanareporte(Connection conec, ResultSet a)
+    public Ventanareporte(Connection conec, JFrame ventana)
     {
-        /*initComponents();
+        initComponents();
         conexion = conec;
+        va = ventana;
         limpiar();
         deshabilitar();
-        cargar();*/
+        cargar();
+        this.addWindowListener(new WindowListener() {
+
+            @Override
+            public void windowOpened(WindowEvent we) {
+                
+            }
+
+            @Override
+            public void windowClosing(WindowEvent we) {
+                cerrar();
+            }
+
+            @Override
+            public void windowClosed(WindowEvent we) {
+                
+            }
+
+            @Override
+            public void windowIconified(WindowEvent we) {
+                
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent we) {
+                
+            }
+
+            @Override
+            public void windowActivated(WindowEvent we) {
+                
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent we) {
+                
+            }
+        });
+    }
+    public void cerrar()
+    {
+        if((fecha.getText() != "")&&(descrip.getText() != ""))
+        {
+            String[] opciones = new String[]{"SI", "NO"};
+            int opcion = JOptionPane.showOptionDialog(this,"Desea guardar los cambios realizados", "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+            //System.out.println(opcion);
+            if(opcion == JOptionPane.YES_OPTION)
+            {
+               try {
+                    String sql = "INSERT INTO Reporte (Fecha, Descripcion, Estudiante_Id)" + "VALUES(?,?,?)";
+                    PreparedStatement ps = conexion.prepareCall(sql);
+                    ps.setString(1, fecha.getText());
+                    ps.setString(2, descrip.getText());
+                    ps.setString(3, id_estudiante);
+
+                    int n = ps.executeUpdate();
+                    if (n > 0) {
+                        JOptionPane.showMessageDialog(null, "Datos Guardados Correctamente");
+                    }
+                } catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, "Error" + e.getMessage());
+                }
+                limpiar();
+                cargar();
+                deshabilitar();
+            }
+        }
+        va.setEnabled(true);
+        this.dispose();
     }
     void limpiar() {
         fecha.setText("");
@@ -53,6 +163,23 @@ public class Ventanareporte extends javax.swing.JFrame {
         descrip.setEditable(true); 
     }
     
+    
+    
+    void año()
+    {
+        try
+        {
+            conexion = cn.Conectar();
+            String sql = "SELECT MAX(ID) FROM cicloescolar;";
+            sent = conexion.createStatement();
+            ResultSet rs = sent.executeQuery(sql);
+            rs.next();
+            ciclo = rs.getString(1);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     void cargar()
     {
         try {
@@ -60,7 +187,7 @@ public class Ventanareporte extends javax.swing.JFrame {
             String [] titulos={"a", "Apellidos", "Nombre"};
             String [] fila = new String [3];
         
-            String sql = "SELECT Estudiante.ID, Estudiante.Apellidos, Estudiante.Nombres FROM Estudiante INNER JOIN AsignacionEst ON Estudiante.ID = AsignacionEst.Estudiante_ID WHERE AsignacionEst.CicloEscolar_ID = " + 5 +  " ORDER BY Estudiante.Apellidos ASC;";
+            String sql = "SELECT Estudiante.ID, Estudiante.Apellidos, Estudiante.Nombres FROM Estudiante INNER JOIN AsignacionEst ON Estudiante.ID = AsignacionEst.Estudiante_ID WHERE AsignacionEst.CicloEscolar_ID = " + ciclo +  " ORDER BY Estudiante.Apellidos ASC;";
         
             model = new DefaultTableModel(null, titulos);
             sent = conexion.createStatement();
@@ -101,7 +228,6 @@ public class Ventanareporte extends javax.swing.JFrame {
         Guardar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         Estudiantes = new javax.swing.JTable();
-        Volver = new javax.swing.JButton();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -118,7 +244,7 @@ public class Ventanareporte extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Creación de reporte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), java.awt.Color.blue)); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Creación de reporte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), java.awt.Color.black)); // NOI18N
 
         jLabel1.setText("Fecha ");
 
@@ -162,10 +288,12 @@ public class Ventanareporte extends javax.swing.JFrame {
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(descrip, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(fecha, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(fecha, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(descrip))
+                        .addGap(18, 18, 18)
                         .addComponent(Guardar)))
                 .addContainerGap())
         );
@@ -188,19 +316,13 @@ public class Ventanareporte extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        Volver.setText("Volver");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(Volver)))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -208,8 +330,6 @@ public class Ventanareporte extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(Volver)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -292,7 +412,6 @@ public class Ventanareporte extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable Estudiantes;
     private javax.swing.JButton Guardar;
-    private javax.swing.JButton Volver;
     private javax.swing.JTextField descrip;
     private javax.swing.JTextField fecha;
     private javax.swing.JLabel jLabel1;
