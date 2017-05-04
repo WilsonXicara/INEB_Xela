@@ -33,7 +33,9 @@ public class ModuloPaquetes extends javax.swing.JFrame {
     }
     
     public ModuloPaquetes(Connection conec,JFrame ventana){
+        
         initComponents();
+        this.setLocationRelativeTo(null);
         conexcion = conec;
         modelo = (DefaultTableModel) Libros.getModel();
         Ventanita = ventana;
@@ -73,7 +75,7 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         Libros = new javax.swing.JTable();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
@@ -91,6 +93,11 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         jLabel4.setText("Descripción");
 
         CodigoPaquete.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        CodigoPaquete.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                CodigoPaqueteKeyTyped(evt);
+            }
+        });
 
         Descripcion.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -156,6 +163,11 @@ public class ModuloPaquetes extends javax.swing.JFrame {
                 CodigoLibroActionPerformed(evt);
             }
         });
+        CodigoLibro.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                CodigoLibroKeyTyped(evt);
+            }
+        });
 
         Nombre.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -173,6 +185,11 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         Editorial.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         Estado.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        Estado.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                EstadoKeyTyped(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -311,6 +328,10 @@ public class ModuloPaquetes extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
+        int filas = Libros.getRowCount();
+        for (int i = 0;filas>i; i++) {
+            modelo.removeRow(0);
+        }
         CodigoPaquete.setText("");
         Descripcion.setText("");
         
@@ -318,79 +339,56 @@ public class ModuloPaquetes extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        ResultSet librito = null;
         String codLib = CodigoLibro.getText();
         String Nom = Nombre.getText();
         String Aut = Autor.getText();
         String Edit = Editorial.getText();
         String Est = Estado.getText();
-        if(contaLibros <= 4){
+        int filas = Libros.getRowCount(), bandera = 0, bandera2 = 0;
+        if(contaLibros < 4){
             if((codLib.equals(""))||(Nom.equals(""))||(Aut.equals(""))||(Edit.equals(""))||(Est.equals(""))){
                 JOptionPane.showMessageDialog(null, "Hay Campos Vacios");
             }
             else{
-                modelo.addRow(new Object[]{codLib,Nom,Aut,Edit,Est});
+                //verificar
+                for(int cont = 0; cont < filas; cont++){
+                    if(Libros.getValueAt(0, cont).equals(codLib)){
+                        bandera = 1;
+                    }
+                    if(Libros.getValueAt(1, cont).equals(Nom)){
+                        bandera2 = 1;
+                    }
+                }
+                if((bandera == 1)&&(bandera2 == 1)){
+                    JOptionPane.showMessageDialog(null, "El Codigo y el Nombre del libro ya existe en la tabla");
+                }
+                else if(bandera == 1){
+                    JOptionPane.showMessageDialog(null, "El Codigo del libro ya existe en la tabla");
+                }
+                else if(bandera2 == 1){
+                    JOptionPane.showMessageDialog(null, "El Nombre del libro ya existe en la tabla");
+                }
+                else{
+                    try {
+                        Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                        librito = sentencia.executeQuery("SELECT libro.Id FROM libro WHERE libro.Codigo = '" + codLib +"';");
+                        if(librito.next() == false){
+                            modelo.addRow(new Object[]{codLib,Nom,Aut,Edit,Est});
+                            contaLibros++;
+                        }
+                        else{
+                            JOptionPane.showMessageDialog(null, "El Codigo del Libro ya existe en otro paquete");
+                        }        
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ModuloPaquetes.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
         }
         else{
            JOptionPane.showMessageDialog(null, "No es posible agregar más libros"); 
         }
-        /*
-        int CantLibros = 0; //Contador que servirá para saber cuantos libros tiene un paquete
-        String CodPack, CodLibro, Nom, Aut, Edit, EstadoL;
-        String Instruccion = "";
-        ResultSet resultado = null, resultado2 = null;
-        if((CodigoPaquete2.getText().equals(""))||(CodigoLibro.getText().equals(""))||(Nombre.getText().equals(""))||(Autor.getText().equals(""))||(Editorial.getText().equals(""))||(Estado.getText().equals(""))){
-            JOptionPane.showMessageDialog(null, "¡Hay Campos Vacios!");
-        }
-        else{
-            CodPack = CodigoPaquete2.getText();
-            CodLibro = CodigoLibro.getText();
-            Nom = Nombre.getText();
-            Aut = Autor.getText();
-            Edit = Editorial.getText();
-            EstadoL = Estado.getText();
-            try {
-                Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                resultado = sentencia.executeQuery("SELECT * FROM PaqueteLibro WHERE Codigo = '" + CodPack + "';");
-                Statement sentencia2 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                resultado2 = sentencia2.executeQuery("SELECT * FROM Libro WHERE Codigo = '" + CodLibro + "';");
-                //Ciclo que cuenta el total de libros para un paquete
-                //Esto ayudará para saber si un paquete le pueden ingresar o no libros. 4 libros por paquete
-                while(resultado2.next() != false){
-                    CantLibros++;
-                }
-                //Condicion que verifica si existe el paquete que se desea agregar un libro
-                if(false == resultado.next()){
-                    JOptionPane.showMessageDialog(null, "¡El paquete " + CodPack + " No Existe!");
-                }
-                //Condicion para verificar que un libro sea nuevo o no
-                else if (false != resultado2.next()){
-                    JOptionPane.showMessageDialog(null, "¡El Libro " + CodLibro + " Ya Existe!");
-                }
-                //Si ninguna de las dos se cumple, el paquete existe y el libro es nuevo
-                else{
-                    //Condicion para verificar que un libro aun pueda contener libros
-                    if(CantLibros < 4){
-                        Instruccion = "INSERT INTO Libro (Codigo,Nombre,Autor,Editorial,Estado,PaqueteLibro_Codigo) VALUES (" + "'" + CodLibro + "'" + "," + "'" + Nom + "'" + "," + "'" + Aut + "'" + "," + "'" + Edit + "'" + "," + "'" + EstadoL + "'" + "," + resultado.getString(1)+ ");";
-                        int  a;
-                        try (PreparedStatement pst = conexcion.prepareStatement(Instruccion)) {
-                            a = pst.executeUpdate();
-                            if (a>0){
-                                System.out.println("Guardado");
-                                JOptionPane.showMessageDialog(null, "¡El libro "+ CodLibro + " se ha agregado al paquete "+ CodPack + " Exitosamente!");
-                            }
-                        }
-                        
-                    }
-                    else{
-                      JOptionPane.showMessageDialog(null, "¡El paquete ya contiene los 4 libros!");  
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-        }
-        }
-        */
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -399,10 +397,10 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         String Desc = Descripcion.getText();
         String Instruccion = "", Instruccion2 = "";
         String CodPack, CodLibro, Nom, Aut, Edit, EstadoL;
-        ResultSet resultado = null;
-        if(contaLibros == 4){
+        ResultSet resultado = null, paquetito = null;
+        if(modelo.getRowCount() == 4){
             if((codPaquete.equals(""))||(Desc.equals(""))){
-                
+                JOptionPane.showMessageDialog(null, "Hay Campos Vacios");
             }
             else{
                 //si se puede crear los libros y el paquete
@@ -413,13 +411,28 @@ public class ModuloPaquetes extends javax.swing.JFrame {
                     if(resultado.next() == false){  //Si no existe entonces creará un paquete con ese codigo
                         Instruccion = "INSERT INTO PaqueteLibro (Codigo, Descripcion) VALUES (" + "'" + codPaquete + "'"+ "," + "'" + Desc + "'" + ");";
                         try {
+                            
                             PreparedStatement  pst = conexcion.prepareStatement(Instruccion);
+                            System.out.println("hace el preparedStatement");
                             int a = pst.executeUpdate();
+                            System.out.println("int a");
                             pst.close();
+                            System.out.println("pst.close");
                             if (a>0){
+                                System.out.println("entra al if a> 0");
+                                //JOptionPane.showMessageDialog(null, "¡Se ha Creado el paquete prueba1" + codPaquete + " Exitosamente!");
                                 System.out.println("Guardado");
                                 //se agregan los libros
+                                Statement sentencia2 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                                paquetito = sentencia2.executeQuery("SELECT * FROM paquetelibro WHERE paquetelibro.Codigo = '" + codPaquete + "';");
+                                if(paquetito.next() == true){
+                                    System.out.println("paquetito true");
+                                }
+                                else{
+                                    System.out.println("paquetito false");
+                                }
                                 for(int cont = 0; cont < 4; cont++){
+                                    System.out.println("Cont" + cont);
                                     CodPack = codPaquete;
                                     CodLibro = Libros.getValueAt(cont, 0).toString();
                                     Nom = Libros.getValueAt(cont, 1).toString();
@@ -427,28 +440,33 @@ public class ModuloPaquetes extends javax.swing.JFrame {
                                     Edit = Libros.getValueAt(cont,3).toString();
                                     EstadoL = Libros.getValueAt(cont, 4).toString();
                                     //ingresar libros
-                                    Instruccion2 = "INSERT INTO Libro (Codigo,Nombre,Autor,Editorial,Estado,PaqueteLibro_Codigo) VALUES (" + "'" + CodLibro + "'" + "," + "'" + Nom + "'" + "," + "'" + Aut + "'" + "," + "'" + Edit + "'" + "," + "'" + EstadoL + "'" + "," + resultado.getString(1)+ ");";
+                                    Instruccion2 = "INSERT INTO libro (libro.Codigo,libro.Nombre,libro.Autor,libro.Editorial,libro.Estado,libro.PaqueteLibro_Codigo) VALUES ('" + CodLibro + "','" + Nom + "','" + Aut + "','" + Edit + "','" + EstadoL + "'," + paquetito.getString(1)+ ");";
                                     int  b;
                                     try (PreparedStatement pst2 = conexcion.prepareStatement(Instruccion2)) {
                                         b = pst2.executeUpdate();
                                         if (b>0){
-                                            int filas = Libros.getRowCount();
-                                            for (int i = 0;filas>i; i++) {
-                                                modelo.removeRow(0);
-                                            }
+                                            System.out.println("Entra al if b >0");
                                             System.out.println("Guardado");
                                             //JOptionPane.showMessageDialog(null, "¡El libro "+ CodLibro + " se ha agregado al paquete "+ CodPack + " Exitosamente!");
-                                            JOptionPane.showMessageDialog(null, "¡Se ha Creado el paquete " + codPaquete + " Exitosamente!");
+                                            
                                         }
                                     }
                                 }
+                                int filas = Libros.getRowCount();
+                                for (int i = 0;filas>i; i++) {
+                                    modelo.removeRow(0);
+                                }
+                                JOptionPane.showMessageDialog(null, "¡Se ha Creado el paquete " + codPaquete + " Exitosamente!");
                                 //JOptionPane.showMessageDialog(null, "¡Se ha Creado el paquete " + codPaquete + " Exitosamente!");
                             }
                         } catch (SQLException ex) {
                             Logger.getLogger(ModuloPaquetes.class.getName()).log(Level.SEVERE, null, ex);
                             System.out.println("Error en SQLException: "+ex.getMessage());
                         }
-                    }  
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null, "El Paquete ya existe");
+                    }
                 } catch (SQLException e) {
                         e.printStackTrace();
                 }
@@ -489,6 +507,30 @@ public class ModuloPaquetes extends javax.swing.JFrame {
         Ventanita.setEnabled(true);
         this.dispose();
     }//GEN-LAST:event_formWindowClosed
+
+    private void CodigoLibroKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CodigoLibroKeyTyped
+        // TODO add your handling code here:
+        int limite = 5;
+        if(CodigoLibro.getText().length() == limite){
+            evt.consume();
+        }
+    }//GEN-LAST:event_CodigoLibroKeyTyped
+
+    private void CodigoPaqueteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CodigoPaqueteKeyTyped
+        // TODO add your handling code here:int limite = 5;
+        int limite = 5;
+        if(CodigoPaquete.getText().length() == limite){
+            evt.consume();
+        }
+    }//GEN-LAST:event_CodigoPaqueteKeyTyped
+
+    private void EstadoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_EstadoKeyTyped
+        // TODO add your handling code here:
+        int limite = 1;
+        if(Estado.getText().length() == limite){
+            evt.consume();
+        }
+    }//GEN-LAST:event_EstadoKeyTyped
 
     /**
      * @param args the command line arguments

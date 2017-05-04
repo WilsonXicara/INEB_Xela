@@ -14,6 +14,7 @@ import ModuloPrestamos.ModuloPaquetes;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
 import Modulo_Ciclo_Escolar.Crear_Ciclo_Escolar_1;
 import Modulo_incio_sesion.Principal;
+import Modulo_notas_y_reporte.Ventanareporte;
 import java.awt.Frame;
 import java.io.IOException;
 import java.sql.Connection;
@@ -39,6 +40,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     
     public ModuloPrincipalAdmin(Connection conec, ResultSet admin){
         initComponents();
+        this.setLocationRelativeTo(null);
         conexcion = conec;
         User = admin;
         ResultSet resultado = null, resultado2 = null;
@@ -117,6 +119,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
+        Reporte = new javax.swing.JMenuItem();
         menu_ver = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
@@ -348,6 +351,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         menu_crear.add(jMenuItem6);
 
+        Reporte.setText("Reporte");
+        Reporte.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ReporteActionPerformed(evt);
+            }
+        });
+        menu_crear.add(Reporte);
+
         jMenuBar1.add(menu_crear);
 
         menu_ver.setText("Ver");
@@ -437,21 +448,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
         // TODO add your handling code here:
-        try {
-            // TODO add your handling code here:
-            String tipo = User.getString("Tipo");
-            if(tipo.equals("1")){
                 this.setEnabled(false);
                 new ModuloPrestamo(conexcion,this).setVisible(true);
                 //this.setEnabled(true);
                 //this.setVisible(false);
-            }
-            else{
-                JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ModuloPrincipalAdmin.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
@@ -480,9 +480,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             // TODO add your handling code here:
             String tipo = User.getString("Tipo");
             if(tipo.equals("1")){
-                this.setVisible(false);
+                this.setEnabled(false);
                 new Ciclo_Escolar(new Frame(),true, conexcion).setVisible(true);
-                this.setVisible(true);
+                this.setEnabled(true);
             }
             else{
                 JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
@@ -502,9 +502,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         Crear_Ciclo_Escolar_1 a;
         try {
             if(User.getString("Tipo").equals("1")){
+                this.setEnabled(false);
                 a = new Crear_Ciclo_Escolar_1(new Frame(),true, conexcion);
                 a.setVisible(true);
-                this.setEnabled(false);
+                this.setEnabled(true);
                 //this.setVisible(true);
             }
             else{
@@ -564,6 +565,13 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jMenuItem8ActionPerformed
 
+    private void ReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReporteActionPerformed
+        // TODO add your handling code here:
+        this.setEnabled(false);
+        Ventanareporte ventana = new Ventanareporte(conexcion,this);
+        ventana.setVisible(true);
+    }//GEN-LAST:event_ReporteActionPerformed
+
 
     /**
      * @param args the command line arguments
@@ -605,6 +613,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JTextField Direccion;
     private javax.swing.JTextField Municipio;
     private javax.swing.JTextField Nombre;
+    private javax.swing.JMenuItem Reporte;
     private javax.swing.JTextField Sexo;
     private javax.swing.JTextField Telefono;
     private javax.swing.JTextField Usuario;

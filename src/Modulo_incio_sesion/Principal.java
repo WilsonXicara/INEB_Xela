@@ -44,8 +44,6 @@ public class Principal extends javax.swing.JDialog {
     public Principal(java.awt.Frame parent, boolean modal) throws IOException {
         super(parent, modal);
         initComponents();
-        
-          
         this.setLocationRelativeTo(null);   // Para centrar esta ventana sobre la pantalla.
         ConectarBD obtenerConexion = new ConectarBD(new javax.swing.JFrame(), true);
         obtenerConexion.setVisible(obtenerConexion.getHacerVisible());
