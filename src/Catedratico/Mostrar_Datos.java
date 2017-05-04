@@ -190,6 +190,7 @@ public class Mostrar_Datos extends javax.swing.JFrame {
         jPopupMenu1.add(jMenu1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setBackground(new java.awt.Color(0, 255, 255));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -501,11 +502,15 @@ public class Mostrar_Datos extends javax.swing.JFrame {
         cadena8 = Campo_Etnia.getText().toString();
         cadena9 = Integer.toString(Campo_Municipio.getSelectedIndex()+1);
         try {
-            if(Campo_DPI.getText().length() <= 12){
-                JOptionPane.showMessageDialog(null,"Error: El campo DPI no posee 13 caracteres.");
+            if(Campo_Nombre.getText().equals("") || Campo_Apellidos.getText().equals("") || Campo_Direccion.getText().equals("") || Campo_DPI.getText().equals("") ||
+               Campo_Etnia.getText().equals("") || Campo_Telefono.getText().equals("") ){
+                JOptionPane.showMessageDialog(null,"Error: Uno de los campos se encuentran vacíos.");
             }else if (Campo_Telefono.getText().length() <= 7){
                 JOptionPane.showMessageDialog(null,"Error: El campo telefono no posee 8 caracteres.");
-            }else{
+            }else if (Campo_DPI.getText().length() <= 12){
+                JOptionPane.showMessageDialog(null,"Error: El campo DPI no posee 13 caracteres.");
+            }
+            else{
             PreparedStatement pst = conexion.prepareStatement("INSERT INTO catedratico (Nombres,Apellidos,Direccion,DPI, Sexo, Etnia,Municipio_Id)"
                     + "VALUES('"+cadena2+"','"+cadena3+"','"+cadena4+"','"+cadena6+"','"+cadena7+"','"+cadena8+"','"+cadena9+ "')");
             
@@ -532,7 +537,7 @@ public class Mostrar_Datos extends javax.swing.JFrame {
             this.Campo_Direccion.setText("");
             this.Campo_Telefono.setText("");
             this.Campo_DPI.setText("");  
-            
+            this.Campo_Etnia.setText("");
             }
         } catch (Exception e) {
             //Logger.getLogger(Mostrar_Datos.class.getName()).log(Level.SEVERE, null, ex);
