@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -27,12 +28,14 @@ public class CrearCat extends javax.swing.JFrame {
     Connection conexion;
     ResultSet datosCat = null;
     DefaultTableModel modelo;
+    JFrame Ventanita;
     int VarId = 0;
     public CrearCat() {
         initComponents();
     }
-    public CrearCat(Connection conec){
+    public CrearCat(Connection conec,JFrame ventana){
         initComponents();
+        Ventanita = ventana;
         this.setLocationRelativeTo(null);
         conexion = conec;
         modelo = (DefaultTableModel) Datos.getModel();
@@ -316,12 +319,15 @@ public class CrearCat extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
+        Ventanita.setEnabled(true);
         this.dispose();
     }//GEN-LAST:event_formWindowClosing
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        Ventanita.setEnabled(true);
         this.dispose();
+        
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void NombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NombreActionPerformed

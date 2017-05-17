@@ -85,6 +85,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1100, 670));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
@@ -239,7 +240,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         );
 
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(525, 81, 570, 247);
+        jPanel1.setBounds(525, 81, 568, 245);
         getContentPane().add(jLabel4);
         jLabel4.setBounds(1213, 981, 0, 0);
 
@@ -271,10 +272,8 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         jLabel8.setText("Paquetes Disponibles");
         getContentPane().add(jLabel8);
         jLabel8.setBounds(40, 90, 127, 17);
-
-        jLabel5.setIcon(new javax.swing.ImageIcon("C:\\Users\\SERGIO MALDONADO\\Documents\\GitHub\\INEB_Xela\\src\\Imagenes\\Libros.png")); // NOI18N
         getContentPane().add(jLabel5);
-        jLabel5.setBounds(790, 370, 309, 274);
+        jLabel5.setBounds(790, 370, 0, 0);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

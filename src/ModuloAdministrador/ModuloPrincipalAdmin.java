@@ -431,7 +431,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 this.setEnabled(false);
                 new Usuarios(conexcion,this).setVisible(true);
                 //this.dispose();
-                this.setEnabled(true);
+                //this.setEnabled(true);
             }
             else{
                 JOptionPane.showMessageDialog(null, "¡No tiene permisos para realizar esta acción!");

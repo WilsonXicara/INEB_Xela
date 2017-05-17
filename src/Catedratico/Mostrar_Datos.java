@@ -224,7 +224,7 @@ public class Mostrar_Datos extends javax.swing.JFrame {
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 420, 785, 257));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel1.setText("Módulo cátedratico");
+        jLabel1.setText("Módulo catedrático");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(351, 13, -1, -1));
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Datos del cátedratico"));
