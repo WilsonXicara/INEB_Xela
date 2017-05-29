@@ -1,0 +1,17 @@
+Datos tomados en base al modelo de la tabla de Usuarios utilizados por el Gestor de Base de Datos:
+
+****  En el Modelo Relacional  ****
+- La columna puede ser de 'Datatype' VARCHAR o CHAR, de 41 caracteres
+- La columna debe tener una 'Collation' = 'latin1 - latin1_bin'
+
+****  En el Gestor de Base de Datos  ****
+Para cifrar la contraseña e insertarla:
+	INSERT INTO tabla_usuarios(..., Contrasenia, ...) VALUES(..., AES_ENCRYPT('contraseña_a_guadar', 'contraseña_para_el_cifrador'), ...)
+Para mostrar la contraseña descifrada:
+SELECT ..., AES_DECRYPT('contraseña_cifrada_guardada', 'contraseña_para_el_cifrador'), ... INTO tabla_usuarios ...
+
+Para utilizar una variable almacendada en el Gestor:
+SET @contrasenia_encriptacion_inebxela = 'inebxela_quetgo';
+SELECT @contrasenia_encriptacion_inebxela;
+SET @contrasenia_encriptacion_inebxela = 'hola';
+SELECT @contrasenia_encriptacion_inebxela;

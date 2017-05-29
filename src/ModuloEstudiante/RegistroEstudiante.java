@@ -13,18 +13,17 @@ import java.util.Date;
  * @author Wilson Xicará
  */
 public class RegistroEstudiante {
-    private int num, ID, municipioId, encargadoId, encargadoNum;
+    private int ID, municipioId, encargadoId, encargadoNum;
     private String codigoPersonal, CUI, nombres, apellidos, direccion, municipio, fechaNacimiento, sexo, etnia, tipoCapacidad;
     private String nombreEncargado, relacionEncargado;
-    private boolean capacidadDiferente, encargadoEnBD, guardadoEnBD;
+    private boolean capacidadDiferente, guardadoEnBD;
 
     public RegistroEstudiante() {
-        num = ID = municipioId = encargadoId = encargadoNum = 0;
-        capacidadDiferente = encargadoEnBD = guardadoEnBD = false;
+        ID = municipioId = encargadoId = encargadoNum = 0;
+        capacidadDiferente = guardadoEnBD = false;
         codigoPersonal = CUI = nombres = apellidos = direccion = municipio = fechaNacimiento = sexo = etnia = tipoCapacidad = nombreEncargado = relacionEncargado = "";
     }
 
-    public int getNum() { return num; }
     public int getID() { return ID; }
     public int getMunicipioId() { return municipioId; }
     public int getEncargadoId() { return encargadoId; }
@@ -46,10 +45,8 @@ public class RegistroEstudiante {
     public String getNombreEncargado() { return nombreEncargado; }
     public String getRelacionEncargado() { return relacionEncargado; }
     public boolean isCapacidadDiferente() { return capacidadDiferente; }
-    public boolean isEncargadoEnBD() { return encargadoEnBD; }
     public boolean isGuardadoEnBD() { return guardadoEnBD; }
 
-    public void setNum(int num) { this.num = num; }
     public void setID(int ID) { this.ID = ID; }
     public void setMunicipioId(int municipioId) { this.municipioId = municipioId; }
     public void setEncargadoId(int encargadoId) { this.encargadoId = encargadoId; }
@@ -67,7 +64,6 @@ public class RegistroEstudiante {
     public void setNombreEncargado(String nombreEncargado) { this.nombreEncargado = nombreEncargado; }
     public void setRelacionEncargado(String relacionEncargado) { this.relacionEncargado = relacionEncargado; }
     public void setCapacidadDiferente(boolean capacidadDiferente) { this.capacidadDiferente = capacidadDiferente; }
-    public void setEncargadoEnBD(boolean encargadoEnBD) { this.encargadoEnBD = encargadoEnBD; }
     public void setGuardadoEnBD(boolean guardadoEnBD) { this.guardadoEnBD = guardadoEnBD; }
     /**
      * Devuelve un array con los datos para ser insertados en una fila de la Tabla de Estudiantes. Estos datos son:
@@ -86,7 +82,7 @@ public class RegistroEstudiante {
      *  "Nombre del Encargado"
      * @return los datos del encargado para ser insertados en una fila de la Tabla de Encargados
      */
-    public String[] getDatosParaTabla() {
+    public String[] getDatosParaTabla(int num) {
         return new String[]{
             ""+num,
             codigoPersonal,

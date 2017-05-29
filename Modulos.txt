@@ -1,6 +1,0 @@
-Modulo Principal	->	Hugo
-Modulo Estudiante	->	Wilson
-Modulo Catedratico	->	Pablo
-Modulo Administrador	->	TODOS
-Modulo Prestamo		->	Sergio
-Modulo Curso		->	Norman
