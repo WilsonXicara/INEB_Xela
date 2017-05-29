@@ -32,6 +32,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
 
     Connection base;
     int cambio = 0;
+    int cambio2 = 0;
     //Contienen informacion del ciclo actual
     ArrayList<String>  ID ;
     //Contienen informacion de los grados asociados al ciclo dentro de la base
@@ -183,6 +184,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         guardar_cambios = new javax.swing.JButton();
         exportar_datos = new javax.swing.JButton();
         ciclo_listo = new javax.swing.JRadioButton();
+        cerrado = new javax.swing.JRadioButton();
         jMenuBar2 = new javax.swing.JMenuBar();
         Menu_crear = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -426,6 +428,13 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
             }
         });
 
+        cerrado.setText("Cerrar Ciclo");
+        cerrado.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cerradoItemStateChanged(evt);
+            }
+        });
+
         Menu_crear.setText("Crear");
 
         jMenuItem1.setText("Ciclo Escolar");
@@ -447,7 +456,9 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addGap(22, 22, 22)
                 .addComponent(ciclo_listo)
-                .addGap(114, 114, 114)
+                .addGap(3, 3, 3)
+                .addComponent(cerrado)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -476,7 +487,8 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ciclo_listo))
+                    .addComponent(ciclo_listo)
+                    .addComponent(cerrado))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -894,6 +906,40 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_ciclo_listoItemStateChanged
 
+    private void cerradoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cerradoItemStateChanged
+       if(evt.getStateChange() == ItemEvent.SELECTED && cambio2 == 0){
+            String[] opciones = new String[2];
+            opciones[0] = "Continuar";
+            opciones[1] = "Cancelar";
+            
+            //Pregunto si desea copiar los cursos y grados de un ciclo anterior
+            int eleccion = JOptionPane.showOptionDialog(null, "Al marcar como cerrad ya no podra hacer cambios a ciclo \n no podra asignar notas a los cursos.\n Ya no podra realizar cambios a los grados.", "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, opciones, opciones[0]);
+            if(eleccion == JOptionPane.YES_OPTION){
+                String instruccion_grado = "UPDATE CicloEscolar SET cicloescolar.Cerrado = 1 WHERE cicloescolar.Id ="+ID.get(posicion)+";";
+                try {
+                    PreparedStatement pst = base.prepareStatement(instruccion_grado);
+                    pst.executeUpdate();
+                    cambio = 1;
+                    agregar_curso.setEnabled(false);
+                    eliminar_curso.setEnabled(false);
+                    agregar_grado.setEnabled(false);
+                    eliminar_grado.setEnabled(false);
+                    asignaciones.setEnabled(false);
+                    guardar_cambios.setEnabled(false);
+                    exportar_datos.setEnabled(false);
+                    ciclo_listo.setEnabled(false);
+                    Tx_Nombre_curso.setEnabled(false);
+                    Tx_Nombre_grado.setEnabled(false);
+                    Tx_seccion.setEnabled(false);
+                    cerrado.setSelected(true);
+                    cerrado.setEnabled(false);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_cerradoItemStateChanged
+
     /**
      * @param args the command line arguments
      */
@@ -1142,9 +1188,10 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         Statement a;
         try {
             Statement b = base.createStatement();
-            ResultSet consultab = b.executeQuery("SELECT Listo FROM cicloescolar WHERE cicloescolar.Id = '"+Id+"';");
+            ResultSet consultab = b.executeQuery("SELECT Listo, Cerrado FROM cicloescolar WHERE cicloescolar.Id = '"+Id+"';");
             if(consultab.next()){
                 String listo = consultab.getString(1);
+                String cerrado = consultab.getString(2);
                 if(listo.equals("1")){
                     cambio = 1;
                     agregar_curso.setEnabled(false);
@@ -1159,6 +1206,13 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
                     Tx_Nombre_grado.setEnabled(false);
                     Tx_seccion.setEnabled(false);
                     ciclo_listo.setSelected(true);
+                    if(cerrado.equals("1")){
+                        this.cerrado.setEnabled(false);
+                        cambio2 = 1;
+                    }else{
+                        this.cerrado.setEnabled(true);
+                        cambio2 = 0;
+                    }
                 }
                 else{
                     cambio = 0;
@@ -1174,6 +1228,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
                     Tx_Nombre_grado.setEnabled(true);
                     Tx_seccion.setEnabled(true);
                     ciclo_listo.setSelected(false);
+                    this.cerrado.setVisible(false);
                 }
                 
             }
@@ -1223,6 +1278,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
     private javax.swing.JButton agregar_curso;
     private javax.swing.JButton agregar_grado;
     private javax.swing.JButton asignaciones;
+    private javax.swing.JRadioButton cerrado;
     private javax.swing.JComboBox<String> ciclo;
     private javax.swing.JRadioButton ciclo_listo;
     private javax.swing.JButton eliminar_curso;
