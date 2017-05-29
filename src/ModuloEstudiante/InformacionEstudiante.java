@@ -17,14 +17,14 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  * Esta clase permite buscar información de uno o varios estudiantes (mostrando los que coincidan con la búsqueda en la tabla).
- * Además, da la opción de Editar la Información de un estudiante, así como visualizar su asignación (y todo lo relacionado).
+ * Permite visualizar la asignación de todos los estudiantes mostrados (y todo lo relacionado).
  * @author Wilson Xicará
  */
 public class InformacionEstudiante extends javax.swing.JDialog {
     private Connection conexion;
     private DefaultTableModel modelEncontrados;
     private ArrayList<RegistroCiclo> listaCiclos;
-    private boolean ciclosCargados;
+    private boolean ciclosCargados, hacerVisible;
     private ArrayList<RegistroEstudiante> listaEncontrados;
     /**
      * Creates new form InformacionEstudiante
@@ -46,6 +46,7 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         modelEncontrados = (DefaultTableModel)tabla_encontrados.getModel();
         listaCiclos = new ArrayList<>();
         ciclosCargados = false;  // Indicador de que todos los datos ya han sido obtenidos de la Base de Datos
+        hacerVisible = true;
         listaEncontrados = new ArrayList<>();
         
         /* Realizo una consulta a la Tabla CicloEscolar de la Base de Datos y los agrego al ArrayList correspondiente, para
@@ -59,30 +60,22 @@ public class InformacionEstudiante extends javax.swing.JDialog {
                 ciclo_escolar.addItem(cCicloEscolar.getString("Anio"));
             } ciclosCargados = true;// Hasta aquí se garantiza la carga de todos los Grados y Ciclos Escolares de la Base de Datos
             
+            // En caso de no existir por lo menos un ciclo escolar, cierro la ventana (no hay información que mostrar)
+            if (listaCiclos.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No se ha creado algún ciclo escolar para mostrar sus datos.", "Sin datos", JOptionPane.INFORMATION_MESSAGE);
+                hacerVisible = false;
+            }
+            
             ciclo_escolar.setSelectedIndex(-1); // Esta opción es para generar una llamada al itemStateChange en caso de sólo encontrar un ciclo
             ciclo_escolar.setSelectedIndex(ciclo_escolar.getItemCount() - 1);   // Selecciono por defecto el último Ciclo Esoclar
-            
-            /*/ Ahora obtengo los grados asociados a cada Ciclo Escolar cargado desde la Base de Datos
-            int cantidad = listaCiclos.size();
-            for(int cont=0; cont<cantidad; cont++) {
-                // El ID de cada ciclo es correlativo a su posición en el ArrayList
-                ResultSet cGrados = sentencia.executeQuery("SELECT AsignacionCAT.CicloEscolar_Id idCiclo, AsignacionCAT.Grado_Id idGrado, Grado.Nombre, Grado.Seccion, COUNT(AsignacionCAT.Grado_Id) grados FROM AsignacionCAT "
-                        + "INNER JOIN Grado ON AsignacionCAT.Grado_Id = Grado.Id "
-                        + "WHERE AsignacionCAT.CicloEscolar_Id = "+(cont+1)+" "
-                        + "GROUP BY AsignacionCAT.Grado_Id");
-                // Cargo al ArrayList todos los Grados del Ciclo Escolar seleccionado
-                while (cGrados.next())
-                    listaCiclos.get(cont).addGrado(new RegistroGrado(cGrados.getInt("idGrado"), cGrados.getString("Nombre"), cGrados.getString("Seccion")));
-                
-                // Ahora cargo el nombre de todos los Ciclos Escolares encontrados al JComboBox 'ciclo_escolar'
-                ciclo_escolar.addItem(listaCiclos.get(cont).getAnio());
-            } ciclosCargados = true;// Hasta aquí se garantiza la carga de todos los Grados y Ciclos Escolares de la Base de Datos
-            ciclo_escolar.setSelectedIndex(ciclo_escolar.getItemCount() - 1);   // Selecciono por defecto el último Ciclo Esoclar
-        */} catch (SQLException ex) {
-            Logger.getLogger(InformacionEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al intentar obtener el registros de la Base de Datos:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+//            Logger.getLogger(InformacionEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+            this.dispose(); // Si ocurre un error, cierro la ventana
         }
         definir_ancho_columnas();
+        
+        this.setLocationRelativeTo(null);   // Para centrar esta ventana sobre la pantalla.
     }
 
     /**
@@ -95,7 +88,6 @@ public class InformacionEstudiante extends javax.swing.JDialog {
     private void initComponents() {
 
         panel_filtro_busqueda = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         ciclo_escolar = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
@@ -107,24 +99,20 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         panel_encontrados = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla_encontrados = new javax.swing.JTable();
-        etiqueta_encontrados = new javax.swing.JLabel();
         panel_botones = new javax.swing.JPanel();
-        editar = new javax.swing.JButton();
         ver_notas = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
+        ver_historial = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Información de los Estudiantes");
 
         panel_filtro_busqueda.setBackground(new java.awt.Color(153, 153, 255));
+        panel_filtro_busqueda.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Especificación de búsqueda", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel4.setText("ESPECIFICACIÓN DE BÚSQUEDA");
-
-        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel3.setText("Ciclo Escolar:");
 
-        ciclo_escolar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        ciclo_escolar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         ciclo_escolar.setEnabled(false);
         ciclo_escolar.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -132,10 +120,10 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel1.setText("Buscar por:");
 
-        filtro_busqueda.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        filtro_busqueda.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         filtro_busqueda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sin especificar", "Código Personal", "Apellidos", "Nombres" }));
         filtro_busqueda.setEnabled(false);
         filtro_busqueda.addItemListener(new java.awt.event.ItemListener() {
@@ -144,10 +132,12 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             }
         });
 
-        campo_busqueda.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        campo_busqueda.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        campo_busqueda.setText("Todos los registros");
         campo_busqueda.setEnabled(false);
 
-        buscar.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        buscar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        buscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/edit.png"))); // NOI18N
         buscar.setText("Nueva Búsqueda");
         buscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -155,10 +145,10 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             }
         });
 
-        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel6.setText("Grado:");
 
-        grado.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        grado.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         grado.setEnabled(false);
 
         javax.swing.GroupLayout panel_filtro_busquedaLayout = new javax.swing.GroupLayout(panel_filtro_busqueda);
@@ -166,50 +156,38 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         panel_filtro_busquedaLayout.setHorizontalGroup(
             panel_filtro_busquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_filtro_busquedaLayout.createSequentialGroup()
-                .addGroup(panel_filtro_busquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_filtro_busquedaLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(filtro_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campo_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(buscar))
-                    .addGroup(panel_filtro_busquedaLayout.createSequentialGroup()
-                        .addGap(438, 438, 438)
-                        .addComponent(jLabel4)))
-                .addContainerGap(88, Short.MAX_VALUE))
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(filtro_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(campo_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buscar)
+                .addGap(0, 55, Short.MAX_VALUE))
         );
         panel_filtro_busquedaLayout.setVerticalGroup(
             panel_filtro_busquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_filtro_busquedaLayout.createSequentialGroup()
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_filtro_busquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_filtro_busquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel1)
-                        .addComponent(filtro_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(campo_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(buscar))
-                    .addGroup(panel_filtro_busquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel6)
-                        .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panel_filtro_busquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel3)
-                        .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 13, Short.MAX_VALUE))
+            .addComponent(buscar)
+            .addGroup(panel_filtro_busquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(jLabel3)
+                .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel6)
+                .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel1)
+                .addComponent(filtro_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(campo_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         panel_encontrados.setBackground(new java.awt.Color(153, 153, 255));
+        panel_encontrados.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Sin búsqueda", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
 
         tabla_encontrados.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         tabla_encontrados.setModel(new javax.swing.table.DefaultTableModel(
@@ -242,43 +220,22 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         tabla_encontrados.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tabla_encontrados);
 
-        etiqueta_encontrados.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        etiqueta_encontrados.setText("ENCONTRADO(S):");
-
         javax.swing.GroupLayout panel_encontradosLayout = new javax.swing.GroupLayout(panel_encontrados);
         panel_encontrados.setLayout(panel_encontradosLayout);
         panel_encontradosLayout.setHorizontalGroup(
             panel_encontradosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_encontradosLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panel_encontradosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 832, Short.MAX_VALUE)
-                    .addGroup(panel_encontradosLayout.createSequentialGroup()
-                        .addComponent(etiqueta_encontrados)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+            .addComponent(jScrollPane1)
         );
         panel_encontradosLayout.setVerticalGroup(
             panel_encontradosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_encontradosLayout.createSequentialGroup()
-                .addComponent(etiqueta_encontrados)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
         );
 
         panel_botones.setBackground(new java.awt.Color(153, 153, 255));
+        panel_botones.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Acciones", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
 
-        editar.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        editar.setText("Editar Información");
-        editar.setEnabled(false);
-        editar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editarActionPerformed(evt);
-            }
-        });
-
-        ver_notas.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        ver_notas.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        ver_notas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/nueva_ventana.png"))); // NOI18N
         ver_notas.setText("Ver Notas");
         ver_notas.setEnabled(false);
         ver_notas.addActionListener(new java.awt.event.ActionListener() {
@@ -287,34 +244,38 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             }
         });
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel5.setText("ACCIONES:");
+        ver_historial.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        ver_historial.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/reloj.png"))); // NOI18N
+        ver_historial.setText("Ver HIstorial");
+        ver_historial.setEnabled(false);
+        ver_historial.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ver_historialActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_botonesLayout = new javax.swing.GroupLayout(panel_botones);
         panel_botones.setLayout(panel_botonesLayout);
         panel_botonesLayout.setHorizontalGroup(
             panel_botonesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_botonesLayout.createSequentialGroup()
-                .addGroup(panel_botonesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panel_botonesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(panel_botonesLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addGroup(panel_botonesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(editar)
-                            .addComponent(ver_notas)))
+                        .addComponent(ver_historial, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(panel_botonesLayout.createSequentialGroup()
-                        .addGap(47, 47, 47)
-                        .addComponent(jLabel5)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap()
+                        .addComponent(ver_notas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(54, Short.MAX_VALUE))
         );
         panel_botonesLayout.setVerticalGroup(
             panel_botonesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_botonesLayout.createSequentialGroup()
-                .addComponent(jLabel5)
-                .addGap(28, 28, 28)
-                .addComponent(editar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(26, 26, 26)
                 .addComponent(ver_notas)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ver_historial, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(52, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -333,11 +294,11 @@ public class InformacionEstudiante extends javax.swing.JDialog {
                 .addComponent(panel_filtro_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(panel_encontrados, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(panel_encontrados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(183, 183, 183)
+                        .addGap(134, 134, 134)
                         .addComponent(panel_botones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
@@ -372,9 +333,11 @@ public class InformacionEstudiante extends javax.swing.JDialog {
     private void buscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarActionPerformed
         if (buscar.getText().equals("Nueva Búsqueda")) {    // Se habilitan los campos para filtrar la búsqueda
             buscar.setText("Buscar");   // Indicador de que se filtrará la búsqueda y puede realizarse la misma
+            buscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/buscar.png")));
             setEnabled_campos_resultado(false);
         } else {    // Ya se han seleccionado el filtro de búsqueda
             buscar.setText("Nueva Búsqueda");   // Indicador de que se habilitará el filtro para una nueva búsqueda
+            buscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/edit.png")));
             setEnabled_campos_resultado(true);
             /* Obtención del tipo de filtro para utilizar en la búsqueda */
             int filtro = filtro_busqueda.getSelectedIndex();
@@ -390,21 +353,8 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             extraer_y_mostrar_registros(cicloSelec+1, gradoId, filtro, campoBusqueda);
         }
     }//GEN-LAST:event_buscarActionPerformed
-    /**APROBADO!!!
-     * Acción que permite editar los datos de un RegistroEstudiante encontrado en la búsqueda. Al llamar a la ventana
-     * EditarEstudiante le pasa como parámetro un RegistroEstudiante en el cual se basará los datos a editar.
-     * @param evt 
-     */
-    private void editarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarActionPerformed
-        int indexRegistro = tabla_encontrados.getSelectedRow();
-        if (indexRegistro != -1) {
-            // Instanciación de la ventana encargada de la Edición de los Datos
-            EditarEstudiante ventanaEditar = new EditarEstudiante(new javax.swing.JFrame(), true, conexion, listaEncontrados.get(indexRegistro));
-            ventanaEditar.setVisible(true);
-        } else
-            JOptionPane.showMessageDialog(this, "No se ha seleccionado un registro", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_editarActionPerformed
-    /**APROBADO!!!
+
+   /**APROBADO!!!
      * Acción que habilita o deshabilita 'campo_busqueda' dependiendo del filtro de búsqueda a utilizar. Los filtros indican
      * los campos en los que se basará la búsqueda. Dichos campos son:
      *  "Sin especificar"
@@ -415,13 +365,12 @@ public class InformacionEstudiante extends javax.swing.JDialog {
      */
     private void filtro_busquedaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_filtro_busquedaItemStateChanged
         campo_busqueda.setEnabled(!(filtro_busqueda.getSelectedIndex() == 0));
-        if (filtro_busqueda.getSelectedIndex()==0)
-            campo_busqueda.setText("");
+        campo_busqueda.setText((filtro_busqueda.getSelectedIndex()==0) ? "Todos los registros" : "");
     }//GEN-LAST:event_filtro_busquedaItemStateChanged
-    /**
+    /**APROBADO!!!
      * Acción que permite mostrar en el JComboBox 'grado' los grados asignados al ciclo escolar seleccionado. Para evita hacer
      * varias peticiones a la Base de Datos, los grados se cargan temporalmente en una estructura interna (con la información
-     * necesaria para identificarlas).
+     * necesaria para identificarlas) si el grado se selecciona por primera vez.
      * @param evt 
      */
     private void ciclo_escolarItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ciclo_escolarItemStateChanged
@@ -454,8 +403,24 @@ public class InformacionEstudiante extends javax.swing.JDialog {
                 grado.addItem(listaGrados.get(i).getGradoSeccion());
             grado.addItem("Todos los grados");  // Última opción que permitirá buscar a los estudiantes de todos los grados
             grado.setSelectedIndex((cantidad == 0) ? -1 : 0);
+            buscar.setEnabled(cantidad != 0);   // Se pueden hacer búsquedas siempre que exista por lo menos un grado
         }
     }//GEN-LAST:event_ciclo_escolarItemStateChanged
+
+    private void ver_historialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ver_historialActionPerformed
+        int[] rango = tabla_encontrados.getSelectedRows();
+        if (rango.length == 0)
+            JOptionPane.showMessageDialog(this, "No se ha seleccionado un registro", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+        else if (rango.length > 1)
+            JOptionPane.showMessageDialog(this, "Por favor selecciona sólo un registro", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+        else {
+            // Instanciación de la ventana encargada de la Visualización de las Notas asociadas al Estudiante y al Ciclo Escolar
+            this.setVisible(false);
+            Historial ventanaHistorial = new Historial(new javax.swing.JFrame(), true, conexion, listaEncontrados.get(rango[0]));
+            ventanaHistorial.setVisible(true);
+            this.setVisible(true);
+        }
+    }//GEN-LAST:event_ver_historialActionPerformed
     /**APROBADO!!!
      * Método que busca los registros que coinciden con las especificaciones de la búsqueda en la Base de Datos. Al finalizar
      * la búsqueda, agrega los datos al ArrayList listaEstudiatnes y a la tabla_encontrados.
@@ -467,7 +432,7 @@ public class InformacionEstudiante extends javax.swing.JDialog {
     private void extraer_y_mostrar_registros(int cicloEscolarId, int gradoId, int filtro, String campoBusqueda) {
         try {
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            String instruccion = "SELECT AsignacionEST.CicloEscolar_Id, AsignacionEST.Grado_Id, Estudiante.*, Municipio.Nombre MunicipioEst, Encargado.Nombre NombreEncargado, Encargado.DPI FROM CicloEscolar "
+            String instruccion = "SELECT AsignacionEST.CicloEscolar_Id, AsignacionEST.Grado_Id, Estudiante.*, Municipio.Nombre MunicipioEst, CONCAT(Encargado.Nombres,CONCAT(' ',Encargado.Apellidos)) NombreEncargado FROM CicloEscolar "
                     + "INNER JOIN AsignacionEST ON CicloEscolar.Id = AsignacionEST.CicloEscolar_Id "
                     + "INNER JOIN Estudiante ON AsignacionEST.Estudiante_Id = Estudiante.Id "
                     + "INNER JOIN Municipio ON Estudiante.Municipio_Id = Municipio.Id "
@@ -498,7 +463,6 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             while(encontrados.next()) {
                 contNum++;
                 RegistroEstudiante nuevo = new RegistroEstudiante();
-                nuevo.setNum(contNum);
                 nuevo.setID(encontrados.getInt("Id"));
                 nuevo.setCodigoPersonal(encontrados.getString("CodigoPersonal"));
                 nuevo.setCUI(encontrados.getString("CUI"));
@@ -513,15 +477,14 @@ public class InformacionEstudiante extends javax.swing.JDialog {
                 nuevo.setMunicipioId(encontrados.getInt("Municipio_Id") - 1);   // Para hacerlo corresponder con el ArrayList
                 nuevo.setMunicipio(encontrados.getString("MunicipioEst"));
                 nuevo.setEncargadoId(encontrados.getInt("Encargado_Id"));
-                nuevo.setNombreEncargado(encontrados.getString("NombreEncargado")+" ("+encontrados.getString("DPI")+")");   // Concateno el DPI al nombre del Encargado
+                nuevo.setNombreEncargado(encontrados.getString("NombreEncargado"));
                 nuevo.setRelacionEncargado(encontrados.getString("RelacionEncargado"));
                 nuevo.setGuardadoEnBD(true);    // Indicador de que es un registro de la BD
-                nuevo.setEncargadoEnBD(true);
                 // Hasta aquí, se garantiza la obtención de los datos del estudiante que concuerda con la búsqueda.
                 listaEncontrados.add(nuevo);
                 
                 // Ahora, cargo los datos a la tabla_encontrados
-                modelEncontrados.addRow(nuevo.getDatosParaTabla());
+                modelEncontrados.addRow(nuevo.getDatosParaTabla(contNum));
             }   // Hasta aquí se garantiza la búsqueda y muestra de datos según las especificaciones
             
             /** Obtención de los Metadatos
@@ -530,11 +493,11 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             for(int i=1; i<=cantidadColumnas; i++)
                 tabla.addColumn(columnas.getColumnLabel(i));**/
             String mensaje = "Se encontró "+contNum+" registro"+((contNum!=1)?"s":"")+" en "+((gradoId==0)?"todos los grados":"el grado "+(String)grado.getSelectedItem())+" del ciclo escolar "+ciclo_escolar.getItemAt(cicloEscolarId-1)+((filtro!=0)?" (Búsqueda por: "+(String)filtro_busqueda.getSelectedItem()+" = '"+campoBusqueda+"')":"");
-            etiqueta_encontrados.setText(mensaje);
+            panel_encontrados.setBorder(javax.swing.BorderFactory.createTitledBorder(null, mensaje, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
             
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al intentar extraer los datos especificados:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(InformacionEstudiante.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(InformacionEstudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     /**
@@ -557,7 +520,7 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         tabla_encontrados.getColumnModel().getColumn(12).setPreferredWidth(330);
         tabla_encontrados.getColumnModel().getColumn(13).setPreferredWidth(115);
     }
-    /**
+    /**APROBADO!!!
      * Método que permite habilitar e inhabilitar campos dentro de la ventana. Esta opción es útil a la hora de hacer una
      * 'Búsqueda' o de seleccionar una 'Nueva Búsqueda'. Al realizar una búsqueda y obtener resultados es necesario que la
      * parte de filtro de búsqueda esté deshabilitado para evitar confusión.
@@ -570,9 +533,10 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         if (!valorEnabled) filtro_busqueda.setSelectedIndex(0);
         
         tabla_encontrados.setEnabled(valorEnabled);
-        editar.setEnabled(valorEnabled);
         ver_notas.setEnabled(valorEnabled);
+        ver_historial.setEnabled(valorEnabled);
     }
+    public boolean getHacerVisible() { return hacerVisible; }
     /**
      * @param args the command line arguments
      */
@@ -615,20 +579,17 @@ public class InformacionEstudiante extends javax.swing.JDialog {
     private javax.swing.JButton buscar;
     private javax.swing.JTextField campo_busqueda;
     private javax.swing.JComboBox<String> ciclo_escolar;
-    private javax.swing.JButton editar;
-    private javax.swing.JLabel etiqueta_encontrados;
     private javax.swing.JComboBox<String> filtro_busqueda;
     private javax.swing.JComboBox<String> grado;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel panel_botones;
     private javax.swing.JPanel panel_encontrados;
     private javax.swing.JPanel panel_filtro_busqueda;
     private javax.swing.JTable tabla_encontrados;
+    private javax.swing.JButton ver_historial;
     private javax.swing.JButton ver_notas;
     // End of variables declaration//GEN-END:variables
 }

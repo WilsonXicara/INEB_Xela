@@ -5,7 +5,6 @@
  */
 package ModuloEstudiante;
 
-import java.text.DateFormat;
 import java.util.Date;
 
 /**
@@ -14,24 +13,20 @@ import java.util.Date;
  * @author Wilson Xicará
  */
 public class RegistroEncargado {
-    private int num, ID;
-    private boolean estaEnBD;
-    private int municipioId;
-    private String DPI, nombre, direccion, municipio, fechaNacimiento;
+    private int ID, municipioId;
+    private String DPI, nombres, apellidos, direccion, municipio, fechaNacimiento;
     private String telefono, celular, trabajo;
 
     public RegistroEncargado() {
-        num = ID = municipioId = 0;
-        estaEnBD = false;
-        DPI = nombre = direccion = municipio = fechaNacimiento = telefono = celular = trabajo = "";
+        ID = municipioId = 0;
+        DPI = nombres = apellidos = direccion = municipio = fechaNacimiento = telefono = celular = trabajo = "";
     }
 
-    public int getNum() { return num; }
     public int getID() { return ID; }
-    public boolean getEstaEnBD() { return estaEnBD; }
     public int getMunicipioId() { return municipioId; }
     public String getDPI() { return DPI; }
-    public String getNombre() { return nombre; }
+    public String getNombres() { return nombres; }
+    public String getApellidos() { return apellidos; }
     public String getDireccion() { return direccion; }
     public String getMunicipio() { return municipio; }
     public String getFechaNacimiento() { return fechaNacimiento; }
@@ -43,12 +38,11 @@ public class RegistroEncargado {
     public String getCelular() { return celular; }
     public String getTrabajo() { return trabajo; }
 
-    public void setNum(int num) { this.num = num; }
     public void setID(int ID) { this.ID = ID; }
-    public void setEstaEnBD(boolean estaEnBD) { this.estaEnBD = estaEnBD; }
     public void setMunicipioId(int municipioId) { this.municipioId = municipioId; }
     public void setDPI(String DPI) { this.DPI = DPI; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setNombres(String nombres) { this.nombres = nombres; }
+    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
     public void setDireccion(String direccion) { this.direccion = direccion; }
     public void setMunicipio(String municipio) { this.municipio = municipio; }
     public void setFechaNacimiento(String fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
@@ -60,7 +54,8 @@ public class RegistroEncargado {
      * Devuelve un array con los datos para ser insertados en una fila de la Tabla de Encargados. Estos datos son:
      * "No.",
      * "DPI",
-     * "Nombre Completo",
+     * "Nombres",
+     * "Apellidos"
      * "Dirección",
      * "Municipio",
      * "Fecha Nacimiento",
@@ -70,11 +65,12 @@ public class RegistroEncargado {
      * "Trabajo u oficio"
      * @return los datos del encargado para ser insertados en una fila de la Tabla de Encargados
      */
-    public String[] getDatosParaTabla() {
+    public String[] getDatosParaTabla(int num) {
         return new String[]{
             ""+num,
             DPI,
-            nombre,
+            nombres,
+            apellidos,
             direccion,
             municipio,
             fechaNacimiento,

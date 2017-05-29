@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -89,12 +90,19 @@ public class Notas extends javax.swing.JDialog {
             if (cInfo.next())
                 this.etiqueta_nombre_estudiante.setText("Estudiante: "+estudiante.getNombres()+" "+estudiante.getApellidos()
                         +" ("+cInfo.getString("Nombre")+" "+cInfo.getString("Seccion")+", "+cInfo.getString("Anio")+").");
-            editar_notas.setEnabled(!listaNotas.isEmpty());
+            // Las notas pueden editarse sí y sólo si el ciclo escolar es el último (el que está vigente)
+            ResultSet cCicloVigente = sentencia.executeQuery("SELECT MAX(Id) FROM CicloEscolar");
+            cCicloVigente.next();
+//            editar_notas.setEnabled(!listaNotas.isEmpty() && idCicloEscolar == cCicloVigente.getInt(1));
+//            if (idCicloEscolar !=cCicloVigente.getInt(1))
+//                etiqueta_notas.setText("Notas: (Las notas no pueden ser editadas pues corresponden a un Ciclo Escolar anterior)");
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error al intentar extraer las Notas.\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al intentar extraer datos.\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(Notas.class.getName()).log(Level.SEVERE, null, ex);
         }
         definir_ancho_columnas();
+        
+        this.setLocationRelativeTo(null);   // Para centrar esta ventana sobre la pantalla.
     }
 
     /**
@@ -128,6 +136,7 @@ public class Notas extends javax.swing.JDialog {
         check_nota_recuperacion = new javax.swing.JCheckBox();
         guardar_cambios = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        calcular_nota_final = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -172,7 +181,7 @@ public class Notas extends javax.swing.JDialog {
             .addGroup(panel_notasLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_notasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
                     .addGroup(panel_notasLayout.createSequentialGroup()
                         .addComponent(etiqueta_notas)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -215,6 +224,16 @@ public class Notas extends javax.swing.JDialog {
         nota1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         nota1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         nota1.setEnabled(false);
+        nota1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                nota1FocusLost(evt);
+            }
+        });
+        nota1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                nota1KeyTyped(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -227,6 +246,16 @@ public class Notas extends javax.swing.JDialog {
         nota2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         nota2.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         nota2.setEnabled(false);
+        nota2.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                nota2FocusLost(evt);
+            }
+        });
+        nota2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                nota2KeyTyped(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -235,6 +264,16 @@ public class Notas extends javax.swing.JDialog {
         nota3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         nota3.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         nota3.setEnabled(false);
+        nota3.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                nota3FocusLost(evt);
+            }
+        });
+        nota3.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                nota3KeyTyped(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -243,10 +282,30 @@ public class Notas extends javax.swing.JDialog {
         nota4.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         nota4.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         nota4.setEnabled(false);
+        nota4.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                nota4FocusLost(evt);
+            }
+        });
+        nota4.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                nota4KeyTyped(evt);
+            }
+        });
 
         nota_recuperacion.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         nota_recuperacion.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         nota_recuperacion.setEnabled(false);
+        nota_recuperacion.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                nota_recuperacionFocusLost(evt);
+            }
+        });
+        nota_recuperacion.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                nota_recuperacionKeyTyped(evt);
+            }
+        });
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -258,8 +317,8 @@ public class Notas extends javax.swing.JDialog {
         nota_final.setEnabled(false);
 
         editar_notas.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        editar_notas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/edit.png"))); // NOI18N
         editar_notas.setText("Editar notas");
-        editar_notas.setEnabled(false);
         editar_notas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editar_notasActionPerformed(evt);
@@ -277,7 +336,8 @@ public class Notas extends javax.swing.JDialog {
         });
 
         guardar_cambios.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        guardar_cambios.setText("Guardar cambios");
+        guardar_cambios.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/guardar.png"))); // NOI18N
+        guardar_cambios.setText("Guardar cambios y salir");
         guardar_cambios.setEnabled(false);
         guardar_cambios.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -292,22 +352,30 @@ public class Notas extends javax.swing.JDialog {
             }
         });
 
+        calcular_nota_final.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/adelante.PNG"))); // NOI18N
+        calcular_nota_final.setEnabled(false);
+        calcular_nota_final.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                calcular_nota_finalActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(nota1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(nota2, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(nota1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(nota2, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(nota3, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE))
@@ -318,29 +386,35 @@ public class Notas extends javax.swing.JDialog {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(41, 41, 41)
-                                .addComponent(nota_recuperacion, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(58, 58, 58)
-                                .addComponent(nota_final, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(nota_recuperacion, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(check_nota_recuperacion, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 131, Short.MAX_VALUE))
+                                .addComponent(check_nota_recuperacion, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(28, 28, 28)
+                        .addComponent(calcular_nota_final, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 72, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(33, 33, 33)
+                                .addComponent(nota_final, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(292, 292, 292)
+                        .addGap(104, 104, 104)
                         .addComponent(editar_notas)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(guardar_cambios)))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addGap(29, 29, 29))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(editar_notas)
@@ -352,20 +426,23 @@ public class Notas extends javax.swing.JDialog {
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6)
                             .addComponent(check_nota_recuperacion))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(nota2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(nota3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(nota4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(nota_recuperacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(nota_final, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(nota_recuperacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(nota1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                        .addComponent(nota1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(nota_final, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(calcular_nota_final))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton1))
         );
 
@@ -416,33 +493,38 @@ public class Notas extends javax.swing.JDialog {
                 nota2.setText(Float.toString(iterador.getNota2()));
                 nota3.setText(Float.toString(iterador.getNota3()));
                 nota4.setText(Float.toString(iterador.getNota4()));
-                nota_recuperacion.setText(Float.toString(iterador.getNotaRecuperacion()));
+                check_nota_recuperacion.setSelected(iterador.getNotaRecuperacion()!=-1);
+                nota_recuperacion.setText((iterador.getNotaRecuperacion()!=-1) ? Float.toString(iterador.getNotaRecuperacion()) : "");
                 nota_final.setText(Float.toString(iterador.getNotaFinal()));
                 setEnable_campos_notas(true);   // Habilito los campos para poder modificarlos
                 
-                editar_notas.setText("Aceptar");    // Cambio el texto para indicar la el guardado de los datos
+                editar_notas.setText("Aceptar");    // Cambio el texto para indicar el guardado de los datos
+                editar_notas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/ok.png")));
+                guardar_cambios.setEnabled(false);  // Inhabilito el botón de guardado
             }
         } else {    // Se guadarán los cambios de la nota editada
             try {
                 validar_notas();    // Valido que las notas sean correctas
                 RegistroNota editado = listaNotas.get(indexNotaEditada);
+                editado.setNota1(Float.parseFloat(nota1.getText()));
+                editado.setNota2(Float.parseFloat(nota2.getText()));
+                editado.setNota3(Float.parseFloat(nota3.getText()));
+                editado.setNota4(Float.parseFloat(nota4.getText()));
+                editado.setNotaRecuperacion((check_nota_recuperacion.isSelected()) ? Float.parseFloat(nota_recuperacion.getText()) : -1);
+                
+//                if (check_nota_recuperacion.isSelected())
+//                    editado.setNotaRecuperacion(Float.parseFloat(nota_recuperacion.getText()));
                 // Cálculo de la Nota Final:
-                if (check_nota_recuperacion.isSelected()) { // Cuando tiene nota de recuperación
-// IMPLEMENTAR
-                } else {    // Cuando no tiene nota de recuperación
-                    editado.setNota1(Float.parseFloat(nota1.getText()));
-                    editado.setNota2(Float.parseFloat(nota2.getText()));
-                    editado.setNota3(Float.parseFloat(nota3.getText()));
-                    editado.setNota4(Float.parseFloat(nota4.getText()));
-                    editado.setNotaFinal((editado.getNota1()+editado.getNota2()+editado.getNota3()+editado.getNota4())/4);
-                    editado.setEditado(true);   // Marco el registro como Editado
-                }
+                editado.setNotaFinal((check_nota_recuperacion.isSelected()) ?
+                        editado.getNotaRecuperacion() : // Es la Nota de Recuperación
+                        editado.getPromedioNotas());   // Es el promedio de las Notas 1-4
+                editado.setEditado(true);   // Marco el registro como Editado
                 // Actualizo las notas en la tabla
                 tabla_notas.setValueAt(""+editado.getNota1(), indexNotaEditada, 2);
                 tabla_notas.setValueAt(""+editado.getNota2(), indexNotaEditada, 3);
                 tabla_notas.setValueAt(""+editado.getNota3(), indexNotaEditada, 4);
                 tabla_notas.setValueAt(""+editado.getNota4(), indexNotaEditada, 5);
-                tabla_notas.setValueAt(""+editado.getNotaRecuperacion(), indexNotaEditada, 6);
+                tabla_notas.setValueAt((editado.getNotaRecuperacion()!=-1 ? ""+editado.getNotaRecuperacion() : ""), indexNotaEditada, 6);
 //                tabla_notas.setValueAt(((check_nota_recuperacion.isSelected()) ? ""+editado.getNotaRecuperacion() : ""), indexNotaEditada, 6);
                 tabla_notas.setValueAt(""+editado.getNotaFinal(), indexNotaEditada, 7);
                 
@@ -450,6 +532,7 @@ public class Notas extends javax.swing.JDialog {
                 setEnable_campos_notas(false);  // Inhabilito los campos de notas
                 
                 editar_notas.setText("Editar notas");   // Cambio el texto del botón
+                editar_notas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/edit.png")));
                 guardar_cambios.setEnabled(true);   // Habilito el botón para poder guardar los cambios
             } catch (ExcepcionDatosIncorrectos ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -470,10 +553,10 @@ public class Notas extends javax.swing.JDialog {
         // Inicio la actualización de todas las notas que fueron editadas
         int tamaño = listaNotas.size();
         int cont = 0;   // Contador de cuántas notas fueron modificadas
+        boolean errorEnNotas = false;
         for(int i=0; i<tamaño; i++) {
             RegistroNota iterador = listaNotas.get(i);
             if (iterador.isEditado()) {
-                cont++;
                 try {
                     // Esta nota fue editada, lo actualizo en la BD
                     String actualizar = "UPDATE Notas SET ";
@@ -488,15 +571,19 @@ public class Notas extends javax.swing.JDialog {
                     
                     // Habilito la opción de volver a editar la nota (en caso de no salir al guardar todo)
                     iterador.setEditado(false);
+                    cont++; // Aumento el contador de notas guardadas con éxito
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Error al intentar actualizar las Notas.\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    errorEnNotas = true;
+                    JOptionPane.showMessageDialog(this, "Error al intentar actualizar la Nota No. "+(i+1)+"\n\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     Logger.getLogger(Notas.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
         guardar_cambios.setEnabled(false);  // Inhabilito este botón hasta que se vuelva a modificar otra nota
-        if (cont != 0)
+        if (cont != 0 && !errorEnNotas)
             JOptionPane.showMessageDialog(this, "Se han guardado los cambios de "+cont+" Nota"+((cont==1)?"":"s"), "Información", JOptionPane.INFORMATION_MESSAGE);
+        if (!errorEnNotas)
+            this.dispose(); // En caso de no haber errores, cierro la ventana
     }//GEN-LAST:event_guardar_cambiosActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -505,9 +592,138 @@ public class Notas extends javax.swing.JDialog {
         System.out.print(tabla_notas.getColumnModel().getColumn(i).getWidth()+",");
     }//GEN-LAST:event_jButton1ActionPerformed
     /**APROBADO!!!
-     * Este método dispara una excepción en caso de existir una nota incorrecta. Una nota es incorrecta cuando:
-     * - (nota < 0) o (nota > 100)
-     * - Cuando contenga caracteres no dígitos.
+     * Acción que calcula la Nota Final como promedio de las Notas 1-4, o como la nota de recuperación.
+     * @param evt 
+     */
+    private void calcular_nota_finalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calcular_nota_finalActionPerformed
+        if (check_nota_recuperacion.isSelected())
+            nota_final.setText(nota_recuperacion.getText());
+        else {
+            if (nota1.getText().length()==0 || nota2.getText().length()==0 || nota3.getText().length()==0 || nota4.getText().length()==0)
+                JOptionPane.showMessageDialog(this, "No se puede calcular la Nota Final sin las 4 notas anteriores.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+            else
+                nota_final.setText(""+(Float.parseFloat(nota1.getText()) + Float.parseFloat(nota2.getText()) + Float.parseFloat(nota3.getText()) + Float.parseFloat(nota4.getText()))/4);
+        }
+    }//GEN-LAST:event_calcular_nota_finalActionPerformed
+    /**
+     * Eventos que controlan que las Notas que se ingresen sean dígitos solamente, y que estén en el rango de [0.0,100.0].
+     * Dichos eventos se lanzan antes de insertar la tecla.
+     */
+    private void nota1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nota1KeyTyped
+        char teclaPulsada = evt.getKeyChar();
+        if (teclaPulsada == '.') {  // Cuando se presiona el punto (para una cantidad decimal)
+            if (nota1.getText().contains("."))  // Se rechaza la tecla si la cantidad ya contiene un punto decimal
+                evt.consume();
+            else if (nota1.getText().length() == 0) // Se concatena un 0 al inicio si la caja está vacía
+                nota1.setText("0");
+        } else if (!Pattern.compile("\\d").matcher(String.valueOf(teclaPulsada)).matches())
+            evt.consume();  // No se acepta la tecla si no es un dígito
+        else {  // Si es un dígito
+            if (nota1.getText().length()!=0 && !nota1.getText().contains(".") && Integer.parseInt(nota1.getText())==0 && teclaPulsada=='0')
+                evt.consume();  // Se rechaza la tecla en caso de querer escribir varios ceros seguidos
+            else if (Float.parseFloat(nota1.getText()+String.valueOf(teclaPulsada)) > 100.0)
+                evt.consume();  // Se rechaza la tecla si hace que la nota sea mayor a 100.0
+        }
+    }//GEN-LAST:event_nota1KeyTyped
+    private void nota2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nota2KeyTyped
+        char teclaPulsada = evt.getKeyChar();
+        if (teclaPulsada == '.') {  // Cuando se presiona el punto (para una cantidad decimal)
+            if (nota2.getText().contains("."))  // Se rechaza la tecla si la cantidad ya contiene un punto decimal
+                evt.consume();
+            else if (nota2.getText().length() == 0) // Se concatena un 0 al inicio si la caja está vacía
+                nota2.setText("0");
+        } else if (!Pattern.compile("\\d").matcher(String.valueOf(teclaPulsada)).matches())
+            evt.consume();  // No se acepta la tecla si no es un dígito
+        else {  // Si es un dígito
+            if (nota2.getText().length()!=0 && !nota2.getText().contains(".") && Integer.parseInt(nota2.getText())==0 && teclaPulsada=='0')
+                evt.consume();  // Se rechaza la tecla en caso de querer escribir varios ceros seguidos
+            else if (Float.parseFloat(nota2.getText()+String.valueOf(teclaPulsada)) > 100.0)
+                evt.consume();  // Se rechaza la tecla si hace que la nota sea mayor a 100.0
+        }
+    }//GEN-LAST:event_nota2KeyTyped
+    private void nota3KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nota3KeyTyped
+        char teclaPulsada = evt.getKeyChar();
+        if (teclaPulsada == '.') {  // Cuando se presiona el punto (para una cantidad decimal)
+            if (nota3.getText().contains("."))  // Se rechaza la tecla si la cantidad ya contiene un punto decimal
+                evt.consume();
+            else if (nota3.getText().length() == 0) // Se concatena un 0 al inicio si la caja está vacía
+                nota3.setText("0");
+        } else if (!Pattern.compile("\\d").matcher(String.valueOf(teclaPulsada)).matches())
+            evt.consume();  // No se acepta la tecla si no es un dígito
+        else {  // Si es un dígito
+            if (nota3.getText().length()!=0 && !nota3.getText().contains(".") && Integer.parseInt(nota3.getText())==0 && teclaPulsada=='0')
+                evt.consume();  // Se rechaza la tecla en caso de querer escribir varios ceros seguidos
+            else if (Float.parseFloat(nota3.getText()+String.valueOf(teclaPulsada)) > 100.0)
+                evt.consume();  // Se rechaza la tecla si hace que la nota sea mayor a 100.0
+        }
+    }//GEN-LAST:event_nota3KeyTyped
+    private void nota4KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nota4KeyTyped
+        char teclaPulsada = evt.getKeyChar();
+        if (teclaPulsada == '.') {  // Cuando se presiona el punto (para una cantidad decimal)
+            if (nota4.getText().contains("."))  // Se rechaza la tecla si la cantidad ya contiene un punto decimal
+                evt.consume();
+            else if (nota4.getText().length() == 0) // Se concatena un 0 al inicio si la caja está vacía
+                nota4.setText("0");
+        } else if (!Pattern.compile("\\d").matcher(String.valueOf(teclaPulsada)).matches())
+            evt.consume();  // No se acepta la tecla si no es un dígito
+        else {  // Si es un dígito
+            if (nota4.getText().length()!=0 && !nota4.getText().contains(".") && Integer.parseInt(nota4.getText())==0 && teclaPulsada=='0')
+                evt.consume();  // Se rechaza la tecla en caso de querer escribir varios ceros seguidos
+            else if (Float.parseFloat(nota4.getText()+String.valueOf(teclaPulsada)) > 100.0)
+                evt.consume();  // Se rechaza la tecla si hace que la nota sea mayor a 100.0
+        }
+    }//GEN-LAST:event_nota4KeyTyped
+    private void nota_recuperacionKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nota_recuperacionKeyTyped
+        char teclaPulsada = evt.getKeyChar();
+        if (teclaPulsada == '.') {  // Cuando se presiona el punto (para una cantidad decimal)
+            if (nota_recuperacion.getText().contains("."))  // Se rechaza la tecla si la cantidad ya contiene un punto decimal
+                evt.consume();
+            else if (nota_recuperacion.getText().length() == 0) // Se concatena un 0 al inicio si la caja está vacía
+                nota_recuperacion.setText("0");
+        } else if (!Pattern.compile("\\d").matcher(String.valueOf(teclaPulsada)).matches())
+            evt.consume();  // No se acepta la tecla si no es un dígito
+        else {  // Si es un dígito
+            if (nota_recuperacion.getText().length()!=0 && !nota_recuperacion.getText().contains(".") && Integer.parseInt(nota_recuperacion.getText())==0 && teclaPulsada=='0')
+                evt.consume();  // Se rechaza la tecla en caso de querer escribir varios ceros seguidos
+            else if (Float.parseFloat(nota_recuperacion.getText()+String.valueOf(teclaPulsada)) > 100.0)
+                evt.consume();  // Se rechaza la tecla si hace que la nota sea mayor a 100.0
+        }
+    }//GEN-LAST:event_nota_recuperacionKeyTyped
+    /**
+     * Eventos que controlan cuando alguna de las cajas de notas pierde el focus. Si al ocurrir esto, el texto tiene la
+     * el formato n. (donde n es un entero entre [0,100]) entonces se concatena '0' al final.
+     */
+    private void nota1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nota1FocusLost
+        if (nota1.getText().length()==0 || (nota1.getText().length()!=0 && Float.parseFloat(nota1.getText())==0.0))
+            nota1.setText("0.0");
+        else if (nota1.getText().indexOf(".")==(nota1.getText().length()-1))
+            nota1.setText(nota1.getText()+"0");
+    }//GEN-LAST:event_nota1FocusLost
+    private void nota2FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nota2FocusLost
+        if (nota2.getText().length()==0 || (nota2.getText().length()!=0 && Float.parseFloat(nota2.getText())==0.0))
+            nota2.setText("0.0");
+        else if (nota2.getText().indexOf(".")==(nota2.getText().length()-1))
+            nota2.setText(nota2.getText()+"0");
+    }//GEN-LAST:event_nota2FocusLost
+    private void nota3FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nota3FocusLost
+        if (nota3.getText().length()==0 || (nota3.getText().length()!=0 && Float.parseFloat(nota3.getText())==0.0))
+            nota3.setText("0.0");
+        else if (nota3.getText().indexOf(".")==(nota3.getText().length()-1))
+            nota3.setText(nota3.getText()+"0");
+    }//GEN-LAST:event_nota3FocusLost
+    private void nota4FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nota4FocusLost
+        if (nota4.getText().length()==0 || (nota4.getText().length()!=0 && Float.parseFloat(nota4.getText())==0.0))
+            nota4.setText("0.0");
+        else if (nota4.getText().indexOf(".")==(nota4.getText().length()-1))
+            nota4.setText(nota4.getText()+"0");
+    }//GEN-LAST:event_nota4FocusLost
+    private void nota_recuperacionFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nota_recuperacionFocusLost
+        if (nota_recuperacion.getText().indexOf(".")==(nota_recuperacion.getText().length()-1))
+            nota_recuperacion.setText(nota_recuperacion.getText()+"0");
+    }//GEN-LAST:event_nota_recuperacionFocusLost
+    /**APROBADO!!!
+     * Este método dispara una excepción en caso de existir una nota incorrecta. Debido a que en los eventos de las cajas
+     * de texto donde se ingresan las notas se verifica que su formato sea correcto, lo único por evaluar es que no sean nulos.
      * Dicha validación aplica a las 4 notas, y a la nota de recuperación (si check_nota_recuperacion está seleccionado)
      * @throws ExcepcionDatosIncorrectos 
      */
@@ -557,6 +773,7 @@ public class Notas extends javax.swing.JDialog {
         nota4.setEnabled(valorEnable);
         check_nota_recuperacion.setEnabled(valorEnable);
         nota_final.setEnabled(valorEnable);
+        calcular_nota_final.setEnabled(valorEnable);
     }
     /**ÚTIL!!!
      * 
@@ -570,7 +787,7 @@ public class Notas extends javax.swing.JDialog {
         check_nota_recuperacion.setSelected(false);
         nota_final.setText("");
     }
-    /**
+    /**ÚTIL!!!
      * Método que define el ancho de las columnas de ambas tablas, en base a valores definidos previamente por pruebas.
      */
     private void definir_ancho_columnas() {
@@ -634,7 +851,8 @@ public class Notas extends javax.swing.JDialog {
         
         public RegistroNota() {
             idNota = idCurso = 0;
-            nota1 = nota2 = nota3 = nota4 = notaRecuperacion = notaFinal = 0;
+            nota1 = nota2 = nota3 = nota4 = notaFinal = 0;
+            notaRecuperacion = -1;  // Indicador de que no se tiene Nota de Recuperación
             curso = "";
             editado = false;
         }
@@ -650,6 +868,7 @@ public class Notas extends javax.swing.JDialog {
         public float getNotaFinal() { return notaFinal; }
         public String getCurso() { return curso; }
         public boolean isEditado() { return editado; }
+        public float getPromedioNotas() { return (nota1+nota2+nota3+nota4)/4; }
 
         public void setNum(int num) { this.num = num; }
         public void setIdNota(int idNota) { this.idNota = idNota; }
@@ -671,13 +890,14 @@ public class Notas extends javax.swing.JDialog {
                 ""+nota2,
                 ""+nota3,
                 ""+nota4,
-                ""+notaRecuperacion,
+                (notaRecuperacion != -1) ? ""+notaRecuperacion : "",
                 ""+notaFinal
             };
         }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton calcular_nota_final;
     private javax.swing.JCheckBox check_nota_recuperacion;
     private javax.swing.JButton editar_notas;
     private javax.swing.JLabel etiqueta_nombre_estudiante;
