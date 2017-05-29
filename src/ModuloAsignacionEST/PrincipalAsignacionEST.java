@@ -59,7 +59,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
         this.listaCiclos = new ArrayList<>();
         this.paraReasignacion = paraReasignacion;
         this.ciclosCargados = false;  // Indicador de que todos los datos ya han sido obtenidos de la Base de Datos
-        this.hacerVisible = false;
+        this.hacerVisible = true;
         this.setTitle(((paraReasignacion)?"Rea":"A")+"signación de Estudiantes");
         this.crear_asignacion.setText("Crear "+((paraReasignacion)?"Rea":"A")+"signación");
         
@@ -75,6 +75,12 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
                     ciclo_escolar.addItem(cCicloEscolar.getString("Anio")); // Agrego el Ciclo Escolar al JComboBox
                 } ciclosCargados = true;// Hasta aquí se garantiza la carga de todos los Grados y Ciclos Escolares de la Base de Datos
                 
+                // En caso de no existir por lo menos un ciclo escolar, cierro la ventana (no hay información que mostrar)
+                if (listaCiclos.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "No se ha creado ningún ciclo escolar para Reasignar Estudiantes.", "Sin datos", JOptionPane.INFORMATION_MESSAGE);
+                    hacerVisible = false;
+                }
+                
                 ciclo_escolar.setSelectedIndex(-1); // Esta opción es para generar una llamada al itemStateChange en caso de sólo encontrar un ciclo
                 ciclo_escolar.setSelectedIndex(ciclo_escolar.getItemCount() - 1);   // Selecciono por defecto el último Ciclo Esoclar
             } catch (SQLException ex) {
@@ -85,6 +91,8 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
         } else  // Se mostrarán los estudiantes que no tienen ninguna asignación
             cargar_estudiantes_no_asignados();
         definir_ancho_columnas();
+        
+        this.setLocationRelativeTo(null);   // Para centrar esta ventana sobre la pantalla.
     }
     
     private void cargar_estudiantes_no_asignados() {
@@ -118,7 +126,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
                 JOptionPane.showMessageDialog(this, "Aviso.\n\nNo hay estudiantes para Asignar", "Información", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
             }
-            jLabel1.setText("Hay "+contador+" estudiante"+((contador==1)?"":"s")+" para Asignar");
+            etiqueta_estudiantes_encontrados.setText("Hay "+contador+" estudiante"+((contador==1)?"":"s")+" para Asignar");
             crear_asignacion.setEnabled(hacerVisible);  // Habilito el botón en Asignaciones nuevas si hay como mínimo un estudiante
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al intentar extraer datos.\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -128,7 +136,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
     private void cargar_estudiantes_para_reasignacion(int cicloEscolarId, int gradoId) {
         /* Obtengo la consulta de todos los Estudiantes que tienen una Asignación en el cicloEscolarId y el gradoId seleccionados */
         try {
-            String instruccion = "SELECT Estudiante.Id idEST, Estudiante.CodigoPersonal, Estudiante.CUI, Estudiante.Nombres, Estudiante.Apellidos, Estudiante.Sexo, AsignacionEST.Id idASIG, AsignacionEST.CicloEscolar_Id, CicloEscolar.Anio, AsignacionEST.Grado_Id, Grado.Nombre Grado, Grado.Seccion, AsignacionEST.Aula FROM Estudiante "
+            String instruccion = "SELECT Estudiante.Id idEST, Estudiante.CodigoPersonal, Estudiante.CUI, Estudiante.Nombres, Estudiante.Apellidos, Estudiante.Sexo, AsignacionEST.Id idASIG, AsignacionEST.CicloEscolar_Id, CicloEscolar.Anio, AsignacionEST.Grado_Id, Grado.Nombre Grado, Grado.Seccion FROM Estudiante "
                     + "INNER JOIN AsignacionEST ON Estudiante.Id = AsignacionEST.Estudiante_Id "
                     + "INNER JOIN Grado ON AsignacionEST.Grado_Id = Grado.Id "
                     + "INNER JOIN CicloEscolar ON AsignacionEST.CicloEscolar_Id = CicloEscolar.Id "
@@ -156,13 +164,12 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
                 nuevo.setGradoId(cAsignaciones.getInt("Grado_Id"));
                 nuevo.setGrado(cAsignaciones.getString("Grado"));
                 nuevo.setSeccion(cAsignaciones.getString("Seccion"));
-                nuevo.setAula(cAsignaciones.getString("Aula"));
                 
                 estudiantes.add(nuevo);    // Agregación del nuevo registro al ArrayList
                 modelEstudiantes.addRow(nuevo.getDatosParaTabla()); // Inserto los datos del nuevo registro en la Tabla
             }   // Hasta aquí se garantiza la extracción de todos los registros de estudiantes que aún no tienen una asignación
             cAsignaciones.close();
-            jLabel1.setText("Hay "+contador+" estudiante"+((contador==1)?"":"s")+" para Reasignar");
+            etiqueta_estudiantes_encontrados.setText("Hay "+contador+" estudiante"+((contador==1)?"":"s")+" para Reasignar");
             crear_asignacion.setEnabled(contador > 0);  // Habilito el botón para Crear las Reasignaciones si hay como minimo un registro
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al intentar extraer datos.\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -187,7 +194,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
         etiqueta_grado = new javax.swing.JLabel();
         grado = new javax.swing.JComboBox<>();
         panel_estudiantes_encontrados = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        etiqueta_estudiantes_encontrados = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla_estudiantes = new javax.swing.JTable();
         crear_asignacion = new javax.swing.JButton();
@@ -268,8 +275,8 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
 
         panel_estudiantes_encontrados.setBackground(new java.awt.Color(153, 153, 255));
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel1.setText("Hay n de m estudiantes no asignados");
+        etiqueta_estudiantes_encontrados.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        etiqueta_estudiantes_encontrados.setText("Hay n de m estudiantes no asignados");
 
         tabla_estudiantes.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         tabla_estudiantes.setModel(new javax.swing.table.DefaultTableModel(
@@ -277,14 +284,14 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
 
             },
             new String [] {
-                "No.", "Código Personal", "CUI", "Nombres", "Apellidos", "Asignación Nueva", "Asignación Anterior", "Ciclo Escolar", "Grado", "Sección", "Aula"
+                "No.", "Código Personal", "CUI", "Nombres", "Apellidos", "Asignación Nueva", "Asignación Anterior", "Ciclo Escolar", "Grado", "Sección"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -321,7 +328,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
                 .addGroup(panel_estudiantes_encontradosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_estudiantes_encontradosLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jLabel1))
+                        .addComponent(etiqueta_estudiantes_encontrados))
                     .addGroup(panel_estudiantes_encontradosLayout.createSequentialGroup()
                         .addGap(280, 280, 280)
                         .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -330,7 +337,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
         panel_estudiantes_encontradosLayout.setVerticalGroup(
             panel_estudiantes_encontradosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_estudiantes_encontradosLayout.createSequentialGroup()
-                .addComponent(jLabel1)
+                .addComponent(etiqueta_estudiantes_encontrados)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -373,7 +380,7 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
             if (!registro.isAsignacionNueva()) {
                 // Llamo a la Ventana encargada de realizar la Asignación
                 AsignarEstudiante nuevaAsignacion = new AsignarEstudiante(new javax.swing.JFrame(), true, conexion, registro, paraReasignacion);
-                nuevaAsignacion.setVisible(true);
+                nuevaAsignacion.setVisible(nuevaAsignacion.getHacerVisible());
                 tabla_estudiantes.setValueAt((registro.isAsignacionNueva()) ? "SI" : "NO", rango[0], 5);   // Actualizo el indicador de Asignación de la Tabla
             } else
                 JOptionPane.showMessageDialog(this, ""+registro.getNombres()+" "+registro.getApellidos()+" ya tiene Asignación", "Información", JOptionPane.INFORMATION_MESSAGE);
@@ -456,7 +463,6 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
         tabla_estudiantes.getColumnModel().getColumn(7).setPreferredWidth(100);
         tabla_estudiantes.getColumnModel().getColumn(8).setPreferredWidth(100);
         tabla_estudiantes.getColumnModel().getColumn(9).setPreferredWidth(60);
-        tabla_estudiantes.getColumnModel().getColumn(10).setPreferredWidth(75);
     }
     public boolean getHacerVisible() { return hacerVisible; }
     /**
@@ -498,10 +504,10 @@ public class PrincipalAsignacionEST extends javax.swing.JDialog {
     private javax.swing.JComboBox<String> ciclo_escolar;
     private javax.swing.JButton crear_asignacion;
     private javax.swing.JLabel etiqueta_ciclo_escolar;
+    private javax.swing.JLabel etiqueta_estudiantes_encontrados;
     private javax.swing.JLabel etiqueta_grado;
     private javax.swing.JLabel etiqueta_seleccion_ciclo_escolar;
     private javax.swing.JComboBox<String> grado;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel panel_estudiantes_encontrados;
     private javax.swing.JPanel panel_reasignacion;

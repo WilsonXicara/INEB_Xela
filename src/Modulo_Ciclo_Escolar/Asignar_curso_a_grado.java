@@ -7,6 +7,8 @@ package Modulo_Ciclo_Escolar;
 
 import java.awt.Frame;
 import java.awt.event.ItemEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -85,6 +87,58 @@ public class Asignar_curso_a_grado extends javax.swing.JDialog {
                 Id_catedratico.add(Id);
                 Asig_catedraticos.addItem(Nombre);
             }
+            
+            this.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent we) {
+           }
+
+            @Override
+            public void windowClosing(WindowEvent we) {
+             if(id_conjunto_agregados.size()> 0 || id_conjunto_borrados.size() > 0){
+            String[] opciones = new String[2];
+            opciones[0] = "SI";
+            opciones[1] = "NO";
+            //Pregunto si desea guardar los cursos agregados
+            int eleccion = JOptionPane.showOptionDialog(null, "Desea guardar los cambios realizados", "Cambios", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+            if(eleccion == JOptionPane.YES_OPTION) {
+               Guardar_cambios();
+               id_conjunto_agregados = new ArrayList<>();
+               conjunto_agregados = new ArrayList<>();
+               id_conjunto_borrados = new ArrayList<>();
+               conjunto_borrados = new ArrayList<>();
+               Actualizar_tabla();
+            }
+            else{
+                id_conjunto_agregados = new ArrayList<>();
+               conjunto_agregados = new ArrayList<>();
+               id_conjunto_borrados = new ArrayList<>();
+               conjunto_borrados = new ArrayList<>();
+            }
+        }
+            }
+
+            @Override
+            public void windowClosed(WindowEvent we) {
+          }
+
+            @Override
+            public void windowIconified(WindowEvent we) {
+           }
+
+            @Override
+            public void windowDeiconified(WindowEvent we) {
+          }
+
+            @Override
+            public void windowActivated(WindowEvent we) {
+           }
+
+            @Override
+            public void windowDeactivated(WindowEvent we) {
+           }
+        });
+            
     }
     
     /**
@@ -296,10 +350,18 @@ public class Asignar_curso_a_grado extends javax.swing.JDialog {
                conjunto_borrados = new ArrayList<>();
                  Actualizar_tabla();
             }else{
+                 id_conjunto_agregados = new ArrayList<>();
+               conjunto_agregados = new ArrayList<>();
+               id_conjunto_borrados = new ArrayList<>();
+               conjunto_borrados = new ArrayList<>();
                  posicion = grado.getSelectedIndex();
                 Actualizar_tabla();
             }
             }else{
+                id_conjunto_agregados = new ArrayList<>();
+               conjunto_agregados = new ArrayList<>();
+               id_conjunto_borrados = new ArrayList<>();
+               conjunto_borrados = new ArrayList<>();
                posicion = grado.getSelectedIndex();
                 Actualizar_tabla(); 
             }
@@ -308,6 +370,28 @@ public class Asignar_curso_a_grado extends javax.swing.JDialog {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         this.dispose();
+        if(id_conjunto_agregados.size()> 0 || id_conjunto_borrados.size() > 0){
+            String[] opciones = new String[2];
+            opciones[0] = "SI";
+            opciones[1] = "NO";
+            //Pregunto si desea guardar los cursos agregados
+            int eleccion = JOptionPane.showOptionDialog(null, "Desea guardar los cambios realizados", "Cambios", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+            if(eleccion == JOptionPane.YES_OPTION) {
+               Guardar_cambios();
+               id_conjunto_agregados = new ArrayList<>();
+               conjunto_agregados = new ArrayList<>();
+               id_conjunto_borrados = new ArrayList<>();
+               conjunto_borrados = new ArrayList<>();
+               Actualizar_tabla();
+            }
+            else{
+                id_conjunto_agregados = new ArrayList<>();
+               conjunto_agregados = new ArrayList<>();
+               id_conjunto_borrados = new ArrayList<>();
+               conjunto_borrados = new ArrayList<>();
+            }
+        }
+        
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -395,6 +479,12 @@ public class Asignar_curso_a_grado extends javax.swing.JDialog {
                id_conjunto_borrados = new ArrayList<>();
                conjunto_borrados = new ArrayList<>();
                Actualizar_tabla();
+            }
+            else{
+                id_conjunto_agregados = new ArrayList<>();
+               conjunto_agregados = new ArrayList<>();
+               id_conjunto_borrados = new ArrayList<>();
+               conjunto_borrados = new ArrayList<>();
             }
         }
     }//GEN-LAST:event_jButton6ActionPerformed

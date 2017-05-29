@@ -1,0 +1,90 @@
+DELIMITER //
+
+/* TRIGGER encargado de encriptar las contraseñas al crear un nuevo Usuario */
+DROP TRIGGER IF EXISTS nuevoUsuario //
+CREATE TRIGGER nuevoUsuario BEFORE INSERT ON Usuarios FOR EACH ROW
+BEGIN
+	DECLARE vContraseniaEncript VARCHAR(25);
+	SELECT VALOR INTO vContraseniaEncript FROM variables_globales.variables_globales WHERE NOMBRE = 'InebXela_Password';
+	SET NEW.Contrasenia = AES_ENCRYPT(NEW.Contrasenia, vContraseniaEncript);
+END //
+
+/* TRIGGER encargado de crear las Notas de cada Curso correspondiente al Ciclo Escolar y Grado al que se asigna el Estudiante */
+DROP TRIGGER IF EXISTS crearAsignacion //
+CREATE TRIGGER crearAsignacion AFTER INSERT ON AsignacionEST FOR EACH ROW
+BEGIN
+	DECLARE vUltimaFila INT DEFAULT 0;
+	DECLARE vIdCiclo INT;
+	DECLARE vIdGrado INT;
+	DECLARE vIdCurso INT;
+	-- El cursor se cargará con todos los Cursos correspondientes al Ciclo Escolar y Grado al que se asigna el estudiante
+	DECLARE cCursos CURSOR FOR SELECT CicloEscolar.Id idCicloEscolar, Grado.Id idGrado, Curso.Id idCurso FROM CicloEscolar
+		INNER JOIN AsignacionCAT ON CicloEscolar.Id = AsignacionCAT.CicloEscolar_Id
+		INNER JOIN Grado ON AsignacionCAT.Grado_Id = Grado.Id
+		INNER JOIN Curso ON AsignacionCAT.Curso_Id = Curso.Id
+		WHERE CicloEscolar_Id = NEW.CicloEscolar_Id AND Grado_Id = NEW.Grado_Id;
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET vUltimaFila = 1;
+	
+	OPEN cCursos;
+	
+	FETCH cCursos INTO vIdCiclo, vIdGrado, vIdCurso;
+	WHILE NOT vUltimaFila DO
+		-- Creación de la Nota para el i-ésimo curso
+		INSERT INTO Notas(AsignacionEST_Id, Estudiante_Id, Curso_Id) VALUES(NEW.Id, NEW.Estudiante_Id, vIdCurso);
+		FETCH cCursos INTO vIdCiclo, vIdGrado, vIdCurso;
+	END WHILE;
+	
+	CLOSE cCursos;
+	
+	-- Ahora aumento el contador de Cantidad de Estudiantes en CicloEscolar
+	UPDATE CicloEscolar SET CantidadEstudiantes = CantidadEstudiantes + 1 WHERE Id = NEW.CicloEscolar_Id;
+	
+END //
+
+/* PROCEDIMIENTO para obtener el Usuario que concuerde con los parámetros */
+DROP PROCEDURE IF EXISTS obtenerUsuario //
+CREATE PROCEDURE obtenerUsuario (_usuario VARCHAR(15), _contrasenia VARCHAR(25))
+BEGIN
+	DECLARE vContraseniaEncript VARCHAR(25);
+	SELECT VALOR INTO vContraseniaEncript FROM variables_globales.variables_globales WHERE NOMBRE = 'InebXela_Password';
+	SELECT * FROM Usuarios WHERE NombreUsuario = _usuario AND Contrasenia = AES_ENCRYPT(_contrasenia, vContraseniaEncript);
+END //
+
+/* FUNCION para modificar una cuenta de Usuario */
+DROP FUNCTION IF EXISTS modificarUsuario //
+CREATE FUNCTION modificarUsuario(_id INT, _anteriorContrasenia VARCHAR(25), _nuevaContrasenia VARCHAR(10), _cambiarNombre INT, _nuevoNombre VARCHAR(15)) RETURNS INT
+BEGIN
+	DECLARE vExisteRegistro INT DEFAULT 1;
+	DECLARE vContraseniaEncript VARCHAR(25);
+	DECLARE vResultado INT DEFAULT 1;
+	DECLARE vContraseniaActual VARCHAR(50);
+	DECLARE cUsuario CURSOR FOR SELECT Contrasenia FROM Usuarios WHERE Id = _id;
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET vExisteRegistro = 0;
+	
+	OPEN cUsuario;
+	SELECT VALOR INTO vContraseniaEncript FROM variables_globales.variables_globales WHERE NOMBRE = 'InebXela_Password';
+	
+	FETCH cUsuario INTO vContraseniaActual;
+	IF (vExisteRegistro = 1) THEN
+		-- Comparo si las contraseñas son iguales
+		IF (vContraseniaActual = AES_ENCRYPT(_anteriorContrasenia, vContraseniaEncript)) THEN
+			-- Procedo a la actualización del registro
+			IF (_cambiarNombre = 1) THEN
+				UPDATE Usuarios SET NombreUsuario = _nuevoNombre, Contrasenia = AES_ENCRYPT(_nuevaContrasenia, vContraseniaEncript) WHERE Id = _id;
+			ELSE
+				UPDATE Usuarios SET Contrasenia = AES_ENCRYPT(_nuevaContrasenia, vContraseniaEncript) WHERE Id = _id;
+			END IF;
+		ELSE
+			SET vResultado = 0;
+		END IF;
+	ELSE
+		SET vResultado = -1;
+	END IF;
+	-- Los valores de retorno para vResultado son:
+	--		-1: Si el Id del registro que se quiere modificar (_id) no existe en la tabla Usuarios
+	--		 0: Si la Contrasenia del registro que se quiere modificar no coincide con _anteriorContrasenia
+	-- 	 1: Si el cambio se realiza con éxito
+	RETURN vResultado;
+END //
+
+DELIMITER ;
