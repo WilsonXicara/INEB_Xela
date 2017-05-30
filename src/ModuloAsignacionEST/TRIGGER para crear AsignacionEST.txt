@@ -1,12 +1,30 @@
 DELIMITER //
 
-/* TRIGGER encargado de encriptar las contraseñas al crear un nuevo Usuario */
-DROP TRIGGER IF EXISTS nuevoUsuario //
-CREATE TRIGGER nuevoUsuario BEFORE INSERT ON Usuarios FOR EACH ROW
+/* FUNCION encargada de crear un Nuevo Usuario, siempre que aún no exista. Encripta la contraseña. */
+DROP FUNCTION IF EXISTS nuevoUsuario //
+CREATE FUNCTION nuevoUsuario(_nombreUsuario VARCHAR(25), _contraseniaUsuario VARCHAR(25), _tipo INT, _catedraticoId INT, _administradorId INT) RETURNS INT
 BEGIN
 	DECLARE vContraseniaEncript VARCHAR(25);
+	DECLARE vContExistentes INT;
+	DECLARE vUsuarioCreado INT DEFAULT -1;
 	SELECT VALOR INTO vContraseniaEncript FROM variables_globales.variables_globales WHERE NOMBRE = 'InebXela_Password';
-	SET NEW.Contrasenia = AES_ENCRYPT(NEW.Contrasenia, vContraseniaEncript);
+	-- Debido a que la comparación de cadenas es insensible a mayúsculas y minúsculas, una opción es encriptar tanto el
+	-- nombre del Nuevo Usuario y los existentes y comparar dicho valor encriptado (que para este caso, es sensible en la comparación)
+	-- Obtengo la cantidad de registros que coincidan (dicho valor puede ser 0 o 1)
+	SELECT COUNT(*) INTO vContExistentes FROM Usuarios WHERE AES_ENCRYPT(NombreUsuario, vContraseniaEncript) = AES_ENCRYPT(_nombreUsuario, vContraseniaEncript);
+	IF (vContExistentes = 0) THEN
+	-- Si la cuenta es para un Administrador, _administradorId deber ser != 0; en caso contrario _catedraticoId debe ser != 0
+		IF (_administradorId != 0) THEN	-- Se creará una cuenta para un Administrador
+			INSERT INTO Usuarios(NombreUsuario, Contrasenia, Tipo, Administrador_Id) VALUES
+				(_nombreUsuario, AES_ENCRYPT(_contraseniaUsuario, vContraseniaEncript), _tipo, _administradorId);
+		ELSE	-- Se creará una cuenta para un Catedrático
+			INSERT INTO Usuarios(NombreUsuario, Contrasenia, Tipo, Catedratico_Id) VALUES
+				(_nombreUsuario, AES_ENCRYPT(_contraseniaUsuario, vContraseniaEncript), _tipo, _catedraticoId);
+		END IF;
+		SET vUsuarioCreado = 1;	-- En cualquier caso, se crea la cuenta de Usuario
+	END IF;
+	RETURN vUsuarioCreado;
+	-- Retorna 1 si el Usuario es creado, y -1 en caso de que ya exista uno con el mismo nombre
 END //
 
 /* TRIGGER encargado de crear las Notas de cada Curso correspondiente al Ciclo Escolar y Grado al que se asigna el Estudiante */
@@ -47,7 +65,24 @@ CREATE PROCEDURE obtenerUsuario (_usuario VARCHAR(15), _contrasenia VARCHAR(25))
 BEGIN
 	DECLARE vContraseniaEncript VARCHAR(25);
 	SELECT VALOR INTO vContraseniaEncript FROM variables_globales.variables_globales WHERE NOMBRE = 'InebXela_Password';
-	SELECT * FROM Usuarios WHERE NombreUsuario = _usuario AND Contrasenia = AES_ENCRYPT(_contrasenia, vContraseniaEncript);
+	SELECT * FROM Usuarios WHERE AES_ENCRYPT(NombreUsuario, vContraseniaEncript) = AES_ENCRYPT(_usuario, vContraseniaEncript) AND Contrasenia = AES_ENCRYPT(_contrasenia, vContraseniaEncript);
+END //
+
+/* PROCEDIMIENTO para obtener la información de todas las cuentas de Usuario, con la contraseña desencriptada */
+DROP PROCEDURE IF EXISTS obtenerListaUsuarios //
+CREATE PROCEDURE obtenerListaUsuarios(_usuarioAdmin VARCHAR(25), _contraseniaAdmin VARCHAR(25))
+BEGIN
+	DECLARE vExisteRegistro INT;
+	DECLARE vContraseniaEncript VARCHAR(25);
+	DECLARE vIdAdmin INT;
+	SELECT VALOR INTO vContraseniaEncript FROM variables_globales.variables_globales WHERE NOMBRE = 'InebXela_Password';
+	SELECT COUNT(Id) INTO vExisteRegistro FROM Usuarios WHERE AES_ENCRYPT(NombreUsuario, vContraseniaEncript) = AES_ENCRYPT(_usuarioAdmin, vContraseniaEncript) AND Contrasenia = AES_ENCRYPT(_contraseniaAdmin, vContraseniaEncript) AND Tipo = 1;
+	
+	IF (vExisteRegistro != 0) THEN	-- Si el Usuario o Contraseña del Administrador es correcto.
+		SELECT Id, NombreUsuario, AES_DECRYPT(Contrasenia, vContraseniaEncript) Contrasenia, Tipo, Catedratico_Id, Administrador_Id FROM Usuarios;
+	ELSE	-- Si el Usuario o Contraseña es incorrecto: realizo una consulta que nunca me devolverá registro alguno
+		SELECT Id, NombreUsuario, AES_DECRYPT(Contrasenia, vContraseniaEncript) Contrasenia, Tipo, Catedratico_Id, Administrador_Id FROM Usuarios WHERE Tipo = 5;
+	END IF;
 END //
 
 /* FUNCION para modificar una cuenta de Usuario */

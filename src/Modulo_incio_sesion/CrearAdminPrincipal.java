@@ -502,11 +502,11 @@ public class CrearAdminPrincipal extends javax.swing.JDialog {
                 instruccion+= ""+(admin_municipio.getSelectedIndex()+1)+")";
                 conexion.prepareStatement(instruccion).executeUpdate();  // Creación del Registro en la Base de Datos
                 // Creación del registro en la Tabla Usuarios
-                instruccion = "INSERT INTO Usuarios(NombreUsuario, Contrasenia, Tipo, Administrador_Id) VALUES(";
-                instruccion+= "'"+usuario_nombre.getText()+"', ";
-                instruccion+= "'"+String.valueOf(usuario_contraseña.getPassword(), 0, usuario_contraseña.getPassword().length)+"', ";
-                instruccion+= "1, 1)";
-                conexion.prepareStatement(instruccion).executeUpdate();  // Creación del Registro en la Base de Datos
+                // La ventaja es que, el llamado a la función dentro de la Base de Datos devoleverá 1 (el registro fue creado)
+                // debido a que la BD está vacía (ningún registro tiene el mismo Nombre de Usuario). No es necesario evaluar el valor de retorno
+                instruccion = "SELECT nuevoUsuario('"+usuario_nombre.getText()+"', ";
+                instruccion+= "'"+String.valueOf(usuario_contraseña.getPassword())+"', 1, 0, 1)";
+                conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY).executeQuery(instruccion);
                 // Creación de los registros de los Números Telefónicos
                 if (admin_telefono.getText().length() != 0)
                     conexion.prepareStatement("INSERT INTO Telefono(Telefono, Administrador_Id) VALUES('"+admin_telefono.getText()+"', 1)").executeUpdate();
@@ -514,7 +514,7 @@ public class CrearAdminPrincipal extends javax.swing.JDialog {
                     conexion.prepareStatement("INSERT INTO Telefono(Telefono, Administrador_Id) VALUES('"+admin_celular.getText()+"', 1)").executeUpdate();
 
                 administradorPrincipalCreado = true;
-                JOptionPane.showMessageDialog(this, "Usuario creado.\n\nBienvenido Administrador.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Usuario creado.\n\nBienvenid"+(admin_sexo_masculino.isSelected()?"o":"a")+" "+admin_nombres.getText().split(" ")[0], "Información", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose(); // Cierro la ventana
             }
         } catch (ExcepcionDatosIncorrectos ex) {
