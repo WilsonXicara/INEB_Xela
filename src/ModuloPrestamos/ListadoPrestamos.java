@@ -25,6 +25,7 @@ public class ListadoPrestamos extends javax.swing.JFrame {
     DefaultTableModel modelo;
     Connection conexcion;
     ResultSet Packs = null;
+    ResultSet Ciclos = null;
     public ListadoPrestamos() {
         initComponents();
     }
@@ -35,20 +36,22 @@ public class ListadoPrestamos extends javax.swing.JFrame {
         conexcion = conec;
         modelo = (DefaultTableModel) Listado.getModel();
         try {
-            
-            //Se agregaran todos los valores al principio
-            Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            Packs = sentencia.executeQuery("SELECT L.Codigo, E.CodigoPersonal, E.Nombres, E.Apellidos, P.CodigoBoleta, P.FechaPago  FROM prestamo P INNER JOIN estudiante E ON P.Estudiante_Id = E.Id INNER JOIN paquetelibro L ON P.PaqueteLibro_Id = L.Id;");
-            if(Packs.next() == false){
-                //No hay paquetes
-                modelo.addRow(new Object[]{"No existen paquetes creados"});
+            /*
+                Se agregaran datos al combobox
+            */
+            Statement senten = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            Ciclos = senten.executeQuery("SELECT * FROM cicloescolar;");
+            if(Ciclos.next()!=false){
+                Ciclos.previous();
+                while(Ciclos.next()!=false){
+                    Ciclo.addItem(Ciclos.getString(2));
+                }
+                Ciclos.first();
             }
             else{
-                Packs.previous();
-                while(Packs.next() != false){
-                    modelo.addRow(new Object[]{Packs.getString(1),Packs.getString(2),Packs.getString(3),Packs.getString(4),Packs.getString(5),Packs.getString(6)});
-                }
+                JOptionPane.showMessageDialog(null, "¡No existen Ciclos Escolares Creados!");
             }
+            
         } catch (SQLException ex) {
             Logger.getLogger(ListadoPaquetes.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -64,13 +67,11 @@ public class ListadoPrestamos extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        CodigoEstudiante = new javax.swing.JTextField();
-        jRadioButton3 = new javax.swing.JRadioButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         Listado = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        Ciclo = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -82,27 +83,6 @@ public class ListadoPrestamos extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Listado de Prestamos de Libros");
-
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel2.setText("Filtro por:");
-
-        jRadioButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jRadioButton1.setText("Codigo Estudiante");
-        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton1ActionPerformed(evt);
-            }
-        });
-
-        CodigoEstudiante.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        jRadioButton3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jRadioButton3.setText("Todo");
-        jRadioButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton3ActionPerformed(evt);
-            }
-        });
 
         Listado.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         Listado.setModel(new javax.swing.table.DefaultTableModel(
@@ -122,123 +102,97 @@ public class ListadoPrestamos extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel3.setText("Ciclo Escolar");
+
+        Ciclo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        Ciclo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CicloActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
+                .addGap(54, 54, 54)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 908, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(88, 88, 88)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jRadioButton3)
-                            .addComponent(jRadioButton1))
-                        .addGap(50, 50, 50)
-                        .addComponent(CodigoEstudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(54, 54, 54)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 908, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2)
-                            .addComponent(jButton1))))
-                .addContainerGap(38, Short.MAX_VALUE))
+                        .addComponent(jLabel3)
+                        .addGap(33, 33, 33)
+                        .addComponent(Ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(28, 28, 28)
                 .addComponent(jLabel1)
-                .addGap(19, 19, 19)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton3)
-                .addGap(10, 10, 10)
+                .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(CodigoEstudiante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jRadioButton1))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(34, 34, 34)
+                    .addComponent(jLabel3)
+                    .addComponent(Ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(27, 27, 27)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 495, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28)
                 .addComponent(jButton1)
-                .addContainerGap(39, Short.MAX_VALUE))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
-        // TODO add your handling code here:
-        String Cod, prestado = "";
-        int filas = Listado.getRowCount();
-        ResultSet Packs2 = null;
-        if(CodigoEstudiante.getText().equals("")){
-            JOptionPane.showMessageDialog(null, "¡El campo está vacio!");
-        }
-        else{
-            Cod = CodigoEstudiante.getText();
-            Statement sentencia;
-            try {
-                sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                //revisar la consulta
-                Packs2 = sentencia.executeQuery("SELECT L.Codigo, E.CodigoPersonal, E.Nombres, E.Apellidos, P.CodigoBoleta, P.FechaPago  FROM prestamo P INNER JOIN estudiante E ON P.Estudiante_Id = E.Id INNER JOIN paquetelibro L ON P.PaqueteLibro_Id = L.Id WHERE E.CodigoPersonal = '" + Cod + "';");
-                if(Packs2.next() == false){
-                //No existen prestamos con ese codigo
-                JOptionPane.showMessageDialog(null, "¡No hay prestamos realizados con el codigo !" + Cod);
-                }
-                else{
-                    //eliminar las filas de las tablas
-                    for (int i = 0;filas>i; i++) {
-                        modelo.removeRow(0);
-                    }
-                    Packs2.previous();
-                    while(Packs2.next() != false){
-                        modelo.addRow(new Object[]{Packs.getString(1),Packs.getString(2),Packs.getString(3),Packs.getString(4),Packs.getString(5),Packs.getString(6)});
-                    }
-                }
-            } catch (SQLException ex) {
-                Logger.getLogger(ListadoPaquetes.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-            //Se mostrará todo lo que sea con ese codigo
-        }
-    }//GEN-LAST:event_jRadioButton1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
-        // TODO add your handling code here:
-        int filas = Listado.getRowCount();
-        for (int i = 0;filas>i; i++) {
-            modelo.removeRow(0);
-        }
-        try {
-            
-            //Se agregaran todos los valores al principio
-            Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            Packs = sentencia.executeQuery("SELECT L.Codigo, E.CodigoPersonal, E.Nombres, E.Apellidos, P.CodigoBoleta, P.FechaPago  FROM prestamo P INNER JOIN estudiante E ON P.Estudiante_Id = E.Id INNER JOIN paquetelibro L ON P.PaqueteLibro_Id = L.Id;");
-            if(Packs.next() == false){
-                //No hay paquetes
-                modelo.addRow(new Object[]{"No existen paquetes creados"});
-            }
-            else{
-                Packs.previous();
-                while(Packs.next() != false){
-                    modelo.addRow(new Object[]{Packs.getString(1),Packs.getString(2),Packs.getString(3),Packs.getString(4),Packs.getString(5),Packs.getString(6)});
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ListadoPaquetes.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_jRadioButton3ActionPerformed
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
         this.dispose();
     }//GEN-LAST:event_formWindowClosing
+
+    private void CicloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CicloActionPerformed
+        try {
+            // TODO add your handling code here:
+            //Se agregaran todos los valores al principio
+            modelo.setRowCount(0);
+            int cont = 0;
+            if(Ciclo.getSelectedIndex() != -1){
+                cont = Ciclo.getSelectedIndex();
+                Ciclos.first();
+                for(int conta = 0; conta < cont; conta++){
+                    try {
+                        Ciclos.next();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ModuloPrestamo.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+            Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            Packs = sentencia.executeQuery("SELECT L.Codigo,E.CodigoPersonal,E.Nombres,E.Apellidos,P.CodigoBoleta,P.FechaPago FROM cicloescolar C INNER JOIN asignacionest A ON  C.Id=A.CicloEscolar_Id \n" +
+                                            "INNER JOIN estudiante E ON E.Id=A.Estudiante_Id\n" +
+                                            "INNER JOIN prestamo P ON A.Estudiante_Id=P.Estudiante_Id \n" +
+                                            "INNER JOIN paquetelibro L ON L.Id=P.PaqueteLibro_Id WHERE C.Anio='"+ Ciclos.getString(2)+"';");
+            if(Packs.next() == false){
+                //No hay paquetes
+                modelo.addRow(new Object[]{"No existen prestamos en este ciclo"});
+            }
+            else{
+                Packs.previous();
+                while(Packs.next() != false){
+                    modelo.addRow(new Object[]{Packs.getString(1),Packs.getString(2),Packs.getString(3) + " " + Packs.getString(4),Packs.getString(5),Packs.getString(6)});
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ListadoPrestamos.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_CicloActionPerformed
 
     /**
      * @param args the command line arguments
@@ -276,13 +230,11 @@ public class ListadoPrestamos extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField CodigoEstudiante;
+    private javax.swing.JComboBox<String> Ciclo;
     private javax.swing.JTable Listado;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton3;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }
