@@ -285,7 +285,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         );
 
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(30, 70, 853, 189);
+        jPanel1.setBounds(30, 70, 855, 195);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         getContentPane().add(jLabel2);
