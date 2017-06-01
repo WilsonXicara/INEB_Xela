@@ -122,7 +122,7 @@ public class ConectarBD extends javax.swing.JDialog {
                 JOptionPane.showMessageDialog(this, "Error al intentar obtener la Dirección IP del servidor\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 //                Logger.getLogger(ConectarBD.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ClassNotFoundException | SQLException ex) {
-                JOptionPane.showMessageDialog(this, "No se puede conectar con la Base de Datos\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No se puede conectar con la Base de Datos.\nAl parecer ha cambiado la Dirección IP del servidor.\nConsulte con el Administrador\n\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 //                Logger.getLogger(ConectarBD.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
