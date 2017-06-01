@@ -497,11 +497,17 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                         Logger.getLogger(ModuloPrestamo.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-                DatosEst(Ciclos.getString(2));
+                if(Ciclos.getString(3).equals("1")){
+                    DatosEst(Ciclos.getString(2));
+                    jButton1.setEnabled(true);
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "El Ciclo aún no está Listo");
+                }
             } catch (SQLException ex) {
                 Logger.getLogger(ModuloPrestamo.class.getName()).log(Level.SEVERE, null, ex);
             }
-            jButton1.setEnabled(true);
+            
         }
     }//GEN-LAST:event_CicloActionPerformed
 
