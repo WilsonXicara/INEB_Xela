@@ -115,8 +115,11 @@ public class Crear_Ciclo_Escolar_1 extends javax.swing.JDialog {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
             String ciclo = Nombre.getText().trim();
+            Statement b = base.createStatement();
+            ResultSet consultab = b.executeQuery("SELECT Id FROM cicloescolar WHERE cicloescolar.Anio = '"+ciclo+"';");
+            if(!consultab.next()){
             String ciclo_nuevo;
-            String instruccion_asignacion = "INSERT INTO cicloescolar(Anio) VALUES ('"+ciclo+"');";
+            String instruccion_asignacion = "INSERT INTO cicloescolar(Anio,Listo) VALUES ('"+ciclo+"',0);";
             PreparedStatement pst = base.prepareStatement(instruccion_asignacion);
             pst.executeUpdate();
              //Obtengo el Id del nuevo ciclo;
@@ -141,6 +144,10 @@ public class Crear_Ciclo_Escolar_1 extends javax.swing.JDialog {
             else{
                 this.dispose();
                 
+            }
+            }else{
+                JOptionPane.showMessageDialog(this, "Ya existe un ciclo con el mismo nombre", "ERROR", JOptionPane.ERROR_MESSAGE, null);
+   
             }
         } catch (SQLException ex) {
             Logger.getLogger(Crear_Ciclo_Escolar_1.class.getName()).log(Level.SEVERE, null, ex);

@@ -8,6 +8,8 @@ package Modulo_Ciclo_Escolar;
 import Tipos_tablas.No_editable;
 import java.awt.Frame;
 import java.awt.event.ItemEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,6 +31,8 @@ import javax.swing.table.DefaultTableModel;
 public class Ciclo_Escolar extends javax.swing.JDialog {
 
     Connection base;
+    int cambio = 0;
+    int cambio2 = 0;
     //Contienen informacion del ciclo actual
     ArrayList<String>  ID ;
     //Contienen informacion de los grados asociados al ciclo dentro de la base
@@ -43,7 +47,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
     ArrayList<String> seccion_agregados;
     //Contiene la informacion de los grados que se desean eliminar de la base
     ArrayList<String> Id_grados_borrados;
-    ArrayList<String> nombre_grados_borrados;
+    ArrayList<String> nombre_grados_borrados ;
     
     
     //Contiene la informacion de los cursos que se desean agregar a la base
@@ -84,6 +88,65 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         año = Integer.toString(fecha.get(Calendar.YEAR));
         Cargar_Datos();
         
+        this.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent we) {
+           }
+
+            @Override
+            public void windowClosing(WindowEvent we) {
+                int tamaño_cursos = cursos_agregados.size();
+        int tamaño_grados = grados_agregados.size();
+        int tamaño_cursos_borrados = id_cursos_borrados.size();
+        int tamaño_grados_borrados = nombre_grados_borrados.size();
+        if(tamaño_cursos > 0 || tamaño_grados > 0 || tamaño_cursos_borrados > 0 || tamaño_grados_borrados > 0){
+            String[] opciones = new String[2];
+            opciones[0] = "SI";
+            opciones[1] = "NO";
+            //Pregunto si desea guardar los cursos agregados
+            int eleccion = JOptionPane.showOptionDialog(null, "Desea guardar los cambios realizados", "Cambios", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+            if(eleccion == JOptionPane.YES_OPTION) {
+                Guardar_cambios_grados();
+                Guardar_cambios_cursos();
+                
+                cursos_agregados = new ArrayList<String>();
+                id_cursos_borrados = new ArrayList<String>();
+                nombre_cursos_borrados = new ArrayList<String>();
+                
+                Id_grados_borrados = new ArrayList<>();
+                nombre_grados_borrados = new ArrayList<>();
+                
+                grados_agregados = new ArrayList<>();
+                seccion_agregados = new ArrayList<>();
+                nombre_grados_agregados = new ArrayList<>();
+                
+                Cambio_ciclo();                
+            }
+           
+        }
+           }
+
+            @Override
+            public void windowClosed(WindowEvent we) {
+           }
+
+            @Override
+            public void windowIconified(WindowEvent we) {
+           }
+
+            @Override
+            public void windowDeiconified(WindowEvent we) {
+            }
+
+            @Override
+            public void windowActivated(WindowEvent we) {
+           }
+
+            @Override
+            public void windowDeactivated(WindowEvent we) {
+           }
+        });
+        
     }
 
     /**
@@ -117,9 +180,11 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         Cursos_asignados = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        asignaciones = new javax.swing.JButton();
+        guardar_cambios = new javax.swing.JButton();
+        exportar_datos = new javax.swing.JButton();
+        ciclo_listo = new javax.swing.JRadioButton();
+        cerrado = new javax.swing.JRadioButton();
         jMenuBar2 = new javax.swing.JMenuBar();
         Menu_crear = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -127,6 +192,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         jMenuItem4.setText("jMenuItem4");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Ciclo Escolar");
 
         jLabel1.setText("Ciclo Escolar");
 
@@ -307,10 +373,10 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
 
         jScrollPane1.setViewportView(Cursos_asignados);
 
-        jButton1.setText("Asignaciones");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        asignaciones.setText("Asignaciones");
+        asignaciones.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                asignacionesActionPerformed(evt);
             }
         });
 
@@ -324,7 +390,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(asignaciones)
                 .addGap(105, 105, 105))
         );
         jPanel3Layout.setVerticalGroup(
@@ -332,21 +398,40 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
+                .addComponent(asignaciones)
                 .addContainerGap())
         );
 
-        jButton6.setText("Guardar Cambios");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        guardar_cambios.setText("Guardar Cambios");
+        guardar_cambios.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                guardar_cambiosActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Exportar Datos");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        exportar_datos.setText("Exportar Datos");
+        exportar_datos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                exportar_datosActionPerformed(evt);
+            }
+        });
+
+        ciclo_listo.setText("Ciclo Listo");
+        ciclo_listo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                ciclo_listoItemStateChanged(evt);
+            }
+        });
+        ciclo_listo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ciclo_listoActionPerformed(evt);
+            }
+        });
+
+        cerrado.setText("Cerrar Ciclo");
+        cerrado.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cerradoItemStateChanged(evt);
             }
         });
 
@@ -369,23 +454,31 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(229, 229, 229)
+                .addGap(22, 22, 22)
+                .addComponent(ciclo_listo)
+                .addGap(3, 3, 3)
+                .addComponent(cerrado)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(129, 129, 129)
+                        .addComponent(guardar_cambios)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton2)
-                .addGap(38, 38, 38)
-                .addComponent(jButton6)
-                .addGap(24, 24, 24))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(exportar_datos)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -394,13 +487,17 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton6)
-                    .addComponent(jButton2))
+                    .addComponent(ciclo_listo)
+                    .addComponent(cerrado))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(guardar_cambios)
+                    .addComponent(exportar_datos))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -481,7 +578,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
             int grado = Grados.getSelectedRow();
             pos_grados = grado;
             System.out.println(grado);
-            String aux  = Grados.getValueAt(pos_grados, 0) +" "+Grados.getValueAt(pos_grados, 1);
+            String aux  = Grados.getValueAt(pos_grados, 1) +" "+Grados.getValueAt(pos_grados, 2);
             if(Nombre_grado.contains(aux)){
                int a = Nombre_grado.indexOf(aux);
             Tabla_cursos_asignados(Id_grado.get(a));
@@ -493,27 +590,29 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
     }//GEN-LAST:event_GradosMouseClicked
 
     private void agregar_cursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregar_cursoActionPerformed
-        String[] curso = new String[1];
-        curso[0] = Tx_Nombre_curso.getText().trim();
-        if (curso[0].length() > 0) {
-            if(nombre_cursos_borrados.contains(curso[0])){
-                if(!Nombre_curso.contains(curso[0])){
+        int filas = Cursos.getRowCount() + 1;
+        String[] curso = new String[2];
+        curso[0] = Integer.toString(filas);
+        curso[1] = Tx_Nombre_curso.getText().trim();
+        if (curso[1].length() > 0) {
+            if(nombre_cursos_borrados.contains(curso[1])){
+                if(!Nombre_curso.contains(curso[1])){
                     DefaultTableModel aux = (DefaultTableModel) Cursos.getModel();
                     aux.addRow(curso);
-                    cursos_agregados.add(curso[0]);
+                    cursos_agregados.add(curso[1]);
                 }else{
                     DefaultTableModel aux = (DefaultTableModel) Cursos.getModel();
                     aux.addRow(curso); 
                 }
-                int aux = nombre_cursos_borrados.indexOf(curso[0]);
+                int aux = nombre_cursos_borrados.indexOf(curso[1]);
                 id_cursos_borrados.remove(aux);
-                nombre_cursos_borrados.remove(curso[0]);
+                nombre_cursos_borrados.remove(curso[1]);
             }
-            else if(!Nombre_curso.contains(curso[0])){
-                if(!cursos_agregados.contains(curso[0])){
+            else if(!Nombre_curso.contains(curso[1])){
+                if(!cursos_agregados.contains(curso[1])){
                 DefaultTableModel aux = (DefaultTableModel) Cursos.getModel();
                 aux.addRow(curso);
-                cursos_agregados.add(curso[0]);
+                cursos_agregados.add(curso[1]);
                         
                 }else{
                     JOptionPane.showMessageDialog(this, "El curso ya ha sido agregado", "ERROR", JOptionPane.ERROR_MESSAGE, null);
@@ -526,15 +625,17 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         else{
             JOptionPane.showMessageDialog(this, "Debe escribir algo en la caja Nombre", "ERROR", JOptionPane.ERROR_MESSAGE, null);
         }
-              
+         Tx_Nombre_curso.setText("");
     }//GEN-LAST:event_agregar_cursoActionPerformed
 
     private void agregar_gradoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_agregar_gradoActionPerformed
         String Nombre = Tx_Nombre_grado.getText().trim();
         String Seccion = Tx_seccion.getText().trim();
-        String[] fila = new String[2];
-        fila[0] = Nombre;
-        fila[1] = Seccion;
+        int filas = Grados.getRowCount()+1;
+        String[] fila = new String[3];
+        fila[0] = Integer.toString(filas);
+        fila[1] = Nombre;
+        fila[2] = Seccion;
         if(Nombre.length()>0 && Seccion.length()>0){
             
             if(nombre_grados_borrados.contains(Nombre+" "+Seccion)){
@@ -568,19 +669,25 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         }else{
             JOptionPane.showMessageDialog(this, "Debe llenar todas las casillas", "ERROR", JOptionPane.ERROR_MESSAGE, null);
         }
-        
+        Tx_Nombre_grado.setText("");
+        Tx_seccion.setText("");
     }//GEN-LAST:event_agregar_gradoActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        String[] opciones = new String[2];
+    private void guardar_cambiosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardar_cambiosActionPerformed
+        int tamaño_cursos = cursos_agregados.size();
+        int tamaño_grados = grados_agregados.size();
+        int tamaño_cursos_borrados = id_cursos_borrados.size();
+        int tamaño_grados_borrados = nombre_grados_borrados.size();
+        if(tamaño_cursos > 0 || tamaño_grados > 0 || tamaño_cursos_borrados > 0 || tamaño_grados_borrados > 0){
+            String[] opciones = new String[2];
             opciones[0] = "SI";
             opciones[1] = "NO";
             //Pregunto si desea guardar los cursos agregados
             int eleccion = JOptionPane.showOptionDialog(null, "Desea guardar los cambios realizados", "Cambios", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
             if(eleccion == JOptionPane.YES_OPTION) {
-                Guardar_cambios_cursos();
                 Guardar_cambios_grados();
-                posicion = ciclo.getSelectedIndex();
+                Guardar_cambios_cursos();
+                
                 cursos_agregados = new ArrayList<String>();
                 id_cursos_borrados = new ArrayList<String>();
                 nombre_cursos_borrados = new ArrayList<String>();
@@ -592,13 +699,15 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
                 seccion_agregados = new ArrayList<>();
                 nombre_grados_agregados = new ArrayList<>();
                 
-                Cambio_ciclo();
+                Cambio_ciclo();                
             }
-    }//GEN-LAST:event_jButton6ActionPerformed
+           
+        }
+    }//GEN-LAST:event_guardar_cambiosActionPerformed
 
     private void eliminar_cursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminar_cursoActionPerformed
         if(pos_cursos != -1){
-            String curso = (String) Cursos.getValueAt(pos_cursos, 0);
+            String curso = (String) Cursos.getValueAt(pos_cursos, 1);
             if(Nombre_curso.contains(curso)){
                 String Id = Id_curso.get(Nombre_curso.indexOf(curso));
                 id_cursos_borrados.add(Id);
@@ -614,6 +723,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         }else{
              JOptionPane.showMessageDialog(this, "Debe selecionar una fila", "ERROR", JOptionPane.ERROR_MESSAGE, null);
         }
+        
     }//GEN-LAST:event_eliminar_cursoActionPerformed
 
     private void CursosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CursosMouseClicked
@@ -623,8 +733,8 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
 
     private void eliminar_gradoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminar_gradoActionPerformed
         if(pos_grados != -1){
-            String Grado = (String) Grados.getValueAt(pos_grados, 0);
-            String seccion = (String) Grados.getValueAt(pos_grados, 1);
+            String Grado = (String) Grados.getValueAt(pos_grados, 1);
+            String seccion = (String) Grados.getValueAt(pos_grados, 2);
             if(Nombre_grado.contains(Grado+" "+seccion)){
                 String Id  = Id_grado.get(Nombre_grado.indexOf(Grado+" "+seccion));
                 Id_grados_borrados.add(Id);
@@ -643,7 +753,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_eliminar_gradoActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void exportar_datosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportar_datosActionPerformed
         int tamaño_cursos = cursos_agregados.size();
         int tamaño_grados = grados_agregados.size();
         int tamaño_cursos_borrados = id_cursos_borrados.size();
@@ -694,9 +804,9 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         }
         
         
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_exportar_datosActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void asignacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_asignacionesActionPerformed
          int tamaño_cursos = cursos_agregados.size();
         int tamaño_grados = grados_agregados.size();
         int tamaño_cursos_borrados = id_cursos_borrados.size();
@@ -757,7 +867,78 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
                 }
             Cambio_ciclo();
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_asignacionesActionPerformed
+
+    private void ciclo_listoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ciclo_listoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ciclo_listoActionPerformed
+
+    private void ciclo_listoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ciclo_listoItemStateChanged
+        if(evt.getStateChange() == ItemEvent.SELECTED && cambio == 0){
+            String[] opciones = new String[2];
+            opciones[0] = "Continuar";
+            opciones[1] = "Cancelar";
+            
+            //Pregunto si desea copiar los cursos y grados de un ciclo anterior
+            int eleccion = JOptionPane.showOptionDialog(null, "Al marcar como listo ya no podra hacer cambios al ciclo \n no podra agregar o eliminar cursos y grados.\n Ya no podra realizar asignaciones", "Advertencia si ", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, opciones, opciones[0]);
+            if(eleccion == JOptionPane.YES_OPTION){
+                String instruccion_grado = "UPDATE CicloEscolar SET cicloescolar.Listo = 1 WHERE cicloescolar.Id ="+ID.get(posicion)+";";
+                try {
+                    PreparedStatement pst = base.prepareStatement(instruccion_grado);
+                    pst.executeUpdate();
+                    cambio = 1;
+                    agregar_curso.setEnabled(false);
+                    eliminar_curso.setEnabled(false);
+                    agregar_grado.setEnabled(false);
+                    eliminar_grado.setEnabled(false);
+                    asignaciones.setEnabled(false);
+                    guardar_cambios.setEnabled(false);
+                    exportar_datos.setEnabled(false);
+                    ciclo_listo.setEnabled(false);
+                    Tx_Nombre_curso.setEnabled(false);
+                    Tx_Nombre_grado.setEnabled(false);
+                    Tx_seccion.setEnabled(false);
+                    ciclo_listo.setSelected(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_ciclo_listoItemStateChanged
+
+    private void cerradoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cerradoItemStateChanged
+       if(evt.getStateChange() == ItemEvent.SELECTED && cambio2 == 0){
+            String[] opciones = new String[2];
+            opciones[0] = "Continuar";
+            opciones[1] = "Cancelar";
+            
+            //Pregunto si desea copiar los cursos y grados de un ciclo anterior
+            int eleccion = JOptionPane.showOptionDialog(null, "Al marcar como cerrad ya no podra hacer cambios a ciclo \n no podra asignar notas a los cursos.\n Ya no podra realizar cambios a los grados.", "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, opciones, opciones[0]);
+            if(eleccion == JOptionPane.YES_OPTION){
+                String instruccion_grado = "UPDATE CicloEscolar SET cicloescolar.Cerrado = 1 WHERE cicloescolar.Id ="+ID.get(posicion)+";";
+                try {
+                    PreparedStatement pst = base.prepareStatement(instruccion_grado);
+                    pst.executeUpdate();
+                    cambio = 1;
+                    agregar_curso.setEnabled(false);
+                    eliminar_curso.setEnabled(false);
+                    agregar_grado.setEnabled(false);
+                    eliminar_grado.setEnabled(false);
+                    asignaciones.setEnabled(false);
+                    guardar_cambios.setEnabled(false);
+                    exportar_datos.setEnabled(false);
+                    ciclo_listo.setEnabled(false);
+                    Tx_Nombre_curso.setEnabled(false);
+                    Tx_Nombre_grado.setEnabled(false);
+                    Tx_seccion.setEnabled(false);
+                    cerrado.setSelected(true);
+                    cerrado.setEnabled(false);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Ciclo_Escolar.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_cerradoItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -821,20 +1002,25 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         No_editable tabla = new No_editable();
         Id_grado= new ArrayList<String>();
         Nombre_grado = new ArrayList<String>();
+        int cont = 1;
+        tabla.addColumn("No");
         tabla.addColumn("Nombre");
         tabla.addColumn("Sección");
-        String[] fila = new String[2];
-        fila[0] = consulta.getString(1);
-        fila[1] = consulta.getString(2);
+        String[] fila = new String[3];
+        fila[0] = Integer.toString(cont);
+        fila[1] = consulta.getString(1);
+        fila[2] = consulta.getString(2);
         Id_grado.add(consulta.getString(3));
-        Nombre_grado.add(fila[0]+" "+fila[1]);
+        Nombre_grado.add(fila[1]+" "+fila[2]);
         tabla.addRow(fila);
         while(consulta.next()){
-            fila[0] = consulta.getString(1);
-            fila[1] = consulta.getString(2);
+            cont++;
+            fila[0] = Integer.toString(cont);
+            fila[1] = consulta.getString(1);
+            fila[2] = consulta.getString(2);
             tabla.addRow(fila);
             Id_grado.add(consulta.getString(3));
-            Nombre_grado.add(fila[0]+" "+fila[1]);
+            Nombre_grado.add(fila[1]+" "+fila[2]);
         }
         tabla.isCellEditable(0, 0);
         Grados.setModel(tabla);
@@ -844,16 +1030,20 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         Id_curso = new ArrayList<String>();
         Nombre_curso = new ArrayList<String>();
         No_editable tabla = new No_editable();
-        String[] fila = new String[1];
-        String catedratico, grado;
+        String[] fila = new String[2];
+        int cont = 1;
+        tabla.addColumn("No");
         tabla.addColumn("Nombre");
-        fila[0] = consulta.getString(1);
-        Nombre_curso.add(fila[0]);
+        fila[0] = Integer.toString(cont);
+        fila[1] = consulta.getString(1);
+        Nombre_curso.add(fila[1]);
         Id_curso.add(consulta.getString(2));
         tabla.addRow(fila);
         while (consulta.next()){
-            fila[0] = consulta.getString(1);
-            Nombre_curso.add(fila[0]);
+            cont++;
+            fila[0] = Integer.toString(cont);
+            fila[1] = consulta.getString(1);
+            Nombre_curso.add(fila[1]);
             Id_curso.add(consulta.getString(2));
         tabla.addRow(fila);
         }
@@ -997,6 +1187,52 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
         String Id = ID.get(posicion);
         Statement a;
         try {
+            Statement b = base.createStatement();
+            ResultSet consultab = b.executeQuery("SELECT Listo, Cerrado FROM cicloescolar WHERE cicloescolar.Id = '"+Id+"';");
+            if(consultab.next()){
+                String listo = consultab.getString(1);
+                String cerrado = consultab.getString(2);
+                if(listo.equals("1")){
+                    cambio = 1;
+                    agregar_curso.setEnabled(false);
+                    eliminar_curso.setEnabled(false);
+                    agregar_grado.setEnabled(false);
+                    eliminar_grado.setEnabled(false);
+                    asignaciones.setEnabled(false);
+                    guardar_cambios.setEnabled(false);
+                    exportar_datos.setEnabled(false);
+                    ciclo_listo.setEnabled(false);
+                    Tx_Nombre_curso.setEnabled(false);
+                    Tx_Nombre_grado.setEnabled(false);
+                    Tx_seccion.setEnabled(false);
+                    ciclo_listo.setSelected(true);
+                    if(cerrado.equals("1")){
+                        this.cerrado.setEnabled(false);
+                        cambio2 = 1;
+                    }else{
+                        this.cerrado.setEnabled(true);
+                        cambio2 = 0;
+                    }
+                }
+                else{
+                    cambio = 0;
+                    agregar_curso.setEnabled(true);
+                    eliminar_curso.setEnabled(true);
+                    agregar_grado.setEnabled(true);
+                    eliminar_grado.setEnabled(true);
+                    asignaciones.setEnabled(true);
+                    guardar_cambios.setEnabled(true);
+                    exportar_datos.setEnabled(true);
+                    ciclo_listo.setEnabled(true);
+                    Tx_Nombre_curso.setEnabled(true);
+                    Tx_Nombre_grado.setEnabled(true);
+                    Tx_seccion.setEnabled(true);
+                    ciclo_listo.setSelected(false);
+                    this.cerrado.setVisible(false);
+                }
+                
+            }
+            
             a = base.createStatement();
             ResultSet consulta_Grados = a.executeQuery("SELECT grado.Nombre,grado.Seccion, grado.Id FROM AsignacionCAT INNER JOIN grado ON AsignacionCAT.Grado_Id = grado.Id WHERE AsignacionCAT.CicloEscolar_Id="+Id+" AND AsignacionCAT.Curso_Id is null ANd AsignacionCAT.Catedratico_Id is null;");
             a = base.createStatement();
@@ -1006,6 +1242,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
             }
             else{
                 No_editable tabla = new No_editable();
+                tabla.addColumn("No");
                 tabla.addColumn("Nombre");
                 tabla.addColumn("Sección");
                 Grados.setModel(tabla);
@@ -1015,8 +1252,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
             }
             else{
                 No_editable tabla = new No_editable();
-                String[] fila = new String[3];
-                String catedratico, grado;
+                tabla.addColumn("No");
                 tabla.addColumn("Nombre");
                // tabla.addColumn("Catedratico Asignado");
                // tabla.addColumn("Grado Asignado");
@@ -1041,12 +1277,14 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
     private javax.swing.JTextField Tx_seccion;
     private javax.swing.JButton agregar_curso;
     private javax.swing.JButton agregar_grado;
+    private javax.swing.JButton asignaciones;
+    private javax.swing.JRadioButton cerrado;
     private javax.swing.JComboBox<String> ciclo;
+    private javax.swing.JRadioButton ciclo_listo;
     private javax.swing.JButton eliminar_curso;
     private javax.swing.JButton eliminar_grado;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton6;
+    private javax.swing.JButton exportar_datos;
+    private javax.swing.JButton guardar_cambios;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

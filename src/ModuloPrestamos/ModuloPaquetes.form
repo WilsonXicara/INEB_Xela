@@ -146,6 +146,9 @@
           <Font name="Tahoma" size="12" style="0"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="CodigoPaqueteKeyTyped"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="Descripcion">
       <Properties>
@@ -313,6 +316,7 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="CodigoLibroActionPerformed"/>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="CodigoLibroKeyTyped"/>
           </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="Nombre">
@@ -366,6 +370,9 @@
               <Font name="Tahoma" size="12" style="0"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="EstadoKeyTyped"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

@@ -62,8 +62,8 @@ public class Importar_datos extends javax.swing.JDialog {
         }
         
         
+        this.setLocationRelativeTo(null);
         
-        Actualizar_copias();
         
     }
 
@@ -92,8 +92,10 @@ public class Importar_datos extends javax.swing.JDialog {
         jButton1 = new javax.swing.JButton();
         ciclo = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Importar Datos");
 
         jRadioButton1.setSelected(true);
         jRadioButton1.setText("Copiar Todo");
@@ -141,14 +143,14 @@ public class Importar_datos extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Nombre", "Seccion"
+                "No", "Nombre", "Seccion"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -219,14 +221,14 @@ public class Importar_datos extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Nombre"
+                "No", "Nombre"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class
+                java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false
+                false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -283,6 +285,13 @@ public class Importar_datos extends javax.swing.JDialog {
 
         jLabel3.setText("Ciclo Escolar:");
 
+        jButton2.setText("Regresar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -298,11 +307,13 @@ public class Importar_datos extends javax.swing.JDialog {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ciclo, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(116, 116, 116)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jRadioButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addGap(33, 33, 33))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -312,7 +323,8 @@ public class Importar_datos extends javax.swing.JDialog {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jRadioButton1)
-                            .addComponent(jButton1)))
+                            .addComponent(jButton1)
+                            .addComponent(jButton2)))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -415,6 +427,10 @@ public class Importar_datos extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_cicloItemStateChanged
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -514,6 +530,7 @@ public class Importar_datos extends javax.swing.JDialog {
             }
             else{
                 No_editable tabla = new No_editable();
+                tabla.addColumn("No");
                 tabla.addColumn("Nombre");
                 tabla.addColumn("Sección");
                 Grados_actuales.setModel(tabla);
@@ -523,8 +540,7 @@ public class Importar_datos extends javax.swing.JDialog {
             }
             else{
                 No_editable tabla = new No_editable();
-                String[] fila = new String[3];
-                String catedratico, grado;
+                tabla.addColumn("No");
                 tabla.addColumn("Nombre");
                // tabla.addColumn("Catedratico Asignado");
                // tabla.addColumn("Grado Asignado");
@@ -538,16 +554,21 @@ public class Importar_datos extends javax.swing.JDialog {
 
     public void Tabla_Grados(ResultSet consulta) throws SQLException{
         No_editable tabla = new No_editable();
+        tabla.addColumn("No");
         tabla.addColumn("Nombre");
         tabla.addColumn("Sección");
-        String[] fila = new String[2];
-        fila[0] = consulta.getString(1);
-        fila[1] = consulta.getString(2);
+        int cont = 1;
+        String[] fila = new String[3];
+        fila[0] = Integer.toString(cont);
+        fila[1] = consulta.getString(1);
+        fila[2] = consulta.getString(2);
         
         tabla.addRow(fila);
         while(consulta.next()){
-            fila[0] = consulta.getString(1);
-            fila[1] = consulta.getString(2);
+            cont++;
+            fila[0] = Integer.toString(cont);
+            fila[1] = consulta.getString(1);
+            fila[2] = consulta.getString(2);
             tabla.addRow(fila);
             
         }
@@ -557,19 +578,23 @@ public class Importar_datos extends javax.swing.JDialog {
     
     public void Tabla_cursos(ResultSet consulta) throws SQLException{
         No_editable tabla = new No_editable();
-        String[] fila = new String[1];
-        String catedratico, grado;
+        String[] fila = new String[2];
+        tabla.addColumn("No");
         tabla.addColumn("Nombre");
-        fila[0] = consulta.getString(1);
+        int cont = 1;
+        
+        fila[0] = Integer.toString(cont);
+        fila[1] = consulta.getString(1);
         
         tabla.addRow(fila);
         while (consulta.next()){
-            fila[0] = consulta.getString(1);
-           
-        tabla.addRow(fila);
+            cont++;
+            fila[0] = Integer.toString(cont);
+            fila[1] = consulta.getString(1);
+            tabla.addRow(fila);
         }
     
-       Cursos_actuales.setModel(tabla);
+        Cursos_actuales.setModel(tabla);
     }
     
     
@@ -580,6 +605,7 @@ public class Importar_datos extends javax.swing.JDialog {
     private javax.swing.JTable Grados_actuales;
     private javax.swing.JComboBox<String> ciclo;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

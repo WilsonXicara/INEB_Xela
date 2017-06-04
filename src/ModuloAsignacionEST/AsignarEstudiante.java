@@ -25,7 +25,7 @@ import javax.swing.table.DefaultTableModel;
 public class AsignarEstudiante extends javax.swing.JDialog {
     private Connection conexion;
     private DefaultTableModel modelEstudiante, modelCursos;
-    private boolean paraReasignacion, ciclosCargados;
+    private boolean paraReasignacion, ciclosCargados, hacerVisible;
     private RegistroAsignacionEST estudiante;
     private ArrayList<RegistroCiclo> listaCiclos;
     /**
@@ -50,6 +50,7 @@ public class AsignarEstudiante extends javax.swing.JDialog {
         this.paraReasignacion = paraReasignacion;
         this.estudiante = estudiante;
         this.ciclosCargados = false;
+        this.hacerVisible = true;
         this.listaCiclos = new ArrayList<>();
         
         modelEstudiante = (DefaultTableModel)tabla_info_estudiante.getModel();
@@ -65,38 +66,34 @@ public class AsignarEstudiante extends javax.swing.JDialog {
             estudiante.getNombres()+" "+estudiante.getApellidos(),
             (asignacionAnterior)?"SI":"No",
             (asignacionAnterior)?estudiante.getAnio():"",
-            (asignacionAnterior)?estudiante.getGrado()+" "+estudiante.getSeccion():"",
-            (asignacionAnterior)?estudiante.getAula():""
+            (asignacionAnterior)?estudiante.getGrado()+" "+estudiante.getSeccion():""
         });
         // Muestro los Ciclos Escolares a los cuales se podría Asignar o Reasignar
         try {
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            ResultSet cCicloEscolar = sentencia.executeQuery("SELECT Anio FROM CicloEscolar");
-            while(cCicloEscolar.next())
-                listaCiclos.add(new RegistroCiclo(cCicloEscolar.getString("Anio")));
-            
-            // Ahora obtengo los grados asociados a cada Ciclo Escolar cargado desde la Base de Datos
-            int cantidad = listaCiclos.size();
-            for(int cont=0; cont<cantidad; cont++) {
-                // El ID de cada ciclo es correlativo a su posición en el ArrayList
-                ResultSet cGrados = sentencia.executeQuery("SELECT AsignacionCAT.CicloEscolar_Id idCiclo, AsignacionCAT.Grado_Id idGrado, Grado.Nombre, Grado.Seccion, COUNT(AsignacionCAT.Grado_Id) grados FROM AsignacionCAT "
-                        + "INNER JOIN Grado ON AsignacionCAT.Grado_Id = Grado.Id "
-                        + "WHERE AsignacionCAT.CicloEscolar_Id = "+(cont+1)+" "
-                        + "GROUP BY AsignacionCAT.Grado_Id");
-                // Cargo al ArrayList todos los Grados del Ciclo Escolar seleccionado
-                while (cGrados.next())
-                    listaCiclos.get(cont).addGrado(new RegistroGrado(cGrados.getInt("idGrado"), cGrados.getString("Nombre"), cGrados.getString("Seccion")));
-                
-                // Ahora cargo el nombre de todos los Ciclos Escolares encontrados al JComboBox 'ciclo_escolar'
-                ciclo_escolar.addItem(listaCiclos.get(cont).getAnio());
+            ResultSet cCicloEscolar = sentencia.executeQuery("SELECT Anio, Listo FROM CicloEscolar");
+            // Cargo al ArrayList los Ciclos Escolares encontrados en la Base de Datos
+            while(cCicloEscolar.next()) {
+                listaCiclos.add(new RegistroCiclo(cCicloEscolar.getString("Anio"), cCicloEscolar.getBoolean("Listo")));    // Agrego un Ciclo Escolar encontrado
+                ciclo_escolar.addItem(cCicloEscolar.getString("Anio")); // Agrego el Ciclo Escolar al JComboBox
             } ciclosCargados = true;// Hasta aquí se garantiza la carga de todos los Grados y Ciclos Escolares de la Base de Datos
-            ciclo_escolar.setSelectedIndex(-1); // Esta parte es para generar un cambio de item, en caso de solo tener 1
-            ciclo_escolar.setSelectedIndex(ciclo_escolar.getItemCount() - 1);  // Selecciona el último item
+            
+            // En caso de no existir por lo menos un ciclo escolar, cierro la ventana (no hay información que mostrar)
+            if (listaCiclos.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No se ha creado algún ciclo escolar para crear Asignaciones.", "Sin datos", JOptionPane.INFORMATION_MESSAGE);
+                hacerVisible = false;
+            }
+
+            ciclo_escolar.setSelectedIndex(-1); // Esta opción es para generar una llamada al itemStateChange en caso de sólo encontrar un ciclo
+            ciclo_escolar.setSelectedIndex(ciclo_escolar.getItemCount() - 1);   // Selecciono por defecto el último Ciclo Esoclar
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al extraer los Ciclos Escolares:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            this.dispose();     // Si ocurre un error, cierro la ventana
 //            Logger.getLogger(AsignarEstudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
         definir_ancho_columnas();
+        
+        this.setLocationRelativeTo(null);   // Para centrar esta ventana sobre la pantalla.
     }
     
     /**
@@ -114,8 +111,6 @@ public class AsignarEstudiante extends javax.swing.JDialog {
         tabla_info_estudiante = new javax.swing.JTable();
         panel_info_asignacion = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        aula = new javax.swing.JTextField();
         ciclo_escolar = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         grado = new javax.swing.JComboBox<>();
@@ -139,14 +134,14 @@ public class AsignarEstudiante extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Código Personal", "CUI", "Nombre Completo", "Asignación Anterior", "Ciclo Escolar", "Grado", "Aula"
+                "Código Personal", "CUI", "Nombre Completo", "Asignación Anterior", "Ciclo Escolar", "Grado"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -189,11 +184,6 @@ public class AsignarEstudiante extends javax.swing.JDialog {
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel3.setText("Grado:");
-
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel4.setText("Aula:");
-
-        aula.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         ciclo_escolar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         ciclo_escolar.addItemListener(new java.awt.event.ItemListener() {
@@ -263,7 +253,6 @@ public class AsignarEstudiante extends javax.swing.JDialog {
             .addGroup(panel_info_asignacionLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(etiqueta_info_asignacion)
                     .addGroup(panel_info_asignacionLayout.createSequentialGroup()
                         .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panel_info_asignacionLayout.createSequentialGroup()
@@ -273,21 +262,21 @@ public class AsignarEstudiante extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(aula, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(jLabel3)))
                             .addGroup(panel_info_asignacionLayout.createSequentialGroup()
-                                .addGap(78, 78, 78)
+                                .addGap(34, 34, 34)
                                 .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(18, 18, 18)
                         .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
                             .addGroup(panel_info_asignacionLayout.createSequentialGroup()
                                 .addComponent(jLabel5)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
-                .addContainerGap())
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(panel_info_asignacionLayout.createSequentialGroup()
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                .addContainerGap())))
+                    .addGroup(panel_info_asignacionLayout.createSequentialGroup()
+                        .addComponent(etiqueta_info_asignacion)
+                        .addContainerGap())))
         );
         panel_info_asignacionLayout.setVerticalGroup(
             panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -298,15 +287,13 @@ public class AsignarEstudiante extends javax.swing.JDialog {
                 .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3)
-                    .addComponent(jLabel4)
                     .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_info_asignacionLayout.createSequentialGroup()
                         .addGroup(panel_info_asignacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(aula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(grado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 107, Short.MAX_VALUE)
                         .addComponent(crear_asignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
@@ -338,17 +325,35 @@ public class AsignarEstudiante extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void ciclo_escolarItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ciclo_escolarItemStateChanged
-        // Cada vez que se selecciona un Ciclo Escolar, se actualizan los valores del JComboBox 'grado'
-        if (ciclosCargados) {
-            int index = ciclo_escolar.getSelectedIndex();
-            if (index != -1) {
-                grado.removeAllItems(); // Borro los registros del JComboBox
-                
-                ArrayList<RegistroGrado> grados = listaCiclos.get(index).getGrados();   // Obtengo los Grados asignados al Ciclo Escolar seleccionado
-                int cantidad = grados.size();
-                for(int cont=0; cont<cantidad; cont++)
-                    grado.addItem(grados.get(cont).getGradoSeccion());  // Agrego el Grado
+        // Cada vez que se selecciona un nuevo ciclo escolar se deben actualizar 'grado' con los grados del ciclo seleccionado
+        int indexCiclo = ciclo_escolar.getSelectedIndex();
+        if (ciclosCargados && indexCiclo != -1) {
+            grado.removeAllItems();
+            ArrayList<RegistroGrado> listaGrados = listaCiclos.get(indexCiclo).getGrados();
+            int cantidad = listaGrados.size();
+            if (cantidad == 0) {    // Si el ArrayList está vacío, aún no se han cargado los grados de dicho ciclo
+                // Ahora obtengo los Grados asociados a cada Ciclo Escolar seleccionado en el JComboBox correspondiente
+                try {
+                    Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                    ResultSet cGrados = sentencia.executeQuery("SELECT AsignacionCAT.CicloEscolar_Id idCiclo, AsignacionCAT.Grado_Id idGrado, Grado.Nombre, Grado.Seccion, COUNT(AsignacionCAT.Grado_Id) grados FROM AsignacionCAT "
+                            + "INNER JOIN Grado ON AsignacionCAT.Grado_Id = Grado.Id "
+                            + "WHERE AsignacionCAT.CicloEscolar_Id = "+(indexCiclo+1)+" "
+                            + "GROUP BY AsignacionCAT.Grado_Id");
+                    // Cargo al ArrayList todos los Grados del Ciclo Escolar seleccionado. El ID de cada ciclo es correlativo a su posición en el ArrayList
+                    while (cGrados.next())
+                        listaGrados.add(new RegistroGrado(cGrados.getInt("idGrado"), cGrados.getString("Nombre"), cGrados.getString("Seccion")));
+                    // Hasta aquí se garantiza la carga de todos los grados
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "Error al intentar obtener los grados:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+//                    Logger.getLogger(PrincipalAsignacionEST.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
+            // Ahora cargo los Grados encontrados al JComboBox
+            cantidad = listaGrados.size();
+            for(int i=0; i<cantidad; i++)
+                grado.addItem(listaGrados.get(i).getGradoSeccion());
+            grado.setSelectedIndex((cantidad == 0) ? -1 : 0);
+            crear_asignacion.setEnabled(cantidad > 0);  // Habilito el botón de Crear Asignación siempre que haya como mínimo un grado
         }
     }//GEN-LAST:event_ciclo_escolarItemStateChanged
 
@@ -356,6 +361,7 @@ public class AsignarEstudiante extends javax.swing.JDialog {
         /* Para la asignación, los datos que se necesitan y de donde se obtienen son:
            - El Ciclo Escolar se obtiene de 'ciclo_escolar.getSelectedIndex()+1' (es correlativo con la Base de Datos).
            - El Grado se obtiene de 'listaGrados.get(grado.getSelectedIndex).getID'
+           - Se puede crear una asignación sí y sólo si el ciclo está listo (hay un atributo que lo indica)
            Los ID's se obtienen como se mencionó. */
         
         int cicloEscolarAnterior = (paraReasignacion) ? Integer.parseInt(estudiante.getAnio()) : 0;
@@ -363,7 +369,7 @@ public class AsignarEstudiante extends javax.swing.JDialog {
         // Evalúo que la nueva Reasignación (de ser el caso) realmente no exista
         boolean yaExiste = false;
         
-        if (paraReasignacion) { 
+        if (paraReasignacion) {
             try {
                 Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 ResultSet cAsignacion = sentencia.executeQuery("SELECT Id, CicloEscolar_Id, Estudiante_Id FROM AsignacionEST "
@@ -383,27 +389,26 @@ public class AsignarEstudiante extends javax.swing.JDialog {
                     ((estudiante.getSexo().equals("F"))?"La":"El")+" estudiante no puede ser asignad"+((estudiante.getSexo().equals("F"))?"a":"o")+" al Ciclo "+cicloEscolarNuevo
                             + "\npues es anterior al Ciclo "+cicloEscolarAnterior+" al que ya fue asignad"+((estudiante.getSexo().equals("F"))?"a":"o."),
                     "Error", JOptionPane.ERROR_MESSAGE);
-        } else if (aula.getText().length() == 0)
-            JOptionPane.showMessageDialog(this, "No se le ha asignado un aula "+((estudiante.getSexo().equals("F"))?"a la":"al")+" estudiante.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else if (!listaCiclos.get(ciclo_escolar.getSelectedIndex()).isCicloListo())   // Si el Ciclo Escolar aún no está listo
+            JOptionPane.showMessageDialog(this,
+                    "El ciclo escolar "+(String)ciclo_escolar.getSelectedItem()+" aún no está listo para las Asignaciones.\n\nContacte al Administrador para obtener más información.", "Ciclo no listo", JOptionPane.ERROR_MESSAGE);
         else {  // Se realizará la Asignación/Reasignación
             int opcion = JOptionPane.showOptionDialog(this,
                     "Se creará la "+((paraReasignacion)?"Rea":"A")+"signación de "+estudiante.getNombres()+" "+estudiante.getApellidos()+":"
                             + "\nCiclo:  "+(String)ciclo_escolar.getSelectedItem()+""
                             + "\nGrado:  "+(String)grado.getSelectedItem()+""
-                            + "\nAula:   "+aula.getText()+""
                             + "\n\nEstá seguro que desea continuar?",
                     "Aviso", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             if (opcion == JOptionPane.YES_OPTION) {
                 int indexCiclo = ciclo_escolar.getSelectedIndex(), indexGrado = grado.getSelectedIndex();
                 try {
-                    String nuevaAsignacion = "INSERT INTO AsignacionEst(CicloEscolar_Id, Grado_Id, Estudiante_Id, Aula) VALUES("
-                            +(indexCiclo+1)+","+listaCiclos.get(indexCiclo).getGrado(indexGrado).getID()+","+estudiante.getID()+",'"+ aula.getText()+"')";
+                    String nuevaAsignacion = "INSERT INTO AsignacionEst(CicloEscolar_Id, Grado_Id, Estudiante_Id) VALUES("
+                            +(indexCiclo+1)+","+listaCiclos.get(indexCiclo).getGrado(indexGrado).getID()+","+estudiante.getID()+")";
                     conexion.prepareStatement(nuevaAsignacion).executeUpdate(); // Inserto y actulizo
                     estudiante.setAsignacionNueva(true);    // Actualizo el registro del estudiante para indicar que ya fue reasignado
                     crear_asignacion.setEnabled(false);     // Bloqueo el botón para evitar que se vuelva a asignar
                     ciclo_escolar.setEnabled(false);    // Bloqueo el JComboBox para evitar accesos innecesarios a la Base de Datos
                     grado.setEnabled(false);    // Bloqueo el JComboBox para evitar accesos innecesarios a la Base de Datos
-                    aula.setEnabled(false);     // Bloqueo el campo donde se ingresa el Aula
                     this.dispose(); // Cierro el JDialog
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(this, "Error al intentar crear la Asignación:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -460,12 +465,12 @@ public class AsignarEstudiante extends javax.swing.JDialog {
         tabla_info_estudiante.getColumnModel().getColumn(3).setPreferredWidth(120);
         tabla_info_estudiante.getColumnModel().getColumn(4).setPreferredWidth(100);
         tabla_info_estudiante.getColumnModel().getColumn(5).setPreferredWidth(85);
-        tabla_info_estudiante.getColumnModel().getColumn(6).setPreferredWidth(85);
         
         // Definición del ancho de las columnas para la Tabla Información Cursos (valores definidos en base a pruebas)
         tabla_info_cursos.getColumnModel().getColumn(0).setPreferredWidth(50);
-        tabla_info_cursos.getColumnModel().getColumn(1).setPreferredWidth(250);
+        tabla_info_cursos.getColumnModel().getColumn(1).setPreferredWidth(350);
     }
+    public boolean getHacerVisible() { return hacerVisible; }
     /**
      * @param args the command line arguments
      */
@@ -512,7 +517,6 @@ public class AsignarEstudiante extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField aula;
     private javax.swing.JComboBox<String> ciclo_escolar;
     private javax.swing.JButton crear_asignacion;
     private javax.swing.JLabel etiqueta_info_asignacion;
@@ -520,7 +524,6 @@ public class AsignarEstudiante extends javax.swing.JDialog {
     private javax.swing.JComboBox<String> grado;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

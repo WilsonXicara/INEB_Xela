@@ -4,48 +4,50 @@
  * and open the template in the editor.
  */
 package ModuloAdministrador;
+import Modulo_incio_sesion.CambiarContraseña;
 import ModuloPrestamos.ModuloPrestamo;
 import Catedratico.Mostrar_Datos;
-import ModuloAsignacionEST.AsignarEstudiante;
 import ModuloAsignacionEST.PrincipalAsignacionEST;
 import ModuloEstudiante.CrearEstudiante;
 import ModuloEstudiante.InformacionEstudiante;
-import ModuloEstudiante.PrincipalEstudiante;
 import ModuloPrestamos.ModuloPaquetes;
 import Modulo_Ciclo_Escolar.Ciclo_Escolar;
 import Modulo_Ciclo_Escolar.Crear_Ciclo_Escolar_1;
-import Modulo_incio_sesion.Principal;
+import Modulo_notas_y_reporte.Ventanareporte;
 import java.awt.Frame;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.*;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 /**
  *
  * @author SERGIO MALDONADO
  */
 public class ModuloPrincipalAdmin extends javax.swing.JFrame {
-
+    private JFrame ventanaPadre;
+    private Connection conexcion;
+    private ResultSet User;
+    
     /**
      * Creates new form ModuloPrincipalAdmin
      */
-    Connection conexcion;
-    ResultSet User;
     public ModuloPrincipalAdmin() {
         initComponents();
     }
     
-    public ModuloPrincipalAdmin(Connection conec, ResultSet admin){
+    public ModuloPrincipalAdmin(Connection conec, ResultSet admin, JFrame ventanaPadre){
         initComponents();
+        this.ventanaPadre = ventanaPadre;
         this.setLocationRelativeTo(null);
         conexcion = conec;
         User = admin;
         ResultSet resultado = null, resultado2 = null;
         try {
             //Desplegar informacion
+            this.setTitle("Sesión Iniciada: "+User.getString("NombreUsuario"));
             Usuario.setText(User.getString("NombreUsuario"));
             Nombre.setText(User.getString("Nombres")+ " " + User.getString("Apellidos"));
             Direccion.setText(User.getString("Direccion"));
@@ -115,13 +117,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         menu_crear = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem10 = new javax.swing.JMenuItem();
+        item_nuevo_estudiante = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
+        Reporte = new javax.swing.JMenuItem();
         menu_ver = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
+        item_info_estudiantes = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
         menu_asignaciones = new javax.swing.JMenu();
@@ -129,7 +132,8 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         item_reasignaciones = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(901, 592));
+        setTitle("Sesión iniciada: Administrador");
+        setPreferredSize(new java.awt.Dimension(900, 590));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -318,13 +322,13 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         menu_crear.add(jMenuItem2);
 
-        jMenuItem10.setText("Nuevo Estudiante");
-        jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
+        item_nuevo_estudiante.setText("Nuevo Estudiante");
+        item_nuevo_estudiante.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem10ActionPerformed(evt);
+                item_nuevo_estudianteActionPerformed(evt);
             }
         });
-        menu_crear.add(jMenuItem10);
+        menu_crear.add(item_nuevo_estudiante);
 
         jMenuItem3.setText("Ciclo Escolar");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
@@ -350,6 +354,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         menu_crear.add(jMenuItem6);
 
+        Reporte.setText("Reporte");
+        Reporte.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ReporteActionPerformed(evt);
+            }
+        });
+        menu_crear.add(Reporte);
+
         jMenuBar1.add(menu_crear);
 
         menu_ver.setText("Ver");
@@ -363,13 +375,13 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         });
         menu_ver.add(jMenuItem4);
 
-        jMenuItem5.setText("Información de Estudiantes");
-        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+        item_info_estudiantes.setText("Información de Estudiantes");
+        item_info_estudiantes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem5ActionPerformed(evt);
+                item_info_estudiantesActionPerformed(evt);
             }
         });
-        menu_ver.add(jMenuItem5);
+        menu_ver.add(item_info_estudiantes);
 
         jMenuItem9.setText("Ciclo Escolar");
         jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
@@ -422,7 +434,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
                 this.setEnabled(false);
                 new Usuarios(conexcion,this).setVisible(true);
                 //this.dispose();
-                this.setEnabled(true);
+                //this.setEnabled(true);
             }
             else{
                 JOptionPane.showMessageDialog(null, "¡No tiene permisos para realizar esta acción!");
@@ -432,10 +444,10 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
-    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+    private void item_info_estudiantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_info_estudiantesActionPerformed
         InformacionEstudiante nueva_ventana = new InformacionEstudiante(new javax.swing.JFrame(), true, conexcion);
-        nueva_ventana.setVisible(true);
-    }//GEN-LAST:event_jMenuItem5ActionPerformed
+        nueva_ventana.setVisible(nueva_ventana.getHacerVisible());
+    }//GEN-LAST:event_item_info_estudiantesActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
         // TODO add your handling code here:
@@ -454,7 +466,8 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        System.exit(0);
+        ventanaPadre.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
@@ -471,9 +484,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
             // TODO add your handling code here:
             String tipo = User.getString("Tipo");
             if(tipo.equals("1")){
-                this.setVisible(false);
+                this.setEnabled(false);
                 new Ciclo_Escolar(new Frame(),true, conexcion).setVisible(true);
-                this.setVisible(true);
+                this.setEnabled(true);
             }
             else{
                 JOptionPane.showMessageDialog(null, "¡No Posee Permisos para realizar esta operacion!");
@@ -483,19 +496,20 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem9ActionPerformed
 
-    private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
+    private void item_nuevo_estudianteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_nuevo_estudianteActionPerformed
         CrearEstudiante nueva_ventana = new CrearEstudiante(new javax.swing.JFrame(), true, conexcion);
         nueva_ventana.setVisible(true);
-    }//GEN-LAST:event_jMenuItem10ActionPerformed
+    }//GEN-LAST:event_item_nuevo_estudianteActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         //this.setVisible(false);
         Crear_Ciclo_Escolar_1 a;
         try {
             if(User.getString("Tipo").equals("1")){
+                this.setEnabled(false);
                 a = new Crear_Ciclo_Escolar_1(new Frame(),true, conexcion);
                 a.setVisible(true);
-                this.setEnabled(false);
+                this.setEnabled(true);
                 //this.setVisible(true);
             }
             else{
@@ -522,20 +536,20 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosing
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        this.setEnabled(false);
-        new CambiarContra(conexcion,User,this).setVisible(true);
+        new CambiarContraseña(this, true, conexcion, User).setVisible(true);
+//        this.setEnabled(false);
+//        new CambiarContra(conexcion,User,this).setVisible(true);
         //this.setEnabled(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void item_asignacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_asignacionesActionPerformed
         PrincipalAsignacionEST asignaciones = new PrincipalAsignacionEST(new javax.swing.JFrame(), true, conexcion, false);
-        asignaciones.setVisible(true);
+        asignaciones.setVisible(asignaciones.getHacerVisible());
     }//GEN-LAST:event_item_asignacionesActionPerformed
 
     private void item_reasignacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_reasignacionesActionPerformed
-        PrincipalAsignacionEST asignaciones = new PrincipalAsignacionEST(new javax.swing.JFrame(), true, conexcion, true);
-        asignaciones.setVisible(true);
+        PrincipalAsignacionEST reasignaciones = new PrincipalAsignacionEST(new javax.swing.JFrame(), true, conexcion, true);
+        reasignaciones.setVisible(reasignaciones.getHacerVisible());
     }//GEN-LAST:event_item_reasignacionesActionPerformed
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
@@ -554,6 +568,13 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+    private void ReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReporteActionPerformed
+        // TODO add your handling code here:
+        this.setEnabled(false);
+        Ventanareporte ventana = new Ventanareporte(conexcion,this);
+        ventana.setVisible(true);
+    }//GEN-LAST:event_ReporteActionPerformed
 
 
     /**
@@ -596,11 +617,14 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JTextField Direccion;
     private javax.swing.JTextField Municipio;
     private javax.swing.JTextField Nombre;
+    private javax.swing.JMenuItem Reporte;
     private javax.swing.JTextField Sexo;
     private javax.swing.JTextField Telefono;
     private javax.swing.JTextField Usuario;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JMenuItem item_asignaciones;
+    private javax.swing.JMenuItem item_info_estudiantes;
+    private javax.swing.JMenuItem item_nuevo_estudiante;
     private javax.swing.JMenuItem item_reasignaciones;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -624,11 +648,9 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;

@@ -13,13 +13,13 @@ public class RegistroAsignacionEST {
     private int num, ID;
     private String codigoPersonal, CUI, nombres, apellidos, sexo;
     private int cicloEscolarId, gradoId;
-    private String anio, grado, seccion, aula;
+    private String anio, grado, seccion;
     private boolean asignacionNueva, asignacionAnterior;
 
     public RegistroAsignacionEST() {
         this.num = this.ID = this.cicloEscolarId = this.gradoId = 0;
         this.codigoPersonal = this.CUI = this.nombres = this.apellidos = this.sexo = "";
-        this.anio = this.grado = this.seccion = this.aula = "";
+        this.anio = this.grado = this.seccion = "";
         this.asignacionNueva = this.asignacionAnterior = false;
     }
 
@@ -35,7 +35,6 @@ public class RegistroAsignacionEST {
     public String getAnio() { return anio; }
     public String getGrado() { return grado; }
     public String getSeccion() { return seccion; }
-    public String getAula() { return aula; }
     public boolean isAsignacionNueva() { return asignacionNueva; }
     public boolean isAsignacionAnterior() { return asignacionAnterior; }
 
@@ -51,7 +50,6 @@ public class RegistroAsignacionEST {
     public void setAnio(String anio) { this.anio = anio; }
     public void setGrado(String grado) { this.grado = grado; }
     public void setSeccion(String seccion) { this.seccion = seccion; }
-    public void setAula(String aula) { this.aula = aula; }
     public void setAsignacionNueva(boolean asignacionNueva) { this.asignacionNueva = asignacionNueva; }
     public void setAsignacionAnterior(boolean asignacionAnterior) { this.asignacionAnterior = asignacionAnterior; }
 
@@ -66,8 +64,7 @@ public class RegistroAsignacionEST {
             (asignacionAnterior) ? "SI" : "NO",
             anio,
             grado,
-            seccion,
-            aula
+            seccion
         };
     }
 }
