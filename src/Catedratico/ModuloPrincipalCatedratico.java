@@ -5,6 +5,7 @@
  */
 package Catedratico;
 
+import Modulo_incio_sesion.CambiarContraseña;
 import Modulo_notas_y_reporte.Pantalla;
 import java.awt.Frame;
 import java.io.IOException;
@@ -365,14 +366,7 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
-            Cambiar_contra s;
-        try {
-            this.setEnabled(false);
-            s = new Cambiar_contra(conexion,respuesta,this);
-            s.setVisible(true);// Llama a la del Andrés
-        } catch (SQLException ex) {
-            Logger.getLogger(ModuloPrincipalCatedratico.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        new CambiarContraseña(this, true, conexion, respuesta).setVisible(true);
             
             //this.dispose();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
