@@ -27,13 +27,16 @@ public class Ventanareporte extends javax.swing.JFrame {
     String ciclo;
     JFrame va;
     
-    public Ventanareporte() {
+    
+    public Ventanareporte() 
+    {
         /*initComponents();
         conexion = cn.Conectar();
         año();
         limpiar();
         deshabilitar();
         cargar();
+        mostrar();
         this.addWindowListener(new WindowListener() {
 
             @Override
@@ -72,6 +75,7 @@ public class Ventanareporte extends javax.swing.JFrame {
             }
         });*/
     }
+    
     public Ventanareporte(Connection conec, JFrame ventana)
     {
         initComponents();
@@ -213,6 +217,32 @@ public class Ventanareporte extends javax.swing.JFrame {
             e.printStackTrace();
         }  
     }
+    void mostrar()
+    {
+        try {
+            conexion = cn.Conectar();
+            String [] titulos={"Apellidos", "Nombre", "Fecha", "Descripcion"};
+            String [] fila = new String [4];
+        
+            String sql = "SELECT Estudiante.Apellidos, Estudiante.Nombres, Reporte.Fecha, Reporte.Descripcion FROM Reporte INNER JOIN Estudiante ON Reporte.Estudiante_ID = Estudiante.ID ORDER BY Estudiante.Apellidos, Estudiante.Nombres, Reporte.Fecha ASC;";
+        
+            model = new DefaultTableModel(null, titulos);
+            sent = conexion.createStatement();
+            ResultSet rs = sent.executeQuery(sql);
+            
+            while (rs.next()) {
+                fila[0] = rs.getString("Estudiante.Apellidos");
+                fila[1] = rs.getString("Estudiante.Nombres");
+                fila[2] = rs.getString("Reporte.Fecha");
+                fila[3] = rs.getString("Reporte.Descripcion");
+
+                model.addRow(fila);
+            }
+            Ver.setModel(model);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }  
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -232,6 +262,9 @@ public class Ventanareporte extends javax.swing.JFrame {
         Guardar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         Estudiantes = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        Ver = new javax.swing.JTable();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -286,7 +319,7 @@ public class Ventanareporte extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
@@ -317,7 +350,38 @@ public class Ventanareporte extends javax.swing.JFrame {
                             .addComponent(jLabel2)
                             .addComponent(descrip, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(Guardar, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
+        );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Reportes creados", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, java.awt.Color.black));
+
+        Ver.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
+
+            }
+        ));
+        jScrollPane3.setViewportView(Ver);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -326,15 +390,19 @@ public class Ventanareporte extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         pack();
@@ -342,6 +410,7 @@ public class Ventanareporte extends javax.swing.JFrame {
 
     private void GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarActionPerformed
         // TODO add your handling code here:
+        System.out.println(id_estudiante);
         try {
             String sql = "INSERT INTO Reporte (Fecha, Descripcion, Estudiante_Id)" + "VALUES(?,?,?)";
             PreparedStatement ps = conexion.prepareCall(sql);
@@ -416,13 +485,16 @@ public class Ventanareporte extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable Estudiantes;
     private javax.swing.JButton Guardar;
+    private javax.swing.JTable Ver;
     private javax.swing.JTextField descrip;
     private javax.swing.JTextField fecha;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }

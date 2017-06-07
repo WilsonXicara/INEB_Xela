@@ -29,7 +29,10 @@ public class ModuloPrestamo extends javax.swing.JFrame {
      */
     Connection conexcion;
     DefaultTableModel modelo;
+    DefaultTableModel modelo2;
     ResultSet Packs = null;
+    ResultSet Alumnos = null;
+    ResultSet Ciclos = null;
     JFrame Ventanita;
     int vId = 0;
     public ModuloPrestamo() {
@@ -37,13 +40,32 @@ public class ModuloPrestamo extends javax.swing.JFrame {
     }
     
     public ModuloPrestamo(Connection conec,JFrame ventana){
-        initComponents();
-        this.setLocationRelativeTo(null);
-        modelo = (DefaultTableModel) Paquetes.getModel();
-        conexcion = conec;
-        Ventanita = ventana;
-        //revisar eso y la funcion si sirven
-        DatosPaquetes();
+        try {
+            initComponents();
+            this.setLocationRelativeTo(null);
+            modelo = (DefaultTableModel) Paquetes.getModel();
+            modelo2 = (DefaultTableModel) Estudiantes.getModel();
+            conexcion = conec;
+            Ventanita = ventana;
+            //agregar al combobox los ciclos
+            Statement senten = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            Ciclos = senten.executeQuery("SELECT * FROM cicloescolar;");
+            if(Ciclos.next()!=false){
+                Ciclos.previous();
+                while(Ciclos.next()!=false){
+                    Ciclo.addItem(Ciclos.getString(2));
+                }
+                Ciclos.first();
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "¡No existen Ciclos Escolares Creados!");
+            }
+            //revisar eso y la funcion si sirven
+            DatosPaquetes();
+            //DatosEst();
+        } catch (SQLException ex) {
+            Logger.getLogger(ModuloPrestamo.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -69,12 +91,10 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         NoFactura = new javax.swing.JTextField();
         CodigoPaquete = new javax.swing.JTextField();
-        FechaPago = new javax.swing.JTextField();
         Monto = new javax.swing.JTextField();
         CodigoEstudiante = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -82,10 +102,15 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         Paquetes = new javax.swing.JTable();
         jButton6 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        Estudiantes = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
+        jToggleButton1 = new javax.swing.JToggleButton();
+        jLabel6 = new javax.swing.JLabel();
+        Ciclo = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1100, 670));
+        setPreferredSize(new java.awt.Dimension(1316, 713));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
@@ -97,19 +122,20 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Prestamo de Libros");
         getContentPane().add(jLabel1);
-        jLabel1.setBounds(0, 20, 1130, 22);
+        jLabel1.setBounds(0, 20, 1320, 22);
         getContentPane().add(jLabel9);
         jLabel9.setBounds(1220, 1022, 0, 0);
 
         jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton1.setText("Prestamo");
+        jButton1.setEnabled(false);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
         getContentPane().add(jButton1);
-        jButton1.setBounds(550, 340, 115, 25);
+        jButton1.setBounds(480, 440, 115, 25);
 
         jButton2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton2.setText("Cancelar");
@@ -119,7 +145,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             }
         });
         getContentPane().add(jButton2);
-        jButton2.setBounds(690, 340, 115, 25);
+        jButton2.setBounds(620, 440, 115, 25);
 
         jButton4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton4.setText("Listado de Prestamos");
@@ -129,7 +155,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             }
         });
         getContentPane().add(jButton4);
-        jButton4.setBounds(470, 590, 202, 34);
+        jButton4.setBounds(470, 620, 202, 34);
 
         jButton5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton5.setText("Listado Paquetes");
@@ -139,7 +165,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             }
         });
         getContentPane().add(jButton5);
-        jButton5.setBounds(250, 590, 202, 34);
+        jButton5.setBounds(250, 620, 202, 34);
         getContentPane().add(jLabel13);
         jLabel13.setBounds(1208, 1022, 0, 0);
         getContentPane().add(jLabel11);
@@ -157,7 +183,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             }
         });
         getContentPane().add(jButton3);
-        jButton3.setBounds(60, 590, 177, 34);
+        jButton3.setBounds(60, 620, 177, 34);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Datos del Prestamo", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 14))); // NOI18N
 
@@ -167,9 +193,6 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel7.setText("Codigo del Paquete");
 
-        jLabel10.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel10.setText("Fecha de Pago");
-
         jLabel12.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel12.setText("Monto (Q)");
 
@@ -177,15 +200,18 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         jLabel3.setText("Codigo Estudiante");
 
         NoFactura.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        NoFactura.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                NoFacturaKeyTyped(evt);
+            }
+        });
 
         CodigoPaquete.setEditable(false);
         CodigoPaquete.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
-        FechaPago.setEditable(false);
-        FechaPago.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
         Monto.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
+        CodigoEstudiante.setEditable(false);
         CodigoEstudiante.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -196,22 +222,24 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(92, 92, 92)
-                        .addComponent(NoFactura))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addGap(92, 92, 92)
+                                .addComponent(NoFactura, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel7)
+                                    .addComponent(jLabel12))
+                                .addGap(44, 44, 44)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(CodigoPaquete)
+                                    .addComponent(Monto)
+                                    .addComponent(CodigoEstudiante))))
+                        .addGap(35, 35, 35))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel10)
-                            .addComponent(jLabel12)
-                            .addComponent(jLabel3))
-                        .addGap(44, 44, 44)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(FechaPago, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
-                            .addComponent(CodigoPaquete)
-                            .addComponent(Monto)
-                            .addComponent(CodigoEstudiante))))
-                .addGap(57, 57, 57))
+                        .addComponent(jLabel3)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -224,23 +252,19 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel7)
                     .addComponent(CodigoPaquete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel10)
-                    .addComponent(FechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(21, 21, 21)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(CodigoEstudiante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel12)
                     .addComponent(Monto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(CodigoEstudiante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(67, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(525, 81, 568, 245);
+        jPanel1.setBounds(430, 170, 410, 247);
         getContentPane().add(jLabel4);
         jLabel4.setBounds(1213, 981, 0, 0);
 
@@ -256,7 +280,7 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         jScrollPane1.setViewportView(Paquetes);
 
         getContentPane().add(jScrollPane1);
-        jScrollPane1.setBounds(40, 120, 452, 378);
+        jScrollPane1.setBounds(20, 150, 380, 378);
 
         jButton6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jButton6.setText("Seleccionar Paquete");
@@ -266,14 +290,55 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             }
         });
         getContentPane().add(jButton6);
-        jButton6.setBounds(520, 470, 155, 25);
+        jButton6.setBounds(130, 540, 155, 25);
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel8.setText("Paquetes Disponibles");
         getContentPane().add(jLabel8);
-        jLabel8.setBounds(40, 90, 127, 17);
+        jLabel8.setBounds(40, 120, 127, 17);
+
+        Estudiantes.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        Estudiantes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Codigo", "Nombres", "Apellidos"
+            }
+        ));
+        jScrollPane2.setViewportView(Estudiantes);
+
+        getContentPane().add(jScrollPane2);
+        jScrollPane2.setBounds(880, 160, 410, 370);
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel5.setText("Estudiantes Disponibles");
         getContentPane().add(jLabel5);
-        jLabel5.setBounds(790, 370, 0, 0);
+        jLabel5.setBounds(880, 130, 150, 17);
+
+        jToggleButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jToggleButton1.setText("Seleccionar Estudiante");
+        jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jToggleButton1);
+        jToggleButton1.setBounds(1030, 540, 169, 25);
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel6.setText("Ciclo Escolar");
+        getContentPane().add(jLabel6);
+        jLabel6.setBounds(30, 70, 80, 17);
+
+        Ciclo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        Ciclo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CicloActionPerformed(evt);
+            }
+        });
+        getContentPane().add(Ciclo);
+        Ciclo.setBounds(130, 70, 130, 23);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -307,10 +372,13 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         String NoFac, CodPack, CodEst,Instruccion = "";
         float Efectivo;
         ResultSet resultado = null, resultado2 = null, prest = null;
-        if(vId == 0){
+        if(CodigoPaquete.getText().equals("") == true){
             JOptionPane.showMessageDialog(null, "¡No ha seleccionado ningun paquete!");
         }
-        else if((NoFactura.getText().equals(""))||(Monto.getText().equals(""))||(CodigoEstudiante.getText().equals(""))){
+        else if(CodigoEstudiante.getText().equals("") == true){
+            JOptionPane.showMessageDialog(null, "¡No ha seleccionado ningun Estudiante!");
+        }
+        else if((NoFactura.getText().equals(""))||(Monto.getText().equals(""))){
             JOptionPane.showMessageDialog(null, "¡Hay Campos Vacios!");
         }
         else{
@@ -320,25 +388,23 @@ public class ModuloPrestamo extends javax.swing.JFrame {
             Efectivo = Float.parseFloat(Monto.getText());
             //Condicion que si el CodigoEstudiante no existe en la base arrojar un mensaje
             //Condicion si el CodigoPaquete no existe
-            try {
-                Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                resultado = sentencia.executeQuery("SELECT * FROM prestamo WHERE CodigoBoleta = '" + NoFac + "';");
+            try {Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                resultado = sentencia.executeQuery("SELECT * FROM paquetelibro WHERE Codigo = '" + CodPack + "';");
                 Statement sentencia2 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 resultado2 = sentencia2.executeQuery("SELECT * FROM estudiante WHERE CodigoPersonal = " + "'" + CodEst + "';");
                 Statement sentencia3 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 prest = sentencia3.executeQuery("SELECT * FROM prestamo WHERE prestamo.PaqueteLibro_Id = '" + CodPack + "';");
                 //Condicion que si el CodigoEstudiante no existe en la base arrojar un mensaje
                 //Condicion si el No Factura ya existe
-                if((false == resultado.next())||(resultado2.next() == false)){
-                    JOptionPane.showMessageDialog(null, "Hay Datos incorrectos");
-                }
-                else if(prest.next() == true){
+                if(prest.next() == true){
                     JOptionPane.showMessageDialog(null, "Ya Existe un prestamo con ese paquete");
                 }
                 else{
                     //Concatenamos la instrucción para insertar a la tabla prestamo.
                     //System.out.println(resultado.next());
                     //System.out.println(resultado2.next());
+                    resultado.next();
+                    resultado2.next();
                     Instruccion = "INSERT INTO prestamo(PaqueteLibro_ID,Estudiante_ID,CodigoBoleta,FechaPago,Monto) VALUES (" + resultado.getString(1) + "," + resultado2.getString(1) +  "," + "'" + NoFac + "'" + ",NOW()," + Efectivo + ");"; //Insercion a la Tabla Prestamos
                      //Insertamos en la base
                     try {
@@ -347,12 +413,24 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                         pst.close();
                         if (a>0){
                             int filas = Paquetes.getRowCount();
-                            for (int i = 0;filas>i; i++) {
+                            int filas2 = Estudiantes.getRowCount();
+                            for (int i = 0;i<filas; i++) {
                                 modelo.removeRow(0);
+                            }
+                            for(int j = 0;j<filas2;j++){
+                                modelo2.removeRow(0);
                             }
                             System.out.println("Guardado");
                             JOptionPane.showMessageDialog(null, "¡Se ha compleado el Prestamo del libro " + CodPack + " Exitosamente!");
                             DatosPaquetes(); //revisar la funcion
+                            //modelo2.setRowCount(0);
+                            if(Ciclo.getSelectedIndex()!=-1){
+                                DatosEst(Ciclos.getString(2));
+                            }
+                            NoFactura.setText("");
+                            CodigoPaquete.setText("");
+                            CodigoEstudiante.setText("");
+                            Monto.setText("");
                         }
                     } catch (SQLException ex) {
                         Logger.getLogger(ModuloPrestamo.class.getName()).log(Level.SEVERE, null, ex);
@@ -390,10 +468,60 @@ public class ModuloPrestamo extends javax.swing.JFrame {
         Ventanita.setEnabled(true);
         this.dispose();
     }//GEN-LAST:event_formWindowClosed
+
+    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+        // TODO add your handling code here:
+        String vCodigo = "",vDescrip;
+        if(Estudiantes.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(null, "No se ha seleccionado ninguna fila");
+        }
+        else{
+            vCodigo = Estudiantes.getValueAt(Estudiantes.getSelectedRow(), 0).toString();
+            CodigoEstudiante.setText(vCodigo);
+            //vId = Integer.parseInt(Paquetes.getValueAt(Paquetes.getSelectedRow(), 0).toString());
+        }
+    }//GEN-LAST:event_jToggleButton1ActionPerformed
+
+    private void CicloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CicloActionPerformed
+        // TODO add your handling code here:
+        int cont = 0;
+        if(Ciclo.getSelectedIndex() != -1){
+            try {
+                modelo2.setRowCount(0);
+                cont = Ciclo.getSelectedIndex();
+                Ciclos.first();
+                for(int conta = 0; conta < cont; conta++){
+                    try {
+                        Ciclos.next();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ModuloPrestamo.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                if(Ciclos.getString(3).equals("1")){
+                    DatosEst(Ciclos.getString(2));
+                    jButton1.setEnabled(true);
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "El Ciclo aún no está Listo");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(ModuloPrestamo.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
+    }//GEN-LAST:event_CicloActionPerformed
+
+    private void NoFacturaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_NoFacturaKeyTyped
+        // TODO add your handling code here:
+        if(NoFactura.getText().length()==5){
+            evt.consume();
+        }
+    }//GEN-LAST:event_NoFacturaKeyTyped
     public void DatosPaquetes(){
         int cont = 1;
         try {
             Statement sentencia = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            
             //revisar la consulta
             Packs = sentencia.executeQuery("SELECT L.Id,L.Codigo,L.Descripcion FROM prestamo P RIGHT JOIN paquetelibro L ON P.PaqueteLibro_Id = L.Id WHERE P.PaqueteLibro_Id is null;");
             if(Packs.next() == false){
@@ -404,6 +532,26 @@ public class ModuloPrestamo extends javax.swing.JFrame {
                 while(Packs.next() != false){
                     modelo.addRow(new Object[]{cont,Packs.getString(2),Packs.getString(3)});
                     cont++;
+                }
+            }
+        } catch (SQLException e) {
+                e.printStackTrace();
+        }
+    }
+    public void DatosEst(String ciclito){
+        try {
+            Statement sentencia2 = conexcion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            Alumnos = sentencia2.executeQuery("SELECT E.CodigoPersonal, E.Nombres, E.Apellidos FROM cicloescolar C INNER JOIN asignacionest A ON  C.Id = A.CicloEscolar_Id\n" +
+            "INNER JOIN estudiante E ON A.Estudiante_Id=E.Id LEFT JOIN prestamo P ON E.Id = P.Estudiante_Id WHERE P.Estudiante_Id is null AND C.Anio = '" + ciclito + "';");
+            //Alumnos = sentencia2.executeQuery("SELECT A.CodigoPersonal, A.Nombres, A.Apellidos FROM estudiante A LEFT JOIN prestamo P ON A.Id = P.Estudiante_Id WHERE P.Estudiante_Id is null;");
+            if(Alumnos.next()==false){
+                
+            }
+            else{
+                Alumnos.previous();
+                while(Alumnos.next() != false){
+                    modelo2.addRow(new Object[]{Alumnos.getString(1),Alumnos.getString(2),Alumnos.getString(3)});
+                    //cont++;
                 }
             }
         } catch (SQLException e) {
@@ -446,9 +594,10 @@ public class ModuloPrestamo extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> Ciclo;
     private javax.swing.JTextField CodigoEstudiante;
     private javax.swing.JTextField CodigoPaquete;
-    private javax.swing.JTextField FechaPago;
+    private javax.swing.JTable Estudiantes;
     private javax.swing.JTextField Monto;
     private javax.swing.JTextField NoFactura;
     private javax.swing.JTable Paquetes;
@@ -459,7 +608,6 @@ public class ModuloPrestamo extends javax.swing.JFrame {
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -469,10 +617,13 @@ public class ModuloPrestamo extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JToggleButton jToggleButton1;
     // End of variables declaration//GEN-END:variables
 }
