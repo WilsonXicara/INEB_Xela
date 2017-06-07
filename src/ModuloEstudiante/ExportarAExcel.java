@@ -20,59 +20,78 @@ import jxl.write.WriteException;
  * @author Wilson Xicará
  */
 public class ExportarAExcel {
-    private File archivoExcel;
-    private ArrayList<JTable> listaTablas;
-    private ArrayList<String> listaNombresLibrosDeExcel;
-
     /**
-     * Ésta clase sólo soporta exportar archivos de excel con extensión .xls (no .xlsx que son las más recientes)
-     * @param archivoExcel
-     * @param listaTablas
-     * @param listaNombresLibrosDeExcel
-     * @throws Exception 
+     * Método que permite exportar varios JTable en un solo Libro de Excel. Cada JTable se exporta a una Hoja de Excel.
+     * @param archivoExcel archivo de tipo xls donde se almacenarán los datos de los JTable.
+     * @param listaTablas ArrayList de JTable con todas las tablas que se exportarán.
+     * @param listaNombresHojasDeExcel ArrayList de  nombres de cada JTable que se asigarán a las Hojas en el archivo xls.
+     * En caso de de listaNombresHojasDeExcel.isEmpty() == true o listaTablas.size()!=listaNombresHojasDeExcel.size(),
+     * todos los libros tendrán un nombre correlativo como "Hoja "+(contador).
+     * @param tituloColumnas ArrayList de booleanos que indican cuáles JTable se exportarán el título de las columnas.
+     * @throws IOException
+     * @throws WriteException 
      */
-    public ExportarAExcel(File archivoExcel, ArrayList<JTable> listaTablas, ArrayList<String> listaNombresLibrosDeExcel) throws Exception {
-        this.archivoExcel = archivoExcel;
-        this.listaTablas = listaTablas;
-        this.listaNombresLibrosDeExcel = listaNombresLibrosDeExcel;
-        if (listaNombresLibrosDeExcel.size()!=listaTablas.size()) {
-            throw new Exception ("Error");
-        }
-    }
-    
-    public static void exportar_tablas(File archivoExcel, ArrayList<JTable> listaTablas, ArrayList<String> listaNombresLibrosDeExcel, boolean tituloColumnas) {
+    public static void exportar_tablas(File archivoExcel, ArrayList<JTable> listaTablas, ArrayList<String> listaNombresHojasDeExcel, ArrayList<Boolean> tituloColumnas) throws IOException, WriteException {
         // En caso de que no se especifica el nombre de las Hojas de Excel, se agregarán nombres por defecto
-        if (listaNombresLibrosDeExcel.isEmpty() || (listaTablas.size()!=listaNombresLibrosDeExcel.size())) {
-            listaNombresLibrosDeExcel.clear();
-//            int cantidad = listaTablas.get(0).setN
-        }
-    }
-    public boolean exportar_tablas() {
-        try {
+        if (listaNombresHojasDeExcel.isEmpty() || listaTablas.size()!=listaNombresHojasDeExcel.size()) {
+            listaNombresHojasDeExcel.clear();
+            int cantidad = listaTablas.size();
+            for(int i=0; i<cantidad; i++)
+                listaNombresHojasDeExcel.add("Hoja "+(i+1));   // Le asigno los nombres por defecto
+            
+            // Ahora inicia la exportación de todas las tablas
             WritableWorkbook libroExcel = Workbook.createWorkbook(archivoExcel);
-            for (int index=0; index<listaTablas.size(); index++){
-                JTable table=listaTablas.get(index);    // Se obtiene la tabla a exportar
-                System.out.println("Tabla = "+table.getName());
-                WritableSheet hojaExcel = libroExcel.createSheet(listaNombresLibrosDeExcel.get(index), 0);
-                int fil, col, contFil = table.getRowCount(), contCol = table.getColumnCount();
-                //Para que salga el titulo de las columnas
-                for (col=0; col<contCol; col++)
-                    hojaExcel.addCell(new Label(col, 0, table.getColumnName(col)));
-                // El método .addCell crea una nueva celda. La celda es un Label.
-                // El constructor del Label es Label(columna, fila, texto_a_mostrar)
-                
-                // Ahora se guardan los datos
-                for(fil=0; fil<contFil; fil++)
-                    for(col=0; col<contCol; col++)
-                        hojaExcel.addCell(new Label(col, fil+1, (String)table.getValueAt(fil, col)));
+            for (int cont=0; cont<cantidad; cont++) {
+                JTable miTabla = listaTablas.get(cont);
+                WritableSheet hojaExcel = libroExcel.createSheet(listaNombresHojasDeExcel.get(cont), 0);
+                int contFil = miTabla.getRowCount(), contCol = miTabla.getColumnCount();
+                if (tituloColumnas.get(cont)) {
+                    // Se exporta el título de las columnas
+                    for(int col=0; col<contCol; col++)
+                        hojaExcel.addCell(new Label(col, 0, miTabla.getColumnName(col)));
+                    // Se exportan los datos de la tabla
+                    for(int fil=0; fil<contFil; fil++)
+                        for(int col=0; col<contCol; col++)
+                            hojaExcel.addCell(new Label(col, fil+1, (String)miTabla.getValueAt(fil, col)));
+                } else {
+                    // Se exportan los datos de la tabla
+                    for(int fil=0; fil<contFil; fil++)
+                        for(int col=0; col<contCol; col++)
+                            hojaExcel.addCell(new Label(col, fil, (String)miTabla.getValueAt(fil, col)));
+                }
             }
             libroExcel.write();
             libroExcel.close();
-            return true;
         }
-        catch (IOException | WriteException e) {
-            System.out.println("Excepción:\n"+e.getMessage());
-            return false;
+    }
+    /**
+     * Método que permite exportar un JTable en un solo archivo de Excel, en una Hoja de Excel.
+     * @param archivoExcel archivo de tipo xls donde se almacenarán los datos de los JTable.
+     * @param tabla JTable con los datos que se exportarán a una Hoja de Excel.
+     * @param nombreLibroDeExcel nombre que se le dará a la Hoja del archivo Excel.
+     * @param tituloColumna booleano que indica si se exportarán los títulos de las columnas.
+     * @throws IOException
+     * @throws WriteException 
+     */
+    public static void exportar_tabla(File archivoExcel, JTable tabla, String nombreLibroDeExcel, boolean tituloColumna) throws IOException, WriteException {
+        WritableWorkbook libroExcel = Workbook.createWorkbook(archivoExcel);
+        WritableSheet hojaExcel = libroExcel.createSheet(nombreLibroDeExcel, 0);
+        int contFil = tabla.getRowCount(), contCol = tabla.getColumnCount();
+        if (tituloColumna) {
+            // Se exporta el título de las columnas
+            for(int col=0; col<contCol; col++)
+                hojaExcel.addCell(new Label(col, 0, tabla.getColumnName(col)));
+            // Se exportan los datos de la tabla
+            for(int fil=0; fil<contFil; fil++)
+                for(int col=0; col<contCol; col++)
+                    hojaExcel.addCell(new Label(col, fil+1, (String)tabla.getValueAt(fil, col)));
+        } else {
+            // Se exportan los datos de la tabla
+            for(int fil=0; fil<contFil; fil++)
+                for(int col=0; col<contCol; col++)
+                    hojaExcel.addCell(new Label(col, fil, (String)tabla.getValueAt(fil, col)));
         }
+        libroExcel.write();
+        libroExcel.close();
     }
 }

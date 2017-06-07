@@ -5,6 +5,8 @@
  */
 package ModuloEstudiante;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,8 +14,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import jxl.write.WriteException;
 
 /**
  *
@@ -103,7 +108,6 @@ public class Historial extends javax.swing.JDialog {
         tabla_cursos_notas = new javax.swing.JTable();
         panel_botones_estudiante1 = new javax.swing.JPanel();
         exportar_datos = new javax.swing.JButton();
-        exportar_datos1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -247,18 +251,10 @@ public class Historial extends javax.swing.JDialog {
         panel_botones_estudiante1.setBackground(new java.awt.Color(51, 51, 255));
 
         exportar_datos.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        exportar_datos.setText("Exportar");
+        exportar_datos.setText("Exportar cursos y notas");
         exportar_datos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportar_datosActionPerformed(evt);
-            }
-        });
-
-        exportar_datos1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        exportar_datos1.setText("Editar tabla");
-        exportar_datos1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exportar_datos1ActionPerformed(evt);
             }
         });
 
@@ -268,18 +264,14 @@ public class Historial extends javax.swing.JDialog {
             panel_botones_estudiante1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_botones_estudiante1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(exportar_datos)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(exportar_datos1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(exportar_datos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         panel_botones_estudiante1Layout.setVerticalGroup(
             panel_botones_estudiante1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_botones_estudiante1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(panel_botones_estudiante1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(exportar_datos)
-                    .addComponent(exportar_datos1))
+                .addComponent(exportar_datos)
                 .addContainerGap())
         );
 
@@ -329,38 +321,25 @@ public class Historial extends javax.swing.JDialog {
             JOptionPane.showMessageDialog (null, "No hay datos en la tabla para exportar.","BCO", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
-        javax.swing.filechooser.FileNameExtensionFilter filter=new javax.swing.filechooser.FileNameExtensionFilter("Archivos de excel (*.xls)","xls");
-        chooser.setFileFilter(filter);
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos de excel (*.xls)","xls");
+        chooser.setFileFilter(filtro);
         chooser.setDialogTitle("Guardar archivo");
         chooser.setMultiSelectionEnabled(false);
         chooser.setAcceptAllFileFilterUsed(false);
-        if (chooser.showSaveDialog(null)==javax.swing.JFileChooser.APPROVE_OPTION){
-            ArrayList<javax.swing.JTable> listaTablas = new ArrayList<>();
-            ArrayList<String> listaHojasDeLibroExcel = new ArrayList<>();
-            tabla_cursos_notas.setName((String)tabla_ciclos_escolares.getValueAt(tabla_ciclos_escolares.getSelectedRow(), 1));
-            listaTablas.add(tabla_cursos_notas);
-            listaHojasDeLibroExcel .add("Detalle de Gastos");
-            String nombreArchivo = chooser.getSelectedFile().toString();
+        int opcion = chooser.showSaveDialog(this);
+        if (opcion == JFileChooser.APPROVE_OPTION) {
+            String nombreArchivo = chooser.getSelectedFile().toString(); 
             try {
-                ExportarAExcel exportador = new ExportarAExcel(new java.io.File(nombreArchivo+".xls"), listaTablas, listaHojasDeLibroExcel );
-                if (exportador.exportar_tablas()) {
-                    JOptionPane.showMessageDialog(null, "Los datos fueron exportados a excel.","BCO",
-                        JOptionPane.INFORMATION_MESSAGE);
-
-                }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null,"Hubo un error"+ex.getMessage(),"Error",JOptionPane.ERROR_MESSAGE);
-            }
+                 ExportarAExcel.exportar_tabla(new File(nombreArchivo+".xls"), tabla_cursos_notas, "Notas del Ciclo "+(String)tabla_ciclos_escolares.getValueAt(tabla_ciclos_escolares.getSelectedRow(), 1), true);
+                 JOptionPane.showMessageDialog(this, "Archivo '"+chooser.getSelectedFile().getAbsolutePath()+"' creado con éxito.", "Información", JOptionPane.INFORMATION_MESSAGE);
+             } catch (IOException | WriteException ex) {
+                 JOptionPane.showMessageDialog(this, "Ocurrió un error al intentar crear el archivo.\n\nDescripción:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                 Logger.getLogger(Historial.class.getName()).log(Level.SEVERE, null, ex);
+             }
+            
         }
     }//GEN-LAST:event_exportar_datosActionPerformed
-
-    private void exportar_datos1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportar_datos1ActionPerformed
-        this.setVisible(false);
-        EditorTablasExcel editor = new EditorTablasExcel(null, true, tabla_cursos_notas);
-        editor.setVisible(true);
-        this.setVisible(true);
-    }//GEN-LAST:event_exportar_datos1ActionPerformed
 
     /**ÚTIL!!!
      * Método que define el ancho de las columnas de ambas tablas, en base a valores definidos previamente por pruebas.
@@ -506,7 +485,6 @@ public class Historial extends javax.swing.JDialog {
     private javax.swing.JLabel etiqueta_cursos_notas;
     private javax.swing.JLabel etiqueta_nombre_estudiante;
     private javax.swing.JButton exportar_datos;
-    private javax.swing.JButton exportar_datos1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel panel_botones_estudiante1;

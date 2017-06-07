@@ -10,20 +10,18 @@ package ModuloAsignacionEST;
  * @author Wilson Xicará
  */
 public class RegistroAsignacionEST {
-    private int num, ID;
+    private int ID, cicloEscolarId, gradoId;
     private String codigoPersonal, CUI, nombres, apellidos, sexo;
-    private int cicloEscolarId, gradoId;
     private String anio, grado, seccion;
     private boolean asignacionNueva, asignacionAnterior;
 
     public RegistroAsignacionEST() {
-        this.num = this.ID = this.cicloEscolarId = this.gradoId = 0;
+        this.ID = this.cicloEscolarId = this.gradoId = 0;
         this.codigoPersonal = this.CUI = this.nombres = this.apellidos = this.sexo = "";
         this.anio = this.grado = this.seccion = "";
         this.asignacionNueva = this.asignacionAnterior = false;
     }
 
-    public int getNum() { return num; }
     public int getID() { return ID; }
     public int getCicloEscolarId() { return cicloEscolarId; }
     public int getGradoId() { return gradoId; }
@@ -38,7 +36,6 @@ public class RegistroAsignacionEST {
     public boolean isAsignacionNueva() { return asignacionNueva; }
     public boolean isAsignacionAnterior() { return asignacionAnterior; }
 
-    public void setNum(int num) { this.num = num; }
     public void setID(int ID) { this.ID = ID; }
     public void setCicloEscolarId(int cicloEscolarId) { this.cicloEscolarId = cicloEscolarId; }
     public void setGradoId(int gradoId) { this.gradoId = gradoId; }
@@ -53,7 +50,7 @@ public class RegistroAsignacionEST {
     public void setAsignacionNueva(boolean asignacionNueva) { this.asignacionNueva = asignacionNueva; }
     public void setAsignacionAnterior(boolean asignacionAnterior) { this.asignacionAnterior = asignacionAnterior; }
 
-    public String[] getDatosParaTabla() {
+    public String[] getDatosParaTabla(int num) {
         return new String[]{
             ""+num,
             codigoPersonal,

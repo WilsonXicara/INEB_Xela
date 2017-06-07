@@ -446,7 +446,7 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
     private void item_info_estudiantesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_info_estudiantesActionPerformed
         InformacionEstudiante nueva_ventana = new InformacionEstudiante(new javax.swing.JFrame(), true, conexcion);
-        nueva_ventana.setVisible(nueva_ventana.getHacerVisible());
+        nueva_ventana.setVisible(true);
     }//GEN-LAST:event_item_info_estudiantesActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
@@ -530,9 +530,8 @@ public class ModuloPrincipalAdmin extends javax.swing.JFrame {
 
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        // TODO add your handling code here:
-        System.exit(0);
-        //this.dispose();
+        ventanaPadre.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_formWindowClosing
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

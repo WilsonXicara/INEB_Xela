@@ -2,7 +2,7 @@
 
 <Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
-    <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
+    <Menu class="javax.swing.JMenuBar" name="menu">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="menu_ver">
           <Properties>
@@ -28,7 +28,7 @@
     <Property name="resizable" type="boolean" value="false"/>
   </Properties>
   <SyntheticProperties>
-    <SyntheticProperty name="menuBar" type="java.lang.String" value="jMenuBar1"/>
+    <SyntheticProperty name="menuBar" type="java.lang.String" value="menu"/>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
     <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
@@ -50,7 +50,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="120" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="jPanel1" alignment="0" max="32767" attributes="0"/>
+                  <Component id="panel_usuario_contraseña" alignment="0" max="32767" attributes="0"/>
                   <Component id="saludo" alignment="0" max="32767" attributes="0"/>
                   <Component id="iniciar_sesion" alignment="0" min="-2" pref="260" max="-2" attributes="0"/>
               </Group>
@@ -64,7 +64,7 @@
               <EmptySpace min="-2" pref="87" max="-2" attributes="0"/>
               <Component id="saludo" min="-2" pref="59" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+              <Component id="panel_usuario_contraseña" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="iniciar_sesion" min="-2" max="-2" attributes="0"/>
               <EmptySpace pref="99" max="32767" attributes="0"/>
@@ -94,7 +94,7 @@
         <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="iniciar_sesionKeyTyped"/>
       </Events>
     </Component>
-    <Container class="javax.swing.JPanel" name="jPanel1">
+    <Container class="javax.swing.JPanel" name="panel_usuario_contrase&#xf1;a">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="26" green="32" red="a9" type="rgb"/>
