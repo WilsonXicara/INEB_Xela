@@ -39,6 +39,7 @@ public class Pantalla extends javax.swing.JFrame {
     ResultSet est, b;
     JFrame va;
     float Notafinal, n1,n2,n3,n4;
+    int verificar_ciclo = 0;
     /**
      * Creates new form Pantalla
      */
@@ -47,7 +48,7 @@ public class Pantalla extends javax.swing.JFrame {
     
     //es este
     public Pantalla() throws SQLException {
-        /*initComponents();
+       /* initComponents();
         this.setLocationRelativeTo(null);
         conexion = cn.Conectar();
         //validar(tipo);
@@ -60,6 +61,7 @@ public class Pantalla extends javax.swing.JFrame {
         año = Integer.toString(fecha.get(Calendar.YEAR));
         posicion = 0;
         llenar();
+        verificar();
         this.addWindowListener(new WindowListener() {
 
             @Override
@@ -194,7 +196,7 @@ public class Pantalla extends javax.swing.JFrame {
                     Notafinal = ((n1+n2+n3+n4)/4);
                     nf = Float.toString(Notafinal);
                     if(((n1>=0)&&(n1<=100))&&((n2>=0)&&(n2<=100))&&((n3>=0)&&(n3<=100))&&((n4>=0)&&(n4<=100)))
-                    {
+                    {   
                         ps.setString(1, Nota1.getText());
                         ps.setString(2, Nota2.getText());
                         ps.setString(3, Nota3.getText());
@@ -269,7 +271,7 @@ public class Pantalla extends javax.swing.JFrame {
         Nota2.setEditable(true);
         Nota3.setEditable(true);
         Nota4.setEditable(true);
-        NotaR.setEditable(true);
+
         Modificar.setEnabled(true);
         //CursoID.requestFocus();
     }
@@ -673,14 +675,52 @@ public class Pantalla extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    public void verificar()
+    {
+        String listo = "", cerrado = "";
+        int l=0, c=0;
+        try {
+            String sql = "SELECT Cicloescolar.listo, cicloescolar.Cerrado FROM cicloescolar WHERE Cicloescolar.id = "+ Id_cicloescolar +";";
+            sent = conexion.createStatement();
+            ResultSet rs = sent.executeQuery(sql);
+            rs.next();
+            listo = rs.getString("CicloEscolar.Listo");
+            cerrado = rs.getString("CicloEscolar.Cerrado");
+            l = Integer.parseInt(listo);
+            c = Integer.parseInt(cerrado);
+        } catch (SQLException ex) {
+            Logger.getLogger(Pantalla.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //1 si el ciclo está creado pero no puede editarse
+        //2 si el ciclo puede editarse
+        //3 si ya está cerrado
+        //4 no puede editar
+        if((l == 0)&& (c == 0))
+        {
+            verificar_ciclo = 1;
+        }
+        else if((l == 1) && (c == 0))
+        {
+            verificar_ciclo = 2;
+        }
+        else if((l == 1) && (c == 1))
+        {
+            verificar_ciclo = 3;
+        }
+        else if((l == 1) && (c == 1))
+        {
+            verificar_ciclo = 4;
+        }
+        //System.out.println(listo);
+        //System.out.println(cerrado);
+        //System.out.println(verificar_ciclo);
+    }
     private void modificacionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_modificacionMouseClicked
         // TODO add your handling code here:
         if(evt.getButton() == 1)
         {
             int fila = modificacion.getSelectedRow();
             try {
-                habilitar();
                 String sql = "SELECT *FROM Notas WHERE Notas.Id=" + modificacion.getValueAt(fila, 0);
                 sent = conexion.createStatement();
                 ResultSet rs = sent.executeQuery(sql);
@@ -695,6 +735,28 @@ public class Pantalla extends javax.swing.JFrame {
                 Codigo.setText((String)modificacion.getValueAt(fila, 1));
                 Ape.setText((String)modificacion.getValueAt(fila, 2));
                 Nom.setText((String)modificacion.getValueAt(fila, 3));
+                System.out.println(verificar_ciclo);
+                if(verificar_ciclo == 1)
+                {
+                    deshabilitar();
+                }
+                else if(verificar_ciclo == 2)
+                {
+                    if((Nota1.getText() != "-1")&&(Nota2.getText() != "-1")&&(Nota3.getText() != "-1")&&(Nota4.getText() != "-1"))
+                    {
+                        habilitar();
+                    }
+                    else
+                    {
+                        habilitar();
+                        NotaR.setEditable(false);
+                    }
+                }
+                else
+                {
+                    deshabilitar();
+                }
+                
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
