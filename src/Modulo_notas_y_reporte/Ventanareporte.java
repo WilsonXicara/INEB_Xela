@@ -27,9 +27,10 @@ public class Ventanareporte extends javax.swing.JFrame {
     String ciclo;
     JFrame va;
     
+    
     public Ventanareporte() 
     {
-        initComponents();
+        /*initComponents();
         conexion = cn.Conectar();
         año();
         limpiar();
@@ -72,11 +73,12 @@ public class Ventanareporte extends javax.swing.JFrame {
             public void windowDeactivated(WindowEvent we) {
                 
             }
-        });
+        });*/
     }
+    
     public Ventanareporte(Connection conec, JFrame ventana)
     {
-        /*initComponents();
+        initComponents();
         this.setLocationRelativeTo(null);
         conexion = conec;
         va = ventana;
@@ -120,7 +122,7 @@ public class Ventanareporte extends javax.swing.JFrame {
             public void windowDeactivated(WindowEvent we) {
                 
             }
-        });*/
+        });
     }
     public void cerrar()
     {
