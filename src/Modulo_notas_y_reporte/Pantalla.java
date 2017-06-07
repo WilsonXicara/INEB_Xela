@@ -204,7 +204,7 @@ public class Pantalla extends javax.swing.JFrame {
                         int n = ps.executeUpdate();
                         if(n>0)
                         {
-                            limpiar();          
+                            limpiar();
                             llenar();
                             //prueba();
                             JOptionPane.showMessageDialog(null, "Datos modificados");
