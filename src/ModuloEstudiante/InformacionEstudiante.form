@@ -73,7 +73,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="ciclo_escolar" min="-2" pref="75" max="-2" attributes="0"/>
+                  <Component id="ciclo_escolar" min="-2" pref="125" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
@@ -86,7 +86,7 @@
                   <Component id="campo_busqueda" min="-2" pref="250" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="buscar" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="0" pref="55" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -248,7 +248,7 @@
                   <Font name="Tahoma" size="14" style="0"/>
                 </Property>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="14" rowCount="0">
+                  <Table columnCount="16" rowCount="0">
                     <Column editable="false" title="No." type="java.lang.Integer"/>
                     <Column editable="false" title="C&#xf3;digo Personal" type="java.lang.String"/>
                     <Column editable="false" title="CUI" type="java.lang.String"/>
@@ -263,6 +263,8 @@
                     <Column editable="false" title="Tipo Capacidad" type="java.lang.String"/>
                     <Column editable="false" title="Encargado" type="java.lang.String"/>
                     <Column editable="false" title="Relaci&#xf3;n" type="java.lang.String"/>
+                    <Column editable="false" title="Ciclo Escolar" type="java.lang.String"/>
+                    <Column editable="false" title="Grado y Secci&#xf3;n" type="java.lang.String"/>
                   </Table>
                 </Property>
                 <Property name="autoResizeMode" type="int" value="0"/>
@@ -295,15 +297,10 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="ver_historial" max="32767" attributes="0"/>
-                      </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="ver_notas" max="32767" attributes="0"/>
-                      </Group>
+                      <Component id="ver_historial" alignment="0" max="32767" attributes="0"/>
+                      <Component id="ver_notas" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace pref="54" max="32767" attributes="0"/>
               </Group>

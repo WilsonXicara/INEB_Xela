@@ -24,7 +24,7 @@ public class InformacionEstudiante extends javax.swing.JDialog {
     private Connection conexion;
     private DefaultTableModel modelEncontrados;
     private ArrayList<RegistroCiclo> listaCiclos;
-    private boolean ciclosCargados, hacerVisible;
+    private boolean ciclosCargados;
     private ArrayList<RegistroEstudiante> listaEncontrados;
     /**
      * Creates new form InformacionEstudiante
@@ -46,25 +46,20 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         modelEncontrados = (DefaultTableModel)tabla_encontrados.getModel();
         listaCiclos = new ArrayList<>();
         ciclosCargados = false;  // Indicador de que todos los datos ya han sido obtenidos de la Base de Datos
-        hacerVisible = true;
         listaEncontrados = new ArrayList<>();
         
         /* Realizo una consulta a la Tabla CicloEscolar de la Base de Datos y los agrego al ArrayList correspondiente, para
            luego agregarlo al JComboBox. El Id de cada ciclo es correlativo a su posición en el ArrayList. */
         try {
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            ResultSet cCicloEscolar = sentencia.executeQuery("SELECT Anio FROM CicloEscolar");
+            ResultSet cCicloEscolar = sentencia.executeQuery("SELECT Id, Anio, Listo, Cerrado FROM CicloEscolar");
             // Cargo al ArrayList y al JComboBox los Ciclos Escolares encontrados en la Base de Datos
-            while(cCicloEscolar.next()) {
-                listaCiclos.add(new RegistroCiclo(cCicloEscolar.getString("Anio")));    // Agrego un Ciclo Escolar encontrado
+            while(cCicloEscolar.next()) {   // Agregación de los Ciclos Escolares encontrados
+                listaCiclos.add(new RegistroCiclo(cCicloEscolar.getInt("Id"), cCicloEscolar.getString("Anio"), cCicloEscolar.getBoolean("Listo"), cCicloEscolar.getBoolean("Cerrado")));
                 ciclo_escolar.addItem(cCicloEscolar.getString("Anio"));
-            } ciclosCargados = true;// Hasta aquí se garantiza la carga de todos los Grados y Ciclos Escolares de la Base de Datos
-            
-            // En caso de no existir por lo menos un ciclo escolar, cierro la ventana (no hay información que mostrar)
-            if (listaCiclos.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "No se ha creado algún ciclo escolar para mostrar sus datos.", "Sin datos", JOptionPane.INFORMATION_MESSAGE);
-                hacerVisible = false;
             }
+            ciclo_escolar.addItem("Sin Asignación");
+            ciclosCargados = true;  // Hasta aquí se garantiza la carga de todos los Grados y Ciclos Escolares de la Base de Datos
             
             ciclo_escolar.setSelectedIndex(-1); // Esta opción es para generar una llamada al itemStateChange en caso de sólo encontrar un ciclo
             ciclo_escolar.setSelectedIndex(ciclo_escolar.getItemCount() - 1);   // Selecciono por defecto el último Ciclo Esoclar
@@ -158,7 +153,7 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             .addGroup(panel_filtro_busquedaLayout.createSequentialGroup()
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -171,7 +166,7 @@ public class InformacionEstudiante extends javax.swing.JDialog {
                 .addComponent(campo_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buscar)
-                .addGap(0, 55, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         panel_filtro_busquedaLayout.setVerticalGroup(
             panel_filtro_busquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -195,14 +190,14 @@ public class InformacionEstudiante extends javax.swing.JDialog {
 
             },
             new String [] {
-                "No.", "Código Personal", "CUI", "Nombres", "Apellidos", "Dirección", "Municipio", "Fecha Nacimiento", "Sexo", "Etnia", "Capacidad Diferente", "Tipo Capacidad", "Encargado", "Relación"
+                "No.", "Código Personal", "CUI", "Nombres", "Apellidos", "Dirección", "Municipio", "Fecha Nacimiento", "Sexo", "Etnia", "Capacidad Diferente", "Tipo Capacidad", "Encargado", "Relación", "Ciclo Escolar", "Grado y Sección"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -259,13 +254,10 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         panel_botonesLayout.setHorizontalGroup(
             panel_botonesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_botonesLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(panel_botonesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(panel_botonesLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(ver_historial, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(panel_botonesLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(ver_notas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(ver_historial, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(ver_notas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(54, Short.MAX_VALUE))
         );
         panel_botonesLayout.setVerticalGroup(
@@ -326,7 +318,7 @@ public class InformacionEstudiante extends javax.swing.JDialog {
     }//GEN-LAST:event_ver_notasActionPerformed
     /**APROBADO!!!
      * Acción que permite realizar una búsqueda de los registros que coincidan con los valores del campo y los filtros de
-     * búsqueda. En la busqueda, carga los registros en un ArrayList<RegistroEstudiante> listaEncontrados
+     * búsqueda. En la busqueda, carga los registros en un ArrayList de RegistroEstudiante's (listaEncontrados).
      * Cada vez que se realiza una búsqueda, se eliminan los registros de la búsqueda anterior.
      * @param evt 
      */
@@ -336,21 +328,21 @@ public class InformacionEstudiante extends javax.swing.JDialog {
             buscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/buscar.png")));
             setEnabled_campos_resultado(false);
         } else {    // Ya se han seleccionado el filtro de búsqueda
-            buscar.setText("Nueva Búsqueda");   // Indicador de que se habilitará el filtro para una nueva búsqueda
-            buscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/edit.png")));
-            setEnabled_campos_resultado(true);
-            /* Obtención del tipo de filtro para utilizar en la búsqueda */
-            int filtro = filtro_busqueda.getSelectedIndex();
-            int cicloSelec = ciclo_escolar.getSelectedIndex();  // Obtengo el index cel ciclo seleccionado
-            // Obtengo el Id del Grado seleccionado (si la búsqueda es para todos los grados, este valor será cero)
-            int gradoId = (grado.getSelectedIndex() == listaCiclos.get(cicloSelec).getGrados().size()) ?
-                    0 : listaCiclos.get(cicloSelec).getGrado(grado.getSelectedIndex()).getID();
-            String campoBusqueda = campo_busqueda.getText();
+            boolean iniciarBusqueda = true;
+            if (filtro_busqueda.getSelectedIndex() != 0 && campo_busqueda.getText().length() == 0)
+                iniciarBusqueda = false;
+            if (iniciarBusqueda) {
+                buscar.setText("Nueva Búsqueda");   // Indicador de que se habilitará el filtro para una nueva búsqueda
+                buscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/edit.png")));
+                setEnabled_campos_resultado(true);
 
-            modelEncontrados.setRowCount(0);    // Eliminación de todos los registros de la tabla_encontrados
-            listaEncontrados.clear();   // Eliminación de todos los registros de listaEstudiantes
-            
-            extraer_y_mostrar_registros(cicloSelec+1, gradoId, filtro, campoBusqueda);
+                modelEncontrados.setRowCount(0);    // Eliminación de todos los registros de la tabla_encontrados
+                listaEncontrados.clear();   // Eliminación de todos los registros de listaEstudiantes
+                extraer_y_mostrar_registros();
+                ver_notas.setEnabled(tabla_encontrados.getRowCount() > 0);
+                ver_historial.setEnabled(tabla_encontrados.getRowCount() > 0);
+            } else
+                JOptionPane.showMessageDialog(this, "Especifique el campo a buscar", "Error en datos", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_buscarActionPerformed
 
@@ -371,6 +363,8 @@ public class InformacionEstudiante extends javax.swing.JDialog {
      * Acción que permite mostrar en el JComboBox 'grado' los grados asignados al ciclo escolar seleccionado. Para evita hacer
      * varias peticiones a la Base de Datos, los grados se cargan temporalmente en una estructura interna (con la información
      * necesaria para identificarlas) si el grado se selecciona por primera vez.
+     * Debido a que se tiene la opción de mostrar a los estudiantes que aún no tienen Asignación (el últiom Item), si éste se
+     * selecciona no se podrá acceder a Ver Notas y a Ver Historial.
      * @param evt 
      */
     private void ciclo_escolarItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ciclo_escolarItemStateChanged
@@ -378,32 +372,40 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         int indexCiclo = ciclo_escolar.getSelectedIndex();
         if (ciclosCargados && indexCiclo != -1) {
             grado.removeAllItems();
-            ArrayList<RegistroGrado> listaGrados = listaCiclos.get(indexCiclo).getGrados();
-            int cantidad = listaGrados.size();
-            if (cantidad == 0) {    // Si el ArrayList está vacío, aún no se han cargado los grados de dicho ciclo
-                // Ahora obtengo los Grados asociados a cada Ciclo Escolar seleccionado en el JComboBox correspondiente
-                try {
-                    Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                    ResultSet cGrados = sentencia.executeQuery("SELECT AsignacionCAT.CicloEscolar_Id idCiclo, AsignacionCAT.Grado_Id idGrado, Grado.Nombre, Grado.Seccion, COUNT(AsignacionCAT.Grado_Id) grados FROM AsignacionCAT "
-                            + "INNER JOIN Grado ON AsignacionCAT.Grado_Id = Grado.Id "
-                            + "WHERE AsignacionCAT.CicloEscolar_Id = "+(indexCiclo+1)+" "
-                            + "GROUP BY AsignacionCAT.Grado_Id");
-                    // Cargo al ArrayList todos los Grados del Ciclo Escolar seleccionado. El ID de cada ciclo es correlativo a su posición en el ArrayList
-                    while (cGrados.next())
-                        listaGrados.add(new RegistroGrado(cGrados.getInt("idGrado"), cGrados.getString("Nombre"), cGrados.getString("Seccion")));
-                    // Hasta aquí se garantiza la carga de todos los grados
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Error al intentar obtener los grados:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//                    Logger.getLogger(PrincipalAsignacionEST.class.getName()).log(Level.SEVERE, null, ex);
+            if (indexCiclo == (ciclo_escolar.getItemCount()-1)) {   // Se eligió la opción de 'Sin Asignación'
+                grado.setEnabled(false);    // No se puede seleccionar un grado (no existen)
+                ver_notas.setEnabled(false);
+                ver_historial.setEnabled(false);
+            } else {    // Se eligió un Ciclo Escolar ya creado
+                grado.setEnabled(true);
+                ver_notas.setEnabled(true);
+                ver_historial.setEnabled(true);
+                ArrayList<RegistroGrado> listaGrados = listaCiclos.get(indexCiclo).getGrados();
+                int cantidad = listaGrados.size();
+                if (cantidad == 0) {    // Si el ArrayList está vacío, aún no se han cargado los grados de dicho ciclo
+                    try {   // Ahora obtengo los Grados asociados a cada Ciclo Escolar seleccionado en el JComboBox correspondiente
+                        Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                        ResultSet cGrados = sentencia.executeQuery("SELECT AsignacionCAT.CicloEscolar_Id idCiclo, AsignacionCAT.Grado_Id idGrado, Grado.Nombre, Grado.Seccion, COUNT(AsignacionCAT.Grado_Id) grados FROM AsignacionCAT "
+                                + "INNER JOIN Grado ON AsignacionCAT.Grado_Id = Grado.Id "
+                                + "WHERE AsignacionCAT.CicloEscolar_Id = "+listaCiclos.get(indexCiclo).getID()+" "
+                                + "GROUP BY AsignacionCAT.Grado_Id");
+                        // Cargo al ArrayList todos los Grados del Ciclo Escolar seleccionado. El ID de cada ciclo es correlativo a su posición en el ArrayList
+                        while (cGrados.next())
+                            listaGrados.add(new RegistroGrado(cGrados.getInt("idGrado"), cGrados.getString("Nombre"), cGrados.getString("Seccion")));
+                        // Hasta aquí se garantiza la carga de todos los grados
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(this, "Error al intentar obtener los grados:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    //                    Logger.getLogger(PrincipalAsignacionEST.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
+                // Ahora cargo los Grados encontrados al JComboBox
+                cantidad = listaGrados.size();
+                for(int i=0; i<cantidad; i++)
+                    grado.addItem(listaGrados.get(i).getGradoSeccion());
+                grado.addItem("Todos los grados");  // Última opción que permitirá buscar a los estudiantes de todos los grados
+                grado.setSelectedIndex((cantidad == 0) ? -1 : 0);
+                buscar.setEnabled(cantidad != 0);   // Se pueden hacer búsquedas siempre que exista por lo menos un grado
             }
-            // Ahora cargo los Grados encontrados al JComboBox
-            cantidad = listaGrados.size();
-            for(int i=0; i<cantidad; i++)
-                grado.addItem(listaGrados.get(i).getGradoSeccion());
-            grado.addItem("Todos los grados");  // Última opción que permitirá buscar a los estudiantes de todos los grados
-            grado.setSelectedIndex((cantidad == 0) ? -1 : 0);
-            buscar.setEnabled(cantidad != 0);   // Se pueden hacer búsquedas siempre que exista por lo menos un grado
         }
     }//GEN-LAST:event_ciclo_escolarItemStateChanged
 
@@ -424,33 +426,41 @@ public class InformacionEstudiante extends javax.swing.JDialog {
     /**APROBADO!!!
      * Método que busca los registros que coinciden con las especificaciones de la búsqueda en la Base de Datos. Al finalizar
      * la búsqueda, agrega los datos al ArrayList listaEstudiatnes y a la tabla_encontrados.
-     * @param cicloEscolarId
-     * @param gradoId
-     * @param filtro
-     * @param campoBusqueda 
+     * @param cicloEscolarId ID del ciclo escolar seleccionado, o 0 en caso de haber seleccionado 'Sin Asignación' (mostrar estudiantes no asignados).
+     * @param gradoId Id del grado seleccionado, 0 en caso de seleccionar 'Todos los grados', o -1 en caso de seleccionar 'Sin Asignación'
+     * @param filtro opción de campos en la que se basará la búsqueda: [Sin especificar, Código Personal, Apellidos, Nombres]
+     * @param campoBusqueda String que contiene el campo en el que se basará la búsqueda de coincidencias.
      */
-    private void extraer_y_mostrar_registros(int cicloEscolarId, int gradoId, int filtro, String campoBusqueda) {
+    private void extraer_y_mostrar_registros() {
+        int cicloSelec = ciclo_escolar.getSelectedIndex(), gradoSelec = grado.getSelectedIndex(), filtro = filtro_busqueda.getSelectedIndex();
         try {
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            String instruccion = "SELECT AsignacionEST.CicloEscolar_Id, AsignacionEST.Grado_Id, Estudiante.*, Municipio.Nombre MunicipioEst, CONCAT(Encargado.Nombres,CONCAT(' ',Encargado.Apellidos)) NombreEncargado FROM CicloEscolar "
-                    + "INNER JOIN AsignacionEST ON CicloEscolar.Id = AsignacionEST.CicloEscolar_Id "
-                    + "INNER JOIN Estudiante ON AsignacionEST.Estudiante_Id = Estudiante.Id "
-                    + "INNER JOIN Municipio ON Estudiante.Municipio_Id = Municipio.Id "
-                    + "INNER JOIN Encargado ON Estudiante.Encargado_Id = Encargado.Id "
-                    + "WHERE CicloEscolar_Id = "+cicloEscolarId;
-            if (gradoId != 0)   // No existe un grado con Id = 0, por lo que dicho valor es utilizado como marca
-                instruccion+= " AND Grado_Id = "+gradoId;
+            String instruccion;
+            if (cicloSelec == (ciclo_escolar.getItemCount()-1))    // Si se ha seleccionado la opción de 'Sin Asignación'
+                instruccion = "SELECT Estudiante.* FROM Estudiante "
+                        + "LEFT JOIN AsignacionEST ON Estudiante.Id = AsignacionEST.Estudiante_Id "
+                        + "WHERE AsignacionEst.Id IS NULL";
+            else {  // Si se ha seleccionado uno de los Ciclos escolares existentes
+                instruccion = "SELECT AsignacionEST.CicloEscolar_Id, AsignacionEST.Grado_Id, CONCAT(Grado.Nombre, Grado.Seccion) GradoSeccion, Estudiante.*, Municipio.Nombre MunicipioEst, CONCAT(Encargado.Nombres,CONCAT(' ',Encargado.Apellidos)) NombreEncargado FROM CicloEscolar "
+                        + "INNER JOIN AsignacionEST ON CicloEscolar.Id = AsignacionEST.CicloEscolar_Id"
+                        + "INNER JOIN Grado ON AsignacionEST.Grado_Id = Grado.Id "
+                        + "INNER JOIN Estudiante ON AsignacionEST.Estudiante_Id = Estudiante.Id "
+                        + "INNER JOIN Municipio ON Estudiante.Municipio_Id = Municipio.Id "
+                        + "INNER JOIN Encargado ON Estudiante.Encargado_Id = Encargado.Id "
+                        + "WHERE CicloEscolar_Id = "+listaCiclos.get(cicloSelec).getID();
+                if (gradoSelec != -1 && gradoSelec != (grado.getItemCount()-1))   // Si se ha seleccionado un Grado
+                    instruccion+= " AND Grado_Id = "+listaCiclos.get(cicloSelec).getGrado(gradoSelec).getID();
+            }
             /* Realizo la búsqueda según el filtro, el Ciclo Escolar y el Grado especificados */
             switch (filtro) {
                 case 1: // Búsqueda por Código Personal
-                    instruccion+= " AND CodigoPersonal = '"+campoBusqueda + "'";
+                    instruccion+= " AND CodigoPersonal = '"+campo_busqueda.getText()+ "'";
                 break;
                 case 2: // Búsqueda por Apellidos
-                    instruccion+= " AND Apellidos = '"+campoBusqueda + "'";
+                    instruccion+= " AND Apellidos = '"+campo_busqueda.getText()+ "'";
                 break;
-                
                 case 3: // Búsqueda por Nombres
-                    instruccion+= " AND Nombres = '"+campoBusqueda + "'";
+                    instruccion+= " AND Nombres = '"+campo_busqueda.getText()+ "'";
                 break;
                 default:    // Sin especificar (devuelve todos los datos del CicloEscolar especificado)
                 break;
@@ -484,15 +494,28 @@ public class InformacionEstudiante extends javax.swing.JDialog {
                 listaEncontrados.add(nuevo);
                 
                 // Ahora, cargo los datos a la tabla_encontrados
-                modelEncontrados.addRow(nuevo.getDatosParaTabla(contNum));
+                String[] datos = nuevo.getDatosParaTabla(contNum);
+                int cantidad = datos.length;
+                String[] datosTabla = new String[cantidad+2];
+                for(int i=0; i<cantidad; i++) datosTabla[i] = datos[i];
+                // Ahora agrego la información de la Asignación
+                if (cicloSelec == (ciclo_escolar.getItemCount()-1)) // Si se ha seleccionado 'Sin Asignación'
+                    for(int i=0; i<2; i++)
+                        datosTabla[cantidad+i] = "Sin Asignación";
+                else {  // Si se ha seleccionado un ciclo escolar existente
+                    datosTabla[cantidad] = (String)ciclo_escolar.getSelectedItem();
+                    // Determinación del grado
+                    if (gradoSelec == (grado.getItemCount()-1)) // Si se ha seleccionao 'Todos los grados'
+                        datosTabla[cantidad+1] = encontrados.getString("GradoSeccion");
+                    else
+                        datosTabla[cantidad+1] = (String)grado.getSelectedItem();   // Si el grado fue especificado
+                }
+                modelEncontrados.addRow(datosTabla);
             }   // Hasta aquí se garantiza la búsqueda y muestra de datos según las especificaciones
             
-            /** Obtención de los Metadatos
-            ResultSetMetaData columnas = consulta.getMetaData();
-            int cantidadColumnas = columnas.getColumnCount();
-            for(int i=1; i<=cantidadColumnas; i++)
-                tabla.addColumn(columnas.getColumnLabel(i));**/
-            String mensaje = "Se encontró "+contNum+" registro"+((contNum!=1)?"s":"")+" en "+((gradoId==0)?"todos los grados":"el grado "+(String)grado.getSelectedItem())+" del ciclo escolar "+ciclo_escolar.getItemAt(cicloEscolarId-1)+((filtro!=0)?" (Búsqueda por: "+(String)filtro_busqueda.getSelectedItem()+" = '"+campoBusqueda+"')":"");
+            /*String mensaje = "Se encontró "+contNum+" registro"+((contNum!=1)?"s":"")+" en "+
+                    ((gradoId==0)?"todos los grados":"el grado "+(String)grado.getSelectedItem())+" del ciclo escolar "+ciclo_escolar.getItemAt(cicloEscolarId-1)+((filtro!=0)?" (Búsqueda por: "+(String)filtro_busqueda.getSelectedItem()+" = '"+campoBusqueda+"')":"");*/
+            String mensaje = "Se encontró "+contNum+" registro"+((contNum!=1)?"s":"")+".";
             panel_encontrados.setBorder(javax.swing.BorderFactory.createTitledBorder(null, mensaje, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
             
         } catch (SQLException ex) {
@@ -527,8 +550,11 @@ public class InformacionEstudiante extends javax.swing.JDialog {
      * @param valorEnabled valor que se le asigna al .setEnabled() de los componentes adecuados.
      */
     private void setEnabled_campos_resultado(boolean valorEnabled) {
+        int ultimoCicloSeleccionado = ciclo_escolar.getSelectedIndex();
+        ciclo_escolar.setSelectedIndex(-1);
+        ciclo_escolar.setSelectedIndex(ultimoCicloSeleccionado);
         ciclo_escolar.setEnabled(!valorEnabled);
-        grado.setEnabled(!valorEnabled);
+        // El JComboBox grado se habilita o inhabilita mediante el cambio de Item en ciclo_escolar
         filtro_busqueda.setEnabled(!valorEnabled);
         if (!valorEnabled) filtro_busqueda.setSelectedIndex(0);
         
@@ -536,7 +562,6 @@ public class InformacionEstudiante extends javax.swing.JDialog {
         ver_notas.setEnabled(valorEnabled);
         ver_historial.setEnabled(valorEnabled);
     }
-    public boolean getHacerVisible() { return hacerVisible; }
     /**
      * @param args the command line arguments
      */

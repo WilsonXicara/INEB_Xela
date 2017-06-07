@@ -81,18 +81,17 @@ public class ConectarBD extends javax.swing.JDialog {
     private void intentar_conexion() {
         File carpetaPrincipal = new File(CARPETA_PRINCIPAL);
         File archivoPrincipal = new File(rutaArchivo);
-        // Si la carpeta principal no existe se crea para guardar los datos de la base de datos
-        if (!carpetaPrincipal.exists() || !archivoPrincipal.exists()) {
-            etiqueta_titulo.setText("No se encontró el archivo principal");
-            // Se cargarán las Direcciones IPs que son accesibles en la tabla
-            // Definición del ancho de las columnas para la Tabla Encontrados (valores definidos en base a pruebas)
-            tabla_ips_accesibles.getColumnModel().getColumn(0).setPreferredWidth(50);
-            tabla_ips_accesibles.getColumnModel().getColumn(1).setPreferredWidth(300);
-            
-            probar_si_soy_servidor();   // Este equipo puede ser servidor sí y solo sí tiene la Base de Datos
-        } else {    // Si la carpeta existe, obtengo la dirección IP del servidor e intento crear la conexión
-            try {
-                System.out.print("Extrayendo la Dirección IP del servidor: ");
+        try {
+            // Si la carpeta principal no existe se crea para guardar los datos de conexión con la Base de Datos
+            if (!carpetaPrincipal.exists() || !archivoPrincipal.exists()) {
+                etiqueta_titulo.setText("No se encontró la Dirección IP del Servidor.");
+                // Se cargarán las Direcciones IPs que son accesibles en la tabla
+                // Definición del ancho de las columnas para la Tabla Encontrados (valores definidos en base a pruebas)
+                tabla_ips_accesibles.getColumnModel().getColumn(0).setPreferredWidth(50);
+                tabla_ips_accesibles.getColumnModel().getColumn(1).setPreferredWidth(300);
+
+                probar_si_soy_servidor();   // Este equipo puede ser servidor sí y solo sí tiene la Base de Datos
+            } else {
                 RandomAccessFile archivo = new RandomAccessFile(rutaArchivo, "r");
                 String firma = "", ipServidor = "";
                 for(int i=0; i<6; i++) firma+= ""+(char)Byte.toUnsignedInt(archivo.readByte());
@@ -101,30 +100,24 @@ public class ConectarBD extends javax.swing.JDialog {
                     ipServidor+= Byte.toUnsignedInt(archivo.readByte())+".";
                     ipServidor+= Byte.toUnsignedInt(archivo.readByte())+".";
                     ipServidor+= Byte.toUnsignedInt(archivo.readByte());
-                    System.out.print(ipServidor+"\n");
                 }
                 archivo.close();
-                
+                System.out.println("Extrayendo la Dirección IP del Servidor: "+ipServidor);
+
                 conectar(ipServidor);
                 etiqueta_titulo.setText("Conexión establecida");
-                campo_direccion_ip1.setEnabled(false);
-                campo_direccion_ip2.setEnabled(false);
-                campo_direccion_ip3.setEnabled(false);
-                campo_direccion_ip4.setEnabled(false);
-                conectar_con_base_datos.setEnabled(false);
-                obtener_ips_accesibles.setEnabled(false);
-                // Si se logra establecer la conexión, se puede cerrar el JDialog
-                this.setVisible(false);
-            } catch (FileNotFoundException ex) {
-                JOptionPane.showMessageDialog(this, "Error al intentar obtener la Dirección IP del servidor\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//                Logger.getLogger(ConectarBD.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, "Error al intentar obtener la Dirección IP del servidor\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//                Logger.getLogger(ConectarBD.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException | SQLException ex) {
-                JOptionPane.showMessageDialog(this, "No se puede conectar con la Base de Datos.\nAl parecer ha cambiado la Dirección IP del servidor.\nConsulte con el Administrador\n\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//                Logger.getLogger(ConectarBD.class.getName()).log(Level.SEVERE, null, ex);
+                // No es necesario inhabilitar campos ya que el JDialog no se mostrará
             }
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(this, "Error al intentar obtener la Dirección IP del servidor\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+//            Logger.getLogger(ConectarBD.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Error al intentar obtener la Dirección IP del servidor\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+//            Logger.getLogger(ConectarBD.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | SQLException ex) {
+            JOptionPane.showMessageDialog(this, "No se puede conectar con la Base de Datos.\nAl parecer ha cambiado la Dirección IP del servidor.\nConsulte con el Administrador\n\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            probar_si_soy_servidor();   // Verifico si este equipo es el Servidor
+//            Logger.getLogger(ConectarBD.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

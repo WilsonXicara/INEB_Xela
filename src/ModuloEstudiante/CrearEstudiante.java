@@ -5,8 +5,6 @@
  */
 package ModuloEstudiante;
 
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,7 +23,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class CrearEstudiante extends javax.swing.JDialog {
     private Connection conexion;
-    private int contadorIdEstudiantesEnBD, indexEstudianteEditado;
+    private int indexEstudianteEditado;
     private DefaultTableModel modelEstudiantes;
     private ArrayList<RegistroEstudiante> listaEstudiantes;
     private ArrayList<RegistroEncargado> listaEncargados;
@@ -54,12 +52,11 @@ public class CrearEstudiante extends javax.swing.JDialog {
         // Obtengo los correlativos ID's de Estudiantes y Encargados que se creen temporalmente en las tablas
         try {
             Statement sentencia = this.conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            // Obtengo el correlativo actual de los Id's de estudiantes en la BD (los nuevos serán mayores al actual mayor).
-            ResultSet cEstudiante = sentencia.executeQuery("SELECT MAX(Id) Cantidad FROM Estudiante");
-            cEstudiante.next();
-            // Obtengo lo que será el inicio del correlativo de los Id's de los nuevos estudiantes
-            contadorIdEstudiantesEnBD = cEstudiante.getInt("Cantidad");
-            cEstudiante.close();
+            // Obtengo la Cantidad de Ciclos Escolares existentes en la BD
+            ResultSet cCantidadCiclos = sentencia.executeQuery("SELECT COUNT(Id) FROM CicloEscolar");
+            cCantidadCiclos.next();
+            if (cCantidadCiclos.getInt(1) == 0)
+                JOptionPane.showMessageDialog(this, "Aún no se ha creado algún Ciclo Escolar.\n\nPuede crear registros de nuevos estudiantes, pero no podrá realizar Asignaciones.\nConsulte con el Administrador para crear un Ciclo Escolar.", "Aviso", JOptionPane.WARNING_MESSAGE);
             sentencia.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error al intentar conectarse a la Base de Datos.\n"+ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
@@ -67,35 +64,11 @@ public class CrearEstudiante extends javax.swing.JDialog {
 //            Logger.getLogger(CrearEstudiante.class.getName()).log(Level.SEVERE, null, ex);
         }
         cargar_municipios();    // Obtengo el listado de municipios almacenados en la Base de Datos
-        /**
-        DefaultTableModel model = new DefaultTableModel();
-        JComboBox comboBox = new JComboBox(new String[]{"ITEM 1","ITEM 2", "ITEM 3"});
-        DefaultCellEditor defaultCellEditor=new DefaultCellEditor(comboBox);
-        tabla_estudiantes.getColumnModel().getColumn(2).setCellEditor(defaultCellEditor);
-        **/
+        
         this.setLocationRelativeTo(null);   // Para centrar esta ventana sobre la pantalla.
         listaEstudiantes = new ArrayList<>();
         listaEncargados = new ArrayList<>();
-        
-        // Evento para controlar cuando la ventana se quiere cerrar, y no se han guardado los datos temporales
-        this.addWindowListener(new WindowListener() {
-            @Override
-            public void windowOpened(WindowEvent we) {}
-            @Override
-            public void windowClosing(WindowEvent we) { antes_de_cerrar(); }
-            @Override
-            public void windowClosed(WindowEvent we) {}
-            @Override
-            public void windowIconified(WindowEvent we) {}
-            @Override
-            public void windowDeiconified(WindowEvent we) {}
-            @Override
-            public void windowActivated(WindowEvent we) {}
-            @Override
-            public void windowDeactivated(WindowEvent we) {}
-        });
         estudiante_fechaNacimiento.getJCalendar().setWeekOfYearVisible(false);  // Para no mostrar el número de semana en el Calendario
-        definir_ancho_columnas();   // Se define el ahcho de columnas en base a valores obtenidos previamente por pruebas
         
         guardar_fila_editada.setVisible(false);     // Oculto estos botones (se mostrarán en la edición de datos)
         cancelar_edicion.setVisible(false);
@@ -173,6 +146,11 @@ public class CrearEstudiante extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Crear nuevo estudiante");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         panel_datos_estudiante.setBackground(new java.awt.Color(153, 153, 255));
         panel_datos_estudiante.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Información del nuevo Estudiante", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
@@ -535,7 +513,7 @@ public class CrearEstudiante extends javax.swing.JDialog {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false, false, false, false, false, false, false, false, false, false
@@ -559,6 +537,22 @@ public class CrearEstudiante extends javax.swing.JDialog {
             }
         });
         jScrollPane1.setViewportView(tabla_estudiantes);
+        if (tabla_estudiantes.getColumnModel().getColumnCount() > 0) {
+            tabla_estudiantes.getColumnModel().getColumn(0).setPreferredWidth(40);
+            tabla_estudiantes.getColumnModel().getColumn(1).setPreferredWidth(110);
+            tabla_estudiantes.getColumnModel().getColumn(2).setPreferredWidth(135);
+            tabla_estudiantes.getColumnModel().getColumn(3).setPreferredWidth(130);
+            tabla_estudiantes.getColumnModel().getColumn(4).setPreferredWidth(150);
+            tabla_estudiantes.getColumnModel().getColumn(5).setPreferredWidth(225);
+            tabla_estudiantes.getColumnModel().getColumn(6).setPreferredWidth(180);
+            tabla_estudiantes.getColumnModel().getColumn(7).setPreferredWidth(120);
+            tabla_estudiantes.getColumnModel().getColumn(8).setPreferredWidth(80);
+            tabla_estudiantes.getColumnModel().getColumn(9).setPreferredWidth(80);
+            tabla_estudiantes.getColumnModel().getColumn(10).setPreferredWidth(125);
+            tabla_estudiantes.getColumnModel().getColumn(11).setPreferredWidth(230);
+            tabla_estudiantes.getColumnModel().getColumn(12).setPreferredWidth(250);
+            tabla_estudiantes.getColumnModel().getColumn(13).setPreferredWidth(115);
+        }
 
         panel_botones_estudiante1.setBackground(new java.awt.Color(51, 51, 255));
 
@@ -694,11 +688,9 @@ public class CrearEstudiante extends javax.swing.JDialog {
         estudiante_tipo_capacidad.setText((estudiante_capacidad_diferente.isSelected())?"":"Sin especificar");
         estudiante_tipo_capacidad.setEnabled(estudiante_capacidad_diferente.isSelected());
     }//GEN-LAST:event_estudiante_capacidad_diferenteItemStateChanged
-
     private void estudiante_sexo_masculinoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_estudiante_sexo_masculinoItemStateChanged
         estudiante_sexo_femenino.setSelected(!estudiante_sexo_masculino.isSelected());
     }//GEN-LAST:event_estudiante_sexo_masculinoItemStateChanged
-
     private void estudiante_sexo_femeninoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_estudiante_sexo_femeninoItemStateChanged
         estudiante_sexo_masculino.setSelected(!estudiante_sexo_femenino.isSelected());
     }//GEN-LAST:event_estudiante_sexo_femeninoItemStateChanged
@@ -1024,7 +1016,19 @@ public class CrearEstudiante extends javax.swing.JDialog {
      * Eventos para controlar el ingreso de datos en CUI, Código Personal. Ambos tienen un formato específico.
      */
     private void estudiante_codigo_personalKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_estudiante_codigo_personalKeyTyped
-        // TODO add your handling code here:
+        // El formato del Código Personal es: [1 caracter][3 dígitos][3 caracteres] (sin las llaves cuadradas).
+        int longActual = estudiante_codigo_personal.getText().length();
+        if (longActual == 0) {
+            if (!Pattern.compile("[a-zA-Z]").matcher(String.valueOf(evt.getKeyChar())).matches())
+                evt.consume();
+        } else if (longActual > 0 && longActual < 4) {
+            if (!Pattern.compile("\\d").matcher(String.valueOf(evt.getKeyChar())).matches())
+                evt.consume();
+        } else if (longActual > 3 && longActual < 7) {
+            if (!Pattern.compile("[a-zA-Z]").matcher(String.valueOf(evt.getKeyChar())).matches())
+                evt.consume();
+        } else
+            evt.consume();
     }//GEN-LAST:event_estudiante_codigo_personalKeyTyped
 
     private void estudiante_cuiKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_estudiante_cuiKeyTyped
@@ -1032,6 +1036,13 @@ public class CrearEstudiante extends javax.swing.JDialog {
         if (!Pattern.compile("\\d").matcher(String.valueOf(evt.getKeyChar())).matches() || estudiante_cui.getText().length() == 13)
             evt.consume();
     }//GEN-LAST:event_estudiante_cuiKeyTyped
+    /**
+     * Evento que se lanza previo a cerrar la ventana.
+     * @param evt 
+     */
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        antes_de_cerrar();
+    }//GEN-LAST:event_formWindowClosing
     /**APROBADO!!!
      * Método que carga los datos de un RegistroEstudiante a los campos correspondientes. Útil en la edición de un registro.
      * @param estudiante registro del que se extraerán los datos para cargarlos a los campos correspondientes.
@@ -1059,17 +1070,17 @@ public class CrearEstudiante extends javax.swing.JDialog {
      * @throws ExcepcionDatosIncorrectos 
      */
     private void validar_datos_estudiante(boolean paraBuscar) throws ExcepcionDatosIncorrectos {
-        if (!Pattern.compile("\\D\\d{3}\\D{3}").matcher(estudiante_codigo_personal.getText()).matches())
-            throw new ExcepcionDatosIncorrectos("El Código Personal es incorrecto.\n\nEl formato correcto es:\nUn caracter, Tres dígitos y Tres caracteres (sin espacios)");
+        if (estudiante_codigo_personal.getText().length() != 7)
+            throw new ExcepcionDatosIncorrectos("El Código Personal debe tener 7 caracteres");
         if (estudiante_cui.getText().length() != 13)
-            throw new ExcepcionDatosIncorrectos("El Código Único de Identificación debe tener 13 dígitos.");
+            throw new ExcepcionDatosIncorrectos("El Código Único de Identificación debe tener 13 dígitos");
         if (estudiante_nombres.getText().length()==0 || estudiante_apellidos.getText().length()==0)
             throw new ExcepcionDatosIncorrectos("Los nombres o los apellidos no pueden ser nulos");
         if (!paraBuscar) {
             if (estudiante_direccion.getText().length() == 0)
                 throw new ExcepcionDatosIncorrectos("No se ha especificado la dirección de estudiante");
             if (estudiante_municipio.getSelectedIndex() == -1)
-                throw new ExcepcionDatosIncorrectos("No se ha especificado el municipio del estudiante.");
+                throw new ExcepcionDatosIncorrectos("No se ha especificado el municipio del estudiante");
             if (estudiante_fechaNacimiento.getDate() == null)
                 throw new ExcepcionDatosIncorrectos("No se ha especificado la fecha de nacimiento del estudiante");
             if (estudiante_etnia.getText().length() == 0)
@@ -1202,26 +1213,6 @@ public class CrearEstudiante extends javax.swing.JDialog {
             // 'javax.swing.JDialog.DISPOSE_ON_CLOSE'       cierra la ventana
             // 'javax.swing.JDialog.DO_NOTHING_ON_CLOSE'    no cierra la ventana
         }
-    }
-    /**APROBADO!!!
-     * Método que define el ancho de las columnas de ambas tablas, en base a valores definidos previamente por pruebas.
-     */
-    private void definir_ancho_columnas() {
-        // Definición del ancho de las columnas para la Tabla Estudiantes (valores definidos en base a pruebas)
-        tabla_estudiantes.getColumnModel().getColumn(0).setPreferredWidth(40);
-        tabla_estudiantes.getColumnModel().getColumn(1).setPreferredWidth(110);
-        tabla_estudiantes.getColumnModel().getColumn(2).setPreferredWidth(135);
-        tabla_estudiantes.getColumnModel().getColumn(3).setPreferredWidth(130);
-        tabla_estudiantes.getColumnModel().getColumn(4).setPreferredWidth(150);
-        tabla_estudiantes.getColumnModel().getColumn(5).setPreferredWidth(225);
-        tabla_estudiantes.getColumnModel().getColumn(6).setPreferredWidth(180);
-        tabla_estudiantes.getColumnModel().getColumn(7).setPreferredWidth(120);
-        tabla_estudiantes.getColumnModel().getColumn(8).setPreferredWidth(80);
-        tabla_estudiantes.getColumnModel().getColumn(9).setPreferredWidth(80);
-        tabla_estudiantes.getColumnModel().getColumn(10).setPreferredWidth(125);
-        tabla_estudiantes.getColumnModel().getColumn(11).setPreferredWidth(230);
-        tabla_estudiantes.getColumnModel().getColumn(12).setPreferredWidth(250);
-        tabla_estudiantes.getColumnModel().getColumn(13).setPreferredWidth(115);
     }
     
     /**
