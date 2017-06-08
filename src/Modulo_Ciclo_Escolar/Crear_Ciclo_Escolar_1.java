@@ -21,7 +21,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author USUARIO
+ * @author Hugo Tzul y Wilson Xicará
  */
 public class Crear_Ciclo_Escolar_1 extends javax.swing.JDialog {
     private Connection base;
