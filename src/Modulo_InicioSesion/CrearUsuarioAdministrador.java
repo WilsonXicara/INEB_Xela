@@ -21,14 +21,14 @@ import javax.swing.JOptionPane;
  * Principal, así como su Cuenta de Usuario; para ambos casos, los ID's de dichos registros es 1 (porque son los primeros).
  * @author Wilson Xicará.
  */
-public class CrearAdministrador extends javax.swing.JDialog {
+public class CrearUsuarioAdministrador extends javax.swing.JDialog {
     private Connection conexion;
     private boolean administradorPrincipalCreado, esAdminPrincipal;
     private int idNuevoAdmin;
     /**
      * Creates new form CrearAdminPrincipal
      */
-    public CrearAdministrador(java.awt.Frame parent, boolean modal) {
+    public CrearUsuarioAdministrador(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
@@ -39,7 +39,7 @@ public class CrearAdministrador extends javax.swing.JDialog {
      * @param conexion 
      * @param esAdminPrincipal 
      */
-    public CrearAdministrador(java.awt.Frame parent, boolean modal, Connection conexion, boolean esAdminPrincipal) {
+    public CrearUsuarioAdministrador(java.awt.Frame parent, boolean modal, Connection conexion, boolean esAdminPrincipal) {
         super(parent, modal);
         initComponents();
         this.conexion = conexion;
@@ -49,31 +49,6 @@ public class CrearAdministrador extends javax.swing.JDialog {
         cargar_municipios();
         
         this.setLocationRelativeTo(null);   // Para centrar esta ventana sobre la pantalla
-        // Evento para controlar cuando la ventana se quiere cerrar, y no se han guardado los datos del administrador
-        /*javax.swing.JDialog estaVentana = this;
-        estaVentana.addWindowListener(new WindowListener() {
-            @Override
-            public void windowOpened(WindowEvent we) {}
-            @Override
-            public void windowClosing(WindowEvent we) {
-                int opcion = JOptionPane.showOptionDialog(estaVentana,
-                    "Aún no ha creado la cuenta del Administrador Principal."
-                    + "\nTome en cuenta que si no crea dicha cuenta, no podrá hacer uso del sistema."
-                    + "\n\nEstá seguro que desea salir?",
-                    "Aviso", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-                estaVentana.setDefaultCloseOperation((opcion == JOptionPane.YES_OPTION) ? javax.swing.JDialog.DISPOSE_ON_CLOSE : javax.swing.JDialog.DO_NOTHING_ON_CLOSE);
-            }
-            @Override
-            public void windowClosed(WindowEvent we) {}
-            @Override
-            public void windowIconified(WindowEvent we) {}
-            @Override
-            public void windowDeiconified(WindowEvent we) {}
-            @Override
-            public void windowActivated(WindowEvent we) {}
-            @Override
-            public void windowDeactivated(WindowEvent we) {}
-        });*/
     }
 
     /**
@@ -125,8 +100,6 @@ public class CrearAdministrador extends javax.swing.JDialog {
                 formWindowClosing(evt);
             }
         });
-
-        panel_general.setBackground(new java.awt.Color(0, 204, 153));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -524,10 +497,10 @@ public class CrearAdministrador extends javax.swing.JDialog {
             }
         } catch (ExcepcionDatosIncorrectos ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error en datos", JOptionPane.ERROR_MESSAGE);
-//            Logger.getLogger(CrearAdministrador.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(CrearUsuarioAdministrador.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "No se puede crear el registro en la Base de Datos.\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//            Logger.getLogger(CrearAdministrador.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(CrearUsuarioAdministrador.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_crear_registrosActionPerformed
 
@@ -580,7 +553,7 @@ public class CrearAdministrador extends javax.swing.JDialog {
             if (cUsuario.getInt(1) != 0)
                 throw new ExcepcionDatosIncorrectos("Ya existe una Cuenta de Usuario con el mismo nombre");
         } catch (SQLException ex) {
-//            Logger.getLogger(CrearAdministrador.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(CrearUsuarioAdministrador.class.getName()).log(Level.SEVERE, null, ex);
             throw new ExcepcionDatosIncorrectos("Error de conexión con la Base de Datos.\nConsulte al programador");
         }   
         if (usuario_contraseña.getPassword().length == 0)
@@ -641,24 +614,16 @@ public class CrearAdministrador extends javax.swing.JDialog {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CrearAdministrador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CrearAdministrador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CrearAdministrador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CrearAdministrador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(CrearUsuarioAdministrador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                CrearAdministrador dialog = new CrearAdministrador(new javax.swing.JFrame(), true);
+                CrearUsuarioAdministrador dialog = new CrearUsuarioAdministrador(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

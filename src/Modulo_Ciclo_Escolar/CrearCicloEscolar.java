@@ -7,7 +7,6 @@ package Modulo_Ciclo_Escolar;
 
 import java.awt.Frame;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -20,41 +19,39 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
- *
- * @author Hugo Tzul y Wilson Xicará
+ * Ventana que permite crear un nuevo registro de Ciclo Escolar en la Base de Datos. Sólo crear el ciclo, la asignación de
+ * cursos y grados se realiza después.
+ * @author Wilson Xicará y Hugo Tzul
  */
-public class Crear_Ciclo_Escolar_1 extends javax.swing.JDialog {
+public class CrearCicloEscolar extends javax.swing.JDialog {
     private Connection base;
-    private DefaultTableModel modelTabla;
     /**
      * Creates new form Crear_Ciclo_Escolar
      */
-    public Crear_Ciclo_Escolar_1(java.awt.Frame parent, boolean modal) {
+    public CrearCicloEscolar(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
     }
     
-    public Crear_Ciclo_Escolar_1(java.awt.Frame parent, boolean modal, Connection base) {
-        super(parent, modal);
+    public CrearCicloEscolar(java.awt.Frame parent, Connection base) {
+        super(parent, true);
         initComponents();
         this.base = base;
-        modelTabla = (DefaultTableModel)tabla_ciclos_existentes.getModel();
-        tabla_ciclos_existentes.getColumnModel().getColumn(0).setPreferredWidth(40);
-        tabla_ciclos_existentes.getColumnModel().getColumn(1).setPreferredWidth(100);
+        
         // Inicialmente se asume que el nuevo Ciclo Escolar es el año en curso, indicado por la Base de Datos
         try {
             Statement sentencia = base.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             ResultSet cCicloEscolar = sentencia.executeQuery("SELECT YEAR(NOW())");
             cCicloEscolar.next();
             nombre_ciclo.setText(cCicloEscolar.getString(1));
-            cCicloEscolar.close();
             // Ahora obtengo todos los Ciclos Escolares almacenados en la Base de Datos
             cCicloEscolar = sentencia.executeQuery("SELECT Anio FROM CicloEscolar");
+            DefaultTableModel modelTabla = (DefaultTableModel)tabla_ciclos_existentes.getModel();
             while (cCicloEscolar.next())
-                modelTabla.addRow(new String[]{""+(tabla_ciclos_existentes.getRowCount()+1), cCicloEscolar.getString(1)});
+                modelTabla.addRow(new String[]{""+(modelTabla.getRowCount()+1), cCicloEscolar.getString(1)});
             cCicloEscolar.close();
         } catch (SQLException ex) {
-//            Logger.getLogger(Crear_Ciclo_Escolar_1.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(CrearCicloEscolar.class.getName()).log(Level.SEVERE, null, ex);
             // En caso de ocurrir un error, se toma el año del equipo actual
             Calendar fecha = new GregorianCalendar();
             nombre_ciclo.setText(Integer.toString(fecha.get(Calendar.YEAR)));
@@ -85,7 +82,6 @@ public class Crear_Ciclo_Escolar_1 extends javax.swing.JDialog {
         setLocationByPlatform(true);
         setResizable(false);
 
-        jPanel1.setBackground(new java.awt.Color(0, 204, 153));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ciclos Escolares existentes:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
 
         tabla_ciclos_existentes.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -115,6 +111,10 @@ public class Crear_Ciclo_Escolar_1 extends javax.swing.JDialog {
         tabla_ciclos_existentes.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tabla_ciclos_existentes.setRowHeight(25);
         jScrollPane1.setViewportView(tabla_ciclos_existentes);
+        if (tabla_ciclos_existentes.getColumnModel().getColumnCount() > 0) {
+            tabla_ciclos_existentes.getColumnModel().getColumn(0).setPreferredWidth(40);
+            tabla_ciclos_existentes.getColumnModel().getColumn(1).setPreferredWidth(150);
+        }
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -127,7 +127,6 @@ public class Crear_Ciclo_Escolar_1 extends javax.swing.JDialog {
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
         );
 
-        jPanel2.setBackground(new java.awt.Color(0, 204, 153));
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Datos del nuevo ciclo:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -252,8 +251,8 @@ public class Crear_Ciclo_Escolar_1 extends javax.swing.JDialog {
                 }
                 this.dispose();
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error de conexión con la Base de Datos.\nConsulte con el programador.\n\nDescripción:\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//                Logger.getLogger(Crear_Ciclo_Escolar_1.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "No se puede crear el Ciclo Escolar.\n\nDescripción:\n"+ex.getMessage(), "Error en conexión", JOptionPane.ERROR_MESSAGE);
+//                Logger.getLogger(CrearCicloEscolar.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_crear_ciclo_escolarActionPerformed
@@ -279,22 +278,15 @@ public class Crear_Ciclo_Escolar_1 extends javax.swing.JDialog {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Crear_Ciclo_Escolar_1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Crear_Ciclo_Escolar_1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Crear_Ciclo_Escolar_1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Crear_Ciclo_Escolar_1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(CrearCicloEscolar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Crear_Ciclo_Escolar_1 dialog = new Crear_Ciclo_Escolar_1(new javax.swing.JFrame(), true);
+                CrearCicloEscolar dialog = new CrearCicloEscolar(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

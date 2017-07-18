@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -19,27 +18,24 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Wilson Xicará
  */
-public class ListadoUsuarios extends javax.swing.JFrame {
-
+public class ListadoUsuarios extends javax.swing.JDialog {
+    private Connection conexion;
     /**
-     * Creates new form ListadoUsuarios
+     * Creates new form Prueba
      */
-    Connection conexion;
-    DefaultTableModel modelo;
-    JFrame Ventanita;
-    ResultSet User = null;
-    public ListadoUsuarios() {
+    public ListadoUsuarios(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
     }
-    public ListadoUsuarios(Connection conec,JFrame ventana) {
+    public ListadoUsuarios(java.awt.Frame parent, Connection conexion) {
+        super(parent, true);
         initComponents();
+        this.conexion = conexion;
+        tabla_usuarios.setShowHorizontalLines(true);
+        tabla_usuarios.setShowVerticalLines(true);
         this.setLocationRelativeTo(null);
-        int cont = 1;
-        String tipo = "";
-        conexion = conec;
-        modelo = (DefaultTableModel)Usuarios.getModel();
-        Ventanita = ventana;
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -49,58 +45,31 @@ public class ListadoUsuarios extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        Usuarios = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        regresar = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         admin_usuario = new javax.swing.JTextField();
         admin_contrasenia = new javax.swing.JPasswordField();
         obtener_lista_usuarios = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tabla_usuarios = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
-            }
-        });
+        setTitle("Información de Cuentas de usuario");
+        setResizable(false);
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Listados de Usuarios");
-
-        Usuarios.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        Usuarios.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "No.", "Usuario", "Contraseña", "Tipo de Cuenta"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        Usuarios.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-        Usuarios.setRowHeight(25);
-        jScrollPane1.setViewportView(Usuarios);
-
-        jButton1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jButton1.setText("Regresar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        regresar.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        regresar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/atras.PNG"))); // NOI18N
+        regresar.setText("Regresar");
+        regresar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                regresarActionPerformed(evt);
             }
         });
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Administrador", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Administrador Principal:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel2.setText("Usuario:");
@@ -124,8 +93,9 @@ public class ListadoUsuarios extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(obtener_lista_usuarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(6, 6, 6)
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel3)
                     .addComponent(jLabel2))
@@ -133,8 +103,7 @@ public class ListadoUsuarios extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(admin_usuario, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(admin_contrasenia, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 11, Short.MAX_VALUE))
-            .addComponent(obtener_lista_usuarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(39, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -151,73 +120,102 @@ public class ListadoUsuarios extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Usuarios asignados:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 12))); // NOI18N
+
+        tabla_usuarios.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        tabla_usuarios.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "No.", "Usuario", "Contraseña", "Tipo de Cuenta"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tabla_usuarios.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tabla_usuarios.setRowHeight(25);
+        tabla_usuarios.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(tabla_usuarios);
+        if (tabla_usuarios.getColumnModel().getColumnCount() > 0) {
+            tabla_usuarios.getColumnModel().getColumn(0).setPreferredWidth(40);
+            tabla_usuarios.getColumnModel().getColumn(1).setPreferredWidth(150);
+            tabla_usuarios.getColumnModel().getColumn(2).setPreferredWidth(150);
+            tabla_usuarios.getColumnModel().getColumn(3).setPreferredWidth(200);
+        }
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(24, 24, 24)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jButton1)))
-                .addGap(0, 22, Short.MAX_VALUE))
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(regresar))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addContainerGap())
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(regresar))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        Ventanita.setEnabled(true);
-        this.dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        // TODO add your handling code here:
-        Ventanita.setEnabled(true);
-        this.dispose();
-    }//GEN-LAST:event_formWindowClosing
-
     private void obtener_lista_usuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_obtener_lista_usuariosActionPerformed
-        modelo.setRowCount(0);  // Borro el contenido de la tabla
+        DefaultTableModel modelUsuarios = (DefaultTableModel)tabla_usuarios.getModel();
+        modelUsuarios.setRowCount(0);  // Borro el contenido de la tabla
         try {
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             ResultSet cUsuarios = sentencia.executeQuery("CALL obtenerListaUsuarios('"+admin_usuario.getText()+"', '"+String.valueOf(admin_contrasenia.getPassword())+"')");
-            int contador = 1;
             while (cUsuarios.next()) {
-                modelo.addRow(new String[]{""+contador, cUsuarios.getString("NombreUsuario"), cUsuarios.getString("Contrasenia"),
-                    ("3".equals(cUsuarios.getString("Tipo")) ? "Catedrático" : ("1".equals(cUsuarios.getString("Tipo")) ? "Principal" : "Administrador"))});
-                contador++;
+                modelUsuarios.addRow(new String[]{
+                    ""+(modelUsuarios.getRowCount()+1),
+                    cUsuarios.getString("NombreUsuario"),
+                    cUsuarios.getString("Contrasenia"),
+                    ("3".equals(cUsuarios.getString("Tipo")) ? "Catedrático" : ("1".equals(cUsuarios.getString("Tipo")) ? "Principal" : "Administrador"))
+                });
             }   // Hasta aquí se garantiza la carga de todas las cuentas de Usuario y su Contraseña (desencriptada).
-            if (Usuarios.getRowCount() == 0) {  // Si se accede a esta ventana, existe por lo menos la cuenta del Administrador Principal
+            if (tabla_usuarios.getRowCount() == 0)  // Si se accede a esta ventana, existe por lo menos la cuenta del Administrador Principal
                 JOptionPane.showMessageDialog(this, "El Usuario o la Contraseña son incorrectos.\n\nIngrese correctamente mayúsculas y minúsculas", "Error en datos", JOptionPane.ERROR_MESSAGE);
-            }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Ocurrió un error de conexión con la Base de Datos.\n\n"+ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//            Logger.getLogger(ListadoUsuarios.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "No se puede obtener los registros pedidos.\n\nDescripción:\n"+ex.getMessage(), "Error en conexión", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(ListadoUsuarios.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_obtener_lista_usuariosActionPerformed
+
+    private void regresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regresarActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_regresarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -245,25 +243,33 @@ public class ListadoUsuarios extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(ListadoUsuarios.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
 
-        /* Create and display the form */
+        /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ListadoUsuarios().setVisible(true);
+                ListadoUsuarios dialog = new ListadoUsuarios(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable Usuarios;
     private javax.swing.JPasswordField admin_contrasenia;
     private javax.swing.JTextField admin_usuario;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton obtener_lista_usuarios;
+    private javax.swing.JButton regresar;
+    private javax.swing.JTable tabla_usuarios;
     // End of variables declaration//GEN-END:variables
 }

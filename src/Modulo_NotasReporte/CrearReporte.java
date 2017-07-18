@@ -5,24 +5,36 @@
  */
 package Modulo_NotasReporte;
 
+import Modulo_Estudiante.ExcepcionDatosIncorrectos;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
- * @author pc
+ * @author Wilson Xicará
  */
 public class CrearReporte extends javax.swing.JFrame {
     private Connection conexion;
     private JFrame ventanaPadre;
+    private boolean hacerVisible, ciclosCargados;
     private ArrayList<RegCiclo> listaCiclos;
-    private boolean ciclosCargados;
+    private ArrayList<Integer> listaIDAsignacionEst;
+    private ArrayList<String> listaDescripcionReportes;
+    private TableRowSorter filtroTabla;
+    private Date fechaHoy;
     /**
      * Creates new form CrearReporte
      */
@@ -33,22 +45,42 @@ public class CrearReporte extends javax.swing.JFrame {
         initComponents();
         this.conexion = conexion;
         this.ventanaPadre = ventanaPadre;
-        ciclosCargados = false;
-        listaCiclos = new ArrayList<>();
+        ciclosCargados = !(hacerVisible = true);    // Inicialmente se mostrará la ventana, y los ciclos aún no han sido cargados
         
+        // Obtengo los datos necesarios desde la Base de datos
         try {
-            // Obtengo el listado de todos los ciclos escolares existentes
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            ResultSet cCicloEscolar = sentencia.executeQuery("SELECT Id, Anio, Listo, Cerrado FROM CicloEscolar");
-            while (cCicloEscolar.next()) {
-                listaCiclos.add(new RegCiclo(cCicloEscolar.getInt("Id"), cCicloEscolar.getString("Anio"), cCicloEscolar.getBoolean("Listo"), cCicloEscolar.getBoolean("Cerrado")));
-                ciclo_escolar.addItem(cCicloEscolar.getString("Anio"));
+            ResultSet cConsulta;
+            // Obtengo el listado de todos los ciclos escolares existentes
+            cConsulta = sentencia.executeQuery("SELECT Id, Anio, Listo, Cerrado FROM CicloEscolar");
+            listaCiclos = new ArrayList<>();
+            while (cConsulta.next()) {
+                listaCiclos.add(new RegCiclo(cConsulta.getInt("Id"), cConsulta.getBoolean("Listo"), cConsulta.getBoolean("Cerrado")));
+                ciclo_escolar.addItem(cConsulta.getString("Anio"));
+            } ciclosCargados = true;    // Indicador de que ya se obtuvo el listado de todos los Ciclos
+            if (listaCiclos.isEmpty()) {
+                hacerVisible = false;
+                JOptionPane.showMessageDialog(this, "No se pueden crear reportes pues no existe algún Ciclo Escolar.\nConsulte con el Administrador e inténtelo más tarde.", "Datos faltantes", JOptionPane.ERROR_MESSAGE);
             }
+            ciclo_escolar.setSelectedIndex(-1);
+            ciclo_escolar.setSelectedIndex(ciclo_escolar.getItemCount()-1);
+            // Obtengo la fecha de hoy, desde la Base de Datos
+            cConsulta = sentencia.executeQuery("SELECT NOW()");
+            cConsulta.next();
+            fechaHoy = cConsulta.getDate(1);
+            // Otras configuraciones importantes
+            listaIDAsignacionEst = new ArrayList<>();
+            listaDescripcionReportes = new ArrayList<>();
+            filtroTabla = new TableRowSorter(tabla_estudiantes.getModel()); // Objeto que permite filtrar filas de la Tabla
+            fecha_reporte.setDate(fechaHoy);
+            fecha_reporte.getJCalendar().setWeekOfYearVisible(false);  // Para no mostrar el número de semana en el Calendario
+            this.setLocationRelativeTo(null);   // Para centrar esta ventana sobre la pantalla
         } catch (SQLException ex) {
+            hacerVisible = false;   // En caso de ocurrir un error, no se mostrará esta ventana
+            JOptionPane.showMessageDialog(this, "No se puede obtener algunos datos desde la Base de Datos", "Error de conexión", JOptionPane.ERROR_MESSAGE);
 //            Logger.getLogger(CrearReporte.class.getName()).log(Level.SEVERE, null, ex);
         }
-        this.setLocationRelativeTo(null);   // Para centrar esta ventana sobre la pantalla.
-        fecha_reporte.getJCalendar().setWeekOfYearVisible(false);  // Para no mostrar el número de semana en el Calendario
+        ventanaPadre.setEnabled(!hacerVisible); // Si no se mostrará esta ventana, habilito ventanaPadre para evitar que quede inhabilitada
     }
 
     /**
@@ -70,41 +102,50 @@ public class CrearReporte extends javax.swing.JFrame {
         etiqueta_aviso = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tabla_reportes = new javax.swing.JTable();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        descripcion_reporte = new javax.swing.JTextArea();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tabla_estudiantes = new javax.swing.JTable();
+        campo_filtro = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        descripcion_reporte = new javax.swing.JTextArea();
+        descripcion_nuevo_reporte = new javax.swing.JTextArea();
         fecha_reporte = new com.toedter.calendar.JDateChooser();
         crear_reporte = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         nombre_estudiante = new javax.swing.JTextField();
+        regresar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Crear nuevo reporte");
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Creación de Reportes Indisciplinarios");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
-        jPanel1.setBackground(new java.awt.Color(0, 204, 153));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Búsqueda del Estudiante:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel1.setText("Ciclo Escolar:");
 
-        ciclo_escolar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        ciclo_escolar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         ciclo_escolar.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 ciclo_escolarItemStateChanged(evt);
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel2.setText("Buscar por:");
 
-        filtro_busqueda.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        filtro_busqueda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Código Personal", "Apellidos", "Nombres" }));
+        filtro_busqueda.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        filtro_busqueda.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TODOS", "Código Personal", "Apellidos", "Nombres" }));
         filtro_busqueda.setEnabled(false);
         filtro_busqueda.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -112,11 +153,12 @@ public class CrearReporte extends javax.swing.JFrame {
             }
         });
 
-        campo_busqueda.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        campo_busqueda.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        campo_busqueda.setText("Todos los registros");
         campo_busqueda.setEnabled(false);
 
-        buscar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        buscar.setText("Buscar Estudante");
+        buscar.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        buscar.setText("Buscar Estudiantes");
         buscar.setToolTipText("");
         buscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -124,7 +166,7 @@ public class CrearReporte extends javax.swing.JFrame {
             }
         });
 
-        etiqueta_aviso.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        etiqueta_aviso.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -137,39 +179,102 @@ public class CrearReporte extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(filtro_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(filtro_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(campo_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buscar))
-                    .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addComponent(etiqueta_aviso, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 655, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(etiqueta_aviso))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel1)
+                        .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(etiqueta_aviso))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(filtro_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(campo_busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
                     .addComponent(buscar))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(etiqueta_aviso, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel3.setBackground(new java.awt.Color(0, 204, 153));
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Historial de reportes:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tabla_reportes.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tabla_reportes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "No.", "Fecha", "Descripción"
+                "No.", "Fecha"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tabla_reportes.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tabla_reportes.setRowHeight(25);
+        tabla_reportes.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tabla_reportes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tabla_reportesMousePressed(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tabla_reportes);
+        if (tabla_reportes.getColumnModel().getColumnCount() > 0) {
+            tabla_reportes.getColumnModel().getColumn(0).setPreferredWidth(40);
+            tabla_reportes.getColumnModel().getColumn(1).setPreferredWidth(90);
+        }
+
+        descripcion_reporte.setEditable(false);
+        descripcion_reporte.setColumns(20);
+        descripcion_reporte.setRows(5);
+        jScrollPane4.setViewportView(descripcion_reporte);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Estudiantes que coinciden con la búsqueda:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
+
+        tabla_estudiantes.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tabla_estudiantes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "No.", "Nombre completo", "Grado y sección"
             }
         ) {
             Class[] types = new Class [] {
@@ -187,132 +292,136 @@ public class CrearReporte extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jTable2.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-        jScrollPane2.setViewportView(jTable2);
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE)
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-        );
-
-        jPanel2.setBackground(new java.awt.Color(0, 204, 153));
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Estudiantes que coinciden con la búsqueda:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "No.", "Nombre completo", "Ciclo escolar", "Grado y sección"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+        tabla_estudiantes.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tabla_estudiantes.setRowHeight(25);
+        tabla_estudiantes.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tabla_estudiantes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tabla_estudiantesMousePressed(evt);
             }
         });
-        jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tabla_estudiantes);
+        if (tabla_estudiantes.getColumnModel().getColumnCount() > 0) {
+            tabla_estudiantes.getColumnModel().getColumn(0).setPreferredWidth(40);
+            tabla_estudiantes.getColumnModel().getColumn(1).setPreferredWidth(230);
+            tabla_estudiantes.getColumnModel().getColumn(2).setPreferredWidth(100);
+        }
+
+        campo_filtro.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        campo_filtro.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                campo_filtroKeyPressed(evt);
+            }
+        });
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel6.setText("Buscar...");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(campo_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(campo_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
         );
 
-        jPanel4.setBackground(new java.awt.Color(0, 204, 153));
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Crear nuevo reporte:", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel3.setText("Fecha:");
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel4.setText("Descripción:");
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel4.setText("Descripción del Reporte indisciplinario:");
 
-        descripcion_reporte.setColumns(20);
-        descripcion_reporte.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
-        descripcion_reporte.setRows(5);
-        jScrollPane3.setViewportView(descripcion_reporte);
+        descripcion_nuevo_reporte.setEditable(false);
+        descripcion_nuevo_reporte.setColumns(20);
+        descripcion_nuevo_reporte.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        descripcion_nuevo_reporte.setRows(5);
+        jScrollPane3.setViewportView(descripcion_nuevo_reporte);
 
-        fecha_reporte.setDateFormatString("yyyy-MM-dd");
+        fecha_reporte.setDateFormatString("dd/MM/yyyy");
         fecha_reporte.setEnabled(false);
-        fecha_reporte.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        fecha_reporte.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
 
-        crear_reporte.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        crear_reporte.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         crear_reporte.setText("Crear reporte");
+        crear_reporte.setEnabled(false);
+        crear_reporte.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                crear_reporteActionPerformed(evt);
+            }
+        });
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel5.setText("Estudiante:");
 
         nombre_estudiante.setEditable(false);
-        nombre_estudiante.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        nombre_estudiante.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(fecha_reporte, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(nombre_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane3)
+                        .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(crear_reporte))))
+                        .addComponent(nombre_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(fecha_reporte, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel4))
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addComponent(jScrollPane3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(crear_reporte))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(nombre_estudiante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                    .addComponent(jLabel5)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addGap(3, 3, 3))
-                    .addComponent(fecha_reporte, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(fecha_reporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel4)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4))
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(33, 33, 33)
-                        .addComponent(crear_reporte))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(85, 85, 85))
+                        .addGap(26, 26, 26)
+                        .addComponent(crear_reporte)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        regresar.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        regresar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/atras.PNG"))); // NOI18N
+        regresar.setText("Regresar");
+        regresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                regresarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -321,86 +430,224 @@ public class CrearReporte extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(regresar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(regresar))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    /**
+     * Evento que se lanza cuando se selecciona un nuevo ciclo escolar y notifica el estado del ciclo (Listo y/o Cerrado).
+     * Si el Ciclo Escolar no está Listo no tiene Estudiantes asignados por lo que la búsqueda en dicho ciclo no devuelve
+     * algún registro. Un Ciclo Escolar puede ser Cerrado sí y sólo si está Listo.
+     * Se podrá crear Reportes sí y sólo sí el Ciclo está Listo y no está Cerrado.
+     * @param evt 
+     */
+    private void ciclo_escolarItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ciclo_escolarItemStateChanged
+        int cicloSelec = ciclo_escolar.getSelectedIndex();
+        if (ciclosCargados && cicloSelec != -1) {
+            boolean cicloListo = listaCiclos.get(cicloSelec).isListo(), cicloCerrado = listaCiclos.get(cicloSelec).isCerrado();
+            if (!cicloListo)
+                etiqueta_aviso.setText("El Ciclo escolar "+(String)ciclo_escolar.getSelectedItem()+" no está Listo (no tiene estudiantes asignados).");
+            else if (cicloCerrado)
+                etiqueta_aviso.setText("El Ciclo escolar "+(String)ciclo_escolar.getSelectedItem()+" ya fue Cerrado.");
+            else
+                etiqueta_aviso.setText("");
+            // Se puede buscar en Ciclos Listos (pues ya tienen Asignaciones)
+            filtro_busqueda.setEnabled(cicloListo);
+            buscar.setEnabled(cicloListo);
+            filtro_busqueda.setSelectedIndex(0);
+        }
+    }//GEN-LAST:event_ciclo_escolarItemStateChanged
 
     private void filtro_busquedaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_filtro_busquedaItemStateChanged
         campo_busqueda.setEnabled(!(filtro_busqueda.getSelectedIndex() == 0));
         campo_busqueda.setText((filtro_busqueda.getSelectedIndex()==0) ? "Todos los registros" : "");
     }//GEN-LAST:event_filtro_busquedaItemStateChanged
 
-    private void ciclo_escolarItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ciclo_escolarItemStateChanged
-        int cicloSelec = ciclo_escolar.getSelectedIndex();
-        if (ciclosCargados && cicloSelec != -1) {
-            boolean cicloListo = listaCiclos.get(cicloSelec).isListo(), cicloCerrado = listaCiclos.get(cicloSelec).isCerrado();
-            if (!cicloListo || cicloCerrado) {
-                if (!cicloListo)
-                    etiqueta_aviso.setText("El Ciclo escolar "+(String)ciclo_escolar.getSelectedItem()+" no está listo.");
-                if (cicloCerrado)
-                    etiqueta_aviso.setText("El Ciclo escolar "+(String)ciclo_escolar.getSelectedItem()+" ya fue cerrado.");
-                campo_busqueda.setEnabled(false);
-                filtro_busqueda.setEnabled(false);
-                buscar.setEnabled(false);
-            } else {
-                etiqueta_aviso.setText("");
-                campo_busqueda.setEnabled(true);
-                filtro_busqueda.setEnabled(true);
-                buscar.setEnabled(true);
-            }
-        }
-    }//GEN-LAST:event_ciclo_escolarItemStateChanged
-
     private void buscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarActionPerformed
-        String instruccion = "SELECT AsignacionEST.Id idAsignacion, CONCAT(Estudiante.Nombres, ' ', Estudiante.Apellidos) nombreEstudiante, CONCAT(Grado.Nombre, ' ', Grado.Seccion) gradoEstudiante FROM AsignacionEST "
-                + "INNER JOIN CicloEscolar ON AsignacionEST.CicloEscolar_Id = CicloEscolar.Id "
-                + "INNER JOIN Grado ON AsignacionEST.Grado_Id = Grado.Id "
-                + "INNER JOIN Estudiante ON AsignacionEST.Estudiante_Id = Estudiante.Id "
-                + "WHERE AsignacionEST.CicloEscolar_Id = "+listaCiclos.get(ciclo_escolar.getSelectedIndex())+" AND Estudiante.";
-        switch(filtro_busqueda.getSelectedIndex()) {
-            case 0: // Buscar por código personal
-                instruccion+= "CodigoPersonal = '";
-            break;
-            case 1: // Buscar por Apellidos
-                instruccion+= "Apellidos = '";
-            break;
-            case 2: // Buscar por Nombres
-                instruccion+= "Nombres = '";
-            break;
+        if ("Buscar Estudiantes".equals(buscar.getText())) {
+            buscar.setText("Nueva búsqueda");
+            ciclo_escolar.setEnabled(false);    // Inhabilito estos campos para evitar confusión en datos
+            filtro_busqueda.setEnabled(false);
+            campo_busqueda.setEnabled(false);
+            try {
+                validar_datos_busqueda();   // Verifico que los datos sean correctos
+                // Inicio la petición y extracción de todos los registros que coinciden con la búsqueda
+                int indexCiclo = ciclo_escolar.getSelectedIndex(), indexFiltro = filtro_busqueda.getSelectedIndex();
+                String instruccion = "SELECT AsignacionEST.Id idAsignacion, CONCAT(Estudiante.Nombres, ' ', Estudiante.Apellidos) nombreEstudiante, CONCAT(Grado.Nombre, ' ', Grado.Seccion) gradoEstudiante FROM AsignacionEST "
+                        + "INNER JOIN CicloEscolar ON AsignacionEST.CicloEscolar_Id = CicloEscolar.Id "
+                        + "INNER JOIN Grado ON AsignacionEST.Grado_Id = Grado.Id "
+                        + "INNER JOIN Estudiante ON AsignacionEST.Estudiante_Id = Estudiante.Id "
+                        + "WHERE AsignacionEST.CicloEscolar_Id = "+listaCiclos.get(indexCiclo).getID();
+                switch(indexFiltro) {
+                    // caso 0: se buscará a todos los registros del Ciclo Escolar seleccionado
+                    case 1: // Buscar por Código Personal
+                        instruccion+= " AND Estudiante.CodigoPersonal = ";
+                    break;
+                    case 2: // Buscar por Apellidos
+                        instruccion+= " AND Estudiante.Apellidos = ";
+                    break;
+                    case 3: // Buscar por Nombres
+                        instruccion+= " AND Estudiante.Nombres = ";
+                    break;
+                }
+                if (indexFiltro > 0)
+                    instruccion+= "'"+campo_busqueda.getText()+"'";
+                Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                ResultSet cEstudiantes = sentencia.executeQuery(instruccion);
+                DefaultTableModel modelEstudiantes = (DefaultTableModel)tabla_estudiantes.getModel();
+                modelEstudiantes.setRowCount(0);    // Borro los registros de la Búsqueda anterior
+                ((DefaultTableModel)tabla_reportes.getModel()).setRowCount(0);  // Borro la lista de reportes del último estudiante seleccionado
+                listaIDAsignacionEst.clear();
+                int contador = 0;
+                while (cEstudiantes.next()) {
+                    listaIDAsignacionEst.add(cEstudiantes.getInt("idAsignacion"));
+                    modelEstudiantes.addRow(new String[]{
+                        ""+(++contador),
+                        cEstudiantes.getString("nombreEstudiante"),
+                        cEstudiantes.getString("gradoEstudiante")
+                    });
+                }   // Hasta aquí se garantiza la extracción de todos los estudiantes que coinciden con la búsqueda
+            } catch (ExcepcionDatosIncorrectos ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error en datos", JOptionPane.ERROR_MESSAGE);
+//                Logger.getLogger(CrearReporte.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "No se puede obtener los registros", "Error en conexión", JOptionPane.ERROR_MESSAGE);
+//                Logger.getLogger(CrearReporte.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            buscar.setText("Buscar Estudiantes");
+            ciclo_escolar.setEnabled(true);    // Inhabilito estos campos para evitar confusión en datos
+            filtro_busqueda.setEnabled(true);
         }
-        instruccion+= campo_busqueda.getText()+"'";
+    }//GEN-LAST:event_buscarActionPerformed
+    /**
+     * Evento que controla cuando se selecciona un registro de estudiante, y obtiene el listado de todos los reportes que
+     * este ha tenido en el Ciclo Escolar actual.
+     * @param evt 
+     */
+    private void tabla_estudiantesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabla_estudiantesMousePressed
+        int index = tabla_estudiantes.getSelectedRow();
         try {
             Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-            ResultSet encontrados = sentencia.executeQuery(instruccion);
+            ResultSet cReportes = sentencia.executeQuery("SELECT Fecha, Descripcion FROM Reporte WHERE AsignacionEST_Id = "+listaIDAsignacionEst.get(index)+" ORDER BY Fecha");
+            DefaultTableModel modelReportes = (DefaultTableModel)tabla_reportes.getModel();
+            modelReportes.setRowCount(0);
+            listaDescripcionReportes.clear();
+            int contador = 0;
+            while (cReportes.next()) {
+                listaDescripcionReportes.add(cReportes.getString("Descripcion"));
+                modelReportes.addRow(new String[]{""+(++contador), cReportes.getString("Fecha")});
+            }
+            descripcion_reporte.setText("");
+            nombre_estudiante.setText((String)tabla_estudiantes.getValueAt(index, 1));  // Cargo el nombre del estudiante
+            fecha_reporte.setDate(fechaHoy);
+            descripcion_nuevo_reporte.setText("");
+            if (!crear_reporte.isEnabled()) {
+                crear_reporte.setEnabled(true);
+                fecha_reporte.setEnabled(true);
+                descripcion_nuevo_reporte.setEditable(true);
+            }
         } catch (SQLException ex) {
-            Logger.getLogger(CrearReporte.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "No se puede obtener el listado de Reportes del Estudiante", "Error en conexión", JOptionPane.ERROR_MESSAGE);
+//            Logger.getLogger(CrearReporte.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-    }//GEN-LAST:event_buscarActionPerformed
+    }//GEN-LAST:event_tabla_estudiantesMousePressed
 
+    private void tabla_reportesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabla_reportesMousePressed
+        descripcion_reporte.setText("Descripción del reporte:\n\n"+listaDescripcionReportes.get(tabla_reportes.getSelectedRow()));
+    }//GEN-LAST:event_tabla_reportesMousePressed
+
+    private void crear_reporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crear_reporteActionPerformed
+        try {
+            validar_datos_reporte();
+            Calendar fecha = fecha_reporte.getCalendar();
+            String fechaS = ""+fecha.get(Calendar.YEAR)+"-"+(fecha.get(Calendar.MONTH)+1)+"-"+fecha.get(Calendar.DAY_OF_MONTH);
+            int indexEstudiante = tabla_estudiantes.getSelectedRow();
+            // Creación del Reporte, dentro de la Base de Datos
+            String instruccion = "INSERT INTO Reporte(Fecha, Descripcion, AsignacionEST_Id) VALUES(";
+            instruccion+= "'"+fechaS+"', ";
+            instruccion+= "'"+descripcion_nuevo_reporte.getText()+"', "+listaIDAsignacionEst.get(indexEstudiante)+")";
+            conexion.prepareStatement(instruccion).executeUpdate();  // Inserción en la Base de Datos del nuevo reporte
+            // Agregación del Reporte a la Tabla de reportes
+            ((DefaultTableModel)tabla_reportes.getModel()).addRow(new String[]{""+(tabla_reportes.getRowCount()+1), fechaS});
+            listaDescripcionReportes.add(descripcion_nuevo_reporte.getText());
+            // Limpieza de campos
+            crear_reporte.setEnabled(false);
+            fecha_reporte.setDate(fechaHoy);
+            fecha_reporte.setEnabled(false);
+            descripcion_nuevo_reporte.setText("");
+            descripcion_nuevo_reporte.setEditable(false);
+        } catch (ExcepcionDatosIncorrectos ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error en datos", JOptionPane.ERROR_MESSAGE);
+//            Logger.getLogger(CrearReporte.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "No se puede crear el nuevo reporte.\n\nDescripción:\n"+ex.getMessage(), "Error de conexión", JOptionPane.ERROR_MESSAGE);
+//            Logger.getLogger(CrearReporte.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_crear_reporteActionPerformed
+
+    private void regresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regresarActionPerformed
+        ventanaPadre.setEnabled(true);
+        this.dispose();
+    }//GEN-LAST:event_regresarActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        ventanaPadre.setEnabled(true);
+        this.dispose();
+    }//GEN-LAST:event_formWindowClosing
+
+    private void campo_filtroKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_campo_filtroKeyPressed
+        // Evento que filtra los Nombres de Estudiantes que concuerden con el texto hasta ahora ingresado
+        filtroTabla.setRowFilter(RowFilter.regexFilter(campo_filtro.getText(), 1));
+        tabla_estudiantes.setRowSorter(filtroTabla);
+    }//GEN-LAST:event_campo_filtroKeyPressed
+
+    /**
+     * Método que valida que los datos a buscar sean correctos, dependiendo del filtro de búsqueda seleccionado. En caso de
+     * que el campo a buscar sea nulo o es incorrecto (el caso del código personal) arrojará una excepción indicando el error.
+     * @throws ExcepcionDatosIncorrectos 
+     */
+    private void validar_datos_busqueda() throws ExcepcionDatosIncorrectos {
+        if (campo_busqueda.getText().length() == 0)
+            throw new ExcepcionDatosIncorrectos("Especifique el valor a buscar");
+        if (filtro_busqueda.getSelectedIndex()==1 && !Pattern.compile("[a-zA-Z]{1}\\d{3}[a-zA-Z]{3}").matcher(campo_busqueda.getText()).matches())
+            throw new ExcepcionDatosIncorrectos("El Código Personal tiene un formato incorrecto");
+    }
+    private void validar_datos_reporte() throws ExcepcionDatosIncorrectos {
+        if (fecha_reporte.getDate() == null)
+            throw new ExcepcionDatosIncorrectos("Seleccione la Fecha del Reporte");
+        Calendar fecha = fecha_reporte.getCalendar();
+        if (!((String)ciclo_escolar.getSelectedItem()).equals(""+(fecha.get(Calendar.YEAR))))  // Si el año de la fecha es diferente al ciclo escolar
+            throw new ExcepcionDatosIncorrectos("No puede crear un Reporte en una fecha fuera del Ciclo Escolar "+(String)ciclo_escolar.getSelectedItem());
+        if (descripcion_nuevo_reporte.getText().length() == 0)
+            throw new ExcepcionDatosIncorrectos("Especifique la Razón del Reporte");
+    }
+    public boolean getHacerVisible() { return hacerVisible; }
     /**
      * @param args the command line arguments
      */
@@ -437,60 +684,33 @@ public class CrearReporte extends javax.swing.JFrame {
     }
     private class RegCiclo {
         private int ID;
-        private String nombre;
         private boolean listo, cerrado;
 
         public RegCiclo() {
             ID = 0;
-            nombre = "";
             listo = cerrado = false;
         }
-
-        public RegCiclo(int ID, String nombre, boolean listo, boolean cerrado) {
+        public RegCiclo(int ID, boolean listo, boolean cerrado) {
             this.ID = ID;
-            this.nombre = nombre;
             this.listo = listo;
             this.cerrado = cerrado;
         }
 
-        public int getID() {
-            return ID;
-        }
-
-        public String getNombre() {
-            return nombre;
-        }
-
-        public boolean isListo() {
-            return listo;
-        }
-
-        public boolean isCerrado() {
-            return cerrado;
-        }
-
-        public void setID(int ID) {
-            this.ID = ID;
-        }
-
-        public void setNombre(String nombre) {
-            this.nombre = nombre;
-        }
-
-        public void setListo(boolean listo) {
-            this.listo = listo;
-        }
-
-        public void setCerrado(boolean cerrado) {
-            this.cerrado = cerrado;
-        }
+        public int getID() { return ID; }
+        public boolean isListo() { return listo; }
+        public boolean isCerrado() { return cerrado; }
+        public void setID(int ID) { this.ID = ID; }
+        public void setListo(boolean listo) { this.listo = listo; }
+        public void setCerrado(boolean cerrado) { this.cerrado = cerrado; }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buscar;
     private javax.swing.JTextField campo_busqueda;
+    private javax.swing.JTextField campo_filtro;
     private javax.swing.JComboBox<String> ciclo_escolar;
     private javax.swing.JButton crear_reporte;
+    private javax.swing.JTextArea descripcion_nuevo_reporte;
     private javax.swing.JTextArea descripcion_reporte;
     private javax.swing.JLabel etiqueta_aviso;
     private com.toedter.calendar.JDateChooser fecha_reporte;
@@ -500,6 +720,7 @@ public class CrearReporte extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -507,8 +728,10 @@ public class CrearReporte extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTextField nombre_estudiante;
+    private javax.swing.JButton regresar;
+    private javax.swing.JTable tabla_estudiantes;
+    private javax.swing.JTable tabla_reportes;
     // End of variables declaration//GEN-END:variables
 }
