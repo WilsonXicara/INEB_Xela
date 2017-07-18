@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -23,6 +24,7 @@ public class CambiarContraseña extends javax.swing.JDialog {
     private String nombreUsuario;
     private Connection conexion;
     private final int longNombre = 15, longContraseña = 10;
+    private JFrame ventanaUsuario, ventanaPadreDeUsuario;
     /**
      * Creates new form CambiarContraseña
      */
@@ -30,21 +32,23 @@ public class CambiarContraseña extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
     }
-    public CambiarContraseña(java.awt.Frame parent, boolean modal, Connection conexion, ResultSet infoAdmin) {
-        super(parent, modal);
+    public CambiarContraseña(Connection conexion, ResultSet infoAdmin, JFrame ventanaUsuario, JFrame ventanaPadreDeUsuario) {
+        super(ventanaUsuario, true);
         initComponents();
         this.conexion = conexion;
         this.infoAdmin = infoAdmin;
+        this.ventanaUsuario = ventanaUsuario;   // Ventana desde donde se realiza el cambio de contraseña
+        this.ventanaPadreDeUsuario = ventanaPadreDeUsuario; // Ventana desde donde se Inicia Sesión
         try {
             this.nombreUsuario = infoAdmin.getString("NombreUsuario");
             this.setTitle("Modificación de la Cuenta de "+nombreUsuario);
             nuevo_nombre.setText(nombreUsuario);
+            this.setLocationRelativeTo(null);   // Para centrar esta ventana sobre la pantalla
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Ocurre un error con el registro.\nNo se pueden realizar los cambios.\n"+ex.getMessage(), "Error en Registro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No se pueden realizar los cambios pues ocurrió un error al intentar leer el registro.\n\nDescripción:\n"+ex.getMessage(), "Error en registro", JOptionPane.ERROR_MESSAGE);
             this.dispose();
 //            Logger.getLogger(CambiarContraseña.class.getName()).log(Level.SEVERE, null, ex);
         }
-        this.setLocationRelativeTo(null);   // Para centrar esta ventana sobre la pantalla
     }
 
     /**
@@ -56,7 +60,6 @@ public class CambiarContraseña extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
         panel_opciones_cuenta = new javax.swing.JPanel();
         check_cambio_nombre = new javax.swing.JCheckBox();
         etiqueta_nombre = new javax.swing.JLabel();
@@ -77,8 +80,11 @@ public class CambiarContraseña extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Modificación de Cuenta");
         setResizable(false);
-
-        jPanel1.setBackground(new java.awt.Color(0, 204, 153));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         panel_opciones_cuenta.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Opciones de cuenta", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
 
@@ -234,32 +240,21 @@ public class CambiarContraseña extends javax.swing.JDialog {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(panel_opciones_cuenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(panel_opciones_cuenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(panel_opciones_cuenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(panel_opciones_cuenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -357,8 +352,10 @@ public class CambiarContraseña extends javax.swing.JDialog {
                     JOptionPane.showMessageDialog(this, "La Contraseña actual es incorrecta.", "Error en datos", JOptionPane.ERROR_MESSAGE);
                 break;
                 case 1:
-                    JOptionPane.showMessageDialog(this, "Cambios realiizados exitosamente!\n\nLos cambios serán visibles la próxima vez que inicie sesión.", "Datos actualizados", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Cambios realizados exitosamente!\n\nPor seguridad, se cerrará su sesión.", "Datos actualizados", JOptionPane.INFORMATION_MESSAGE);
                     this.dispose();
+                    ventanaUsuario.dispose();
+                    ventanaPadreDeUsuario.setVisible(true);
                 break;
             }
         } catch (ExcepcionDatosIncorrectos ex) {
@@ -373,6 +370,14 @@ public class CambiarContraseña extends javax.swing.JDialog {
     private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
         this.dispose();
     }//GEN-LAST:event_cancelarActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        int opcion = JOptionPane.showOptionDialog(this, "No se han guardado los cambios.\nDesea continuar?", "Guardar cambios", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+        if (opcion == JOptionPane.YES_OPTION)
+            this.dispose();
+        else
+            this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+    }//GEN-LAST:event_formWindowClosing
 
     private void validar_datos() throws ExcepcionDatosIncorrectos {
         if (check_cambio_nombre.isSelected() && nuevo_nombre.getText().length() == 0)
@@ -457,7 +462,6 @@ public class CambiarContraseña extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField nuevo_nombre;
     private javax.swing.JPanel panel_opciones_cuenta;
     // End of variables declaration//GEN-END:variables

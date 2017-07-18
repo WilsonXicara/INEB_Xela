@@ -6,124 +6,85 @@
 package Modulo_Catedratico;
 
 import Modulo_InicioSesion.CambiarContraseña;
-import Modulo_NotasReporte.Pantalla;
-import java.awt.Frame;
-import java.io.IOException;
+import Modulo_NotasReporte.NotasPorGradoCurso;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.sql.Statement;
 import java.util.logging.Logger;
-import java.sql.*;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 /**
  *
- * @author oem y Wilson Xicará
+ * @author Wilson Xicará
  */
 public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
+    private Connection conexion;
     private JFrame ventanaPadre;
-    /**
-     * Creates new form ModuloPrincipalCatedratico
-     */
-    Connection conexion;
-    ResultSet respuesta;
+    private ResultSet cCatedratico;
+    private ArrayList<Integer> listaIDCiclos, listaIDCursos, listaIDGrados;
+    private ArrayList<Boolean> listaCicloListo, listaCicloCerrado;
+    private boolean hacerVisible, ciclosCargados;
+    private int idCatedratico;
     Statement stmt;
-    
-    String titulos [] = {"Nombre del curso",
-                         "Grado",
-                         "Seccion"};
-    String fila[]= new String [3];
-    DefaultTableModel modelo;
-    int idcat, idcurso, idciclo;
+    int idcurso, idciclo;
     String Materia = "", A;
     ArrayList<String> Años;
     
+    /**
+     * Creates new form ModuloPrincipalCatedratico
+     */
     public ModuloPrincipalCatedratico() {
         initComponents();
     }
     
-    public ModuloPrincipalCatedratico(Connection conex, ResultSet sentencia, JFrame ventanaPadre) throws SQLException{
+    public ModuloPrincipalCatedratico(Connection conexion, JFrame ventanaPadre, ResultSet cCatedratico) {
         initComponents();
-        this.setLocationRelativeTo(null);
-        conexion = conex;
-        respuesta = sentencia;
+        this.conexion = conexion;
         this.ventanaPadre = ventanaPadre;
-        ResultSet rs2=null;
-        Calendar fecha = new GregorianCalendar();
-        A = Integer.toString(fecha.get(Calendar.YEAR));
-        LlenarComboBoxx();
-        Llenartabla();
-        LlenarDatos();
-    }
-    public void LlenarDatos() throws SQLException{
-        String consulta = "SELECT catedratico.nombres, catedratico.apellidos FROM catedratico WHERE catedratico.id = "+ respuesta.getInt(5);
-        ResultSet r = stmt.executeQuery(consulta);
-        while(r.next()){
-                Campo_Nombre.setText(r.getString("nombres"));
-                Campo_Apellidos.setText(r.getString("apellidos"));
-            }
+        this.cCatedratico = cCatedratico;
+        hacerVisible = !(ciclosCargados = false);   // Inicialmente se intentará mostrar la ventena, y no se han cargado los ciclos
         
-    }
-    public void LlenarComboBoxx() throws SQLException{
-        boolean existe = false;
-        Años = new ArrayList<String>();
-        Statement stmt3 = conexion.createStatement();
-        ResultSet consulta = stmt3.executeQuery("SELECT Id, anio FROM CicloEscolar ORDER BY anio");
-        while(consulta.next()){
-            String pivote = consulta.getString(2);
-            Años.add(consulta.getString(1));
-            if(pivote.equals(A)) existe = true;
-            Campo_Año.addItem(pivote);
-        }
-        if(existe = true){
-            Campo_Año.setSelectedItem(A);
-        }
-        
-    }
-    
-    public void Llenartabla(){
-        try{
-           // int a = respuesta.getInt(5);
-            Campo_Usuario.setText(respuesta.getString("NombreUsuario"));
-            //Campo_Apellidos.setText(String.valueOf(respuesta.getInt(5)));
-            idcat = respuesta.getInt(5);
-            stmt = conexion.createStatement();
-            String Opcion = Campo_Año.getSelectedItem().toString();
-            
-            ResultSet rs = stmt.executeQuery("SELECT curso.Nombre, grado.Nombre, grado.Seccion FROM asignacioncat "
-                    + "INNER JOIN catedratico ON asignacioncat.Catedratico_Id = catedratico.Id " 
-                    + "INNER JOIN curso ON asignacioncat.Curso_Id = curso.Id "
-                    + "INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id "
-                    + "INNER JOIN grado ON asignacioncat.Grado_Id = grado.Id "
-                    + "WHERE catedratico.id = "+idcat+" AND cicloescolar.anio = '"+ Opcion+ "'");
-            modelo = new DefaultTableModel (null,titulos);
-            //ResultSet rs = stmt.executeQuery("select* from curso");
-            while(rs.next()){
-                fila[0] = rs.getString("curso.Nombre");
-                fila[1] = rs.getString("grado.Nombre");
-                fila[2] = rs.getString("grado.Seccion");
-                //fila[1] = rs.getString("catedratico.Nombres");
-                modelo.addRow(fila);
-            }
-            Tabla.setModel(modelo);
-            TableColumn ci = Tabla.getColumn("Nombre del curso");
-            ci.setMaxWidth(500);
-            TableColumn ci2 = Tabla.getColumn("Grado");
-            ci2.setMaxWidth(100);
-            TableColumn ci3 = Tabla.getColumn("Seccion");
-            ci3.setMaxWidth(100);
-            
-        }catch (SQLException ex) {
+        // Obtención de datos importantes desde la Base de Datos
+        try {
+            Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            ResultSet cConsulta;
+            // Obtención de información de la cuenta de usuario
+            this.setTitle("Sesión iniciada: "+cCatedratico.getString("NombreUsuario"));
+            etiqueta_bienvenida.setText("Bienvenido Catedrático '"+cCatedratico.getString("NombreUsuario")+"'");
+            idCatedratico = cCatedratico.getInt("Catedratico_Id");
+            // Obtención de los datos del Catedrático
+            cConsulta = sentencia.executeQuery("SELECT C.Nombres, C.Apellidos FROM Catedratico C WHERE Id = "+ idCatedratico);
+            cConsulta.next();
+            etiqueta_nombres.setText(cConsulta.getString("Nombres"));
+            etiqueta_apellidos.setText(cConsulta.getString("Apellidos"));
+            // Obtención de todos los Ciclos Escolares existentes en la Base de Datos
+            cConsulta = sentencia.executeQuery("SELECT Id, Anio, Listo, Cerrado FROM CicloEscolar");
+            listaIDCiclos = new ArrayList<>();
+            listaCicloListo = new ArrayList<>();
+            listaCicloCerrado = new ArrayList<>();
+            listaIDCursos = new ArrayList<>();
+            listaIDGrados = new ArrayList<>();
+            while (cConsulta.next()) {
+                listaIDCiclos.add(cConsulta.getInt("Id"));
+                listaCicloListo.add(cConsulta.getBoolean("Listo"));
+                listaCicloCerrado.add(cConsulta.getBoolean("Cerrado"));
+                ciclo_escolar.addItem(cConsulta.getString("Anio"));
+            } ciclosCargados = true;
+            ciclo_escolar.setSelectedIndex(-1);
+            ciclo_escolar.setSelectedIndex(ciclo_escolar.getItemCount()-1);
+            // Otras configuraciones importantes
+            this.setLocationRelativeTo(null);
+        } catch (SQLException ex) {
+            hacerVisible = false;
+            JOptionPane.showMessageDialog(this, "No se puede extraer información desde la Base de Datos.\n\nDescripción:\n"+ex, "Error en conexión", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(ModuloPrincipalCatedratico.class.getName()).log(Level.SEVERE, null, ex);
         }
+        ventanaPadre.setVisible(!hacerVisible);
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -134,65 +95,43 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        Campo_Usuario = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        Tabla = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
-        Campo_Año = new javax.swing.JComboBox<>();
+        etiqueta_bienvenida = new javax.swing.JLabel();
+        ciclo_escolar = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        Campo_Nombre = new javax.swing.JTextField();
-        Campo_Apellidos = new javax.swing.JTextField();
+        etiqueta_nombres = new javax.swing.JLabel();
+        etiqueta_apellidos = new javax.swing.JLabel();
         cerrar_sesion = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
+        etiqueta_aviso = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tabla_cursos_grados = new javax.swing.JTable();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        menu_opciones = new javax.swing.JMenu();
+        item_cambiar_contrasenia = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Sesión iniciada: Catedrático");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
         });
 
-        Campo_Usuario.setEditable(false);
-        Campo_Usuario.setBackground(new java.awt.Color(204, 204, 204));
+        etiqueta_bienvenida.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        etiqueta_bienvenida.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        etiqueta_bienvenida.setText("Bienvenido Catedrático 'UsuarioCat'");
 
-        Tabla = new javax.swing.JTable(){
-            public boolean isCellEditable(int rowIndex,int colIndex){
-                return false;
-            }
-        };
-        Tabla.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-
-            }
-        ));
-        Tabla.getTableHeader().setReorderingAllowed(false);
-        Tabla.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                TablaMouseClicked(evt);
-            }
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                TablaMousePressed(evt);
-            }
-        });
-        jScrollPane1.setViewportView(Tabla);
-
-        jLabel1.setText("Bienvenido:");
-
-        Campo_Año.addItemListener(new java.awt.event.ItemListener() {
+        ciclo_escolar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        ciclo_escolar.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                Campo_AñoItemStateChanged(evt);
+                ciclo_escolarItemStateChanged(evt);
             }
         });
 
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel2.setText("Ciclo escolar:");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Datos del catedrático", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
@@ -203,13 +142,13 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel4.setText("Apellidos:");
 
-        Campo_Nombre.setEditable(false);
-        Campo_Nombre.setBackground(new java.awt.Color(204, 204, 204));
-        Campo_Nombre.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        etiqueta_nombres.setBackground(new java.awt.Color(255, 255, 255));
+        etiqueta_nombres.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        etiqueta_nombres.setOpaque(true);
 
-        Campo_Apellidos.setEditable(false);
-        Campo_Apellidos.setBackground(new java.awt.Color(204, 204, 204));
-        Campo_Apellidos.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        etiqueta_apellidos.setBackground(new java.awt.Color(255, 255, 255));
+        etiqueta_apellidos.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        etiqueta_apellidos.setOpaque(true);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -217,31 +156,32 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(Campo_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(Campo_Apellidos, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(etiqueta_apellidos, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(etiqueta_nombres, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(Campo_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(Campo_Apellidos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(etiqueta_nombres, javax.swing.GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel3)))
+                .addGap(8, 8, 8)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(etiqueta_apellidos, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        cerrar_sesion.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cerrar_sesion.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        cerrar_sesion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Regresar.png"))); // NOI18N
         cerrar_sesion.setText("Cerrar Sesión");
         cerrar_sesion.setToolTipText("");
         cerrar_sesion.addActionListener(new java.awt.event.ActionListener() {
@@ -250,20 +190,80 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
             }
         });
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel5.setText("Grados y cursos que tiene asignado (Dar doble clic para editar las notas de un curso):");
+        etiqueta_aviso.setFont(new java.awt.Font("Tahoma", 1, 10)); // NOI18N
+        etiqueta_aviso.setText("Estado del ciclo escolar seleccionado");
 
-        jMenu1.setText("Opciones");
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Grados y Cursos asignados (doble clic para editar las Notas):", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
 
-        jMenuItem1.setText("Cambiar contraseña");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+        tabla_cursos_grados = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex,int colIndex){
+                return false;
+            }
+        };
+        tabla_cursos_grados.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        tabla_cursos_grados.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "No.", "Nombre del Curso", "Grado", "Sección", "Ciclo Escolar"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
-        jMenu1.add(jMenuItem1);
+        tabla_cursos_grados.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tabla_cursos_grados.setRowHeight(25);
+        tabla_cursos_grados.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tabla_cursos_grados.getTableHeader().setReorderingAllowed(false);
+        tabla_cursos_grados.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tabla_cursos_gradosMousePressed(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tabla_cursos_grados);
+        if (tabla_cursos_grados.getColumnModel().getColumnCount() > 0) {
+            tabla_cursos_grados.getColumnModel().getColumn(0).setPreferredWidth(40);
+            tabla_cursos_grados.getColumnModel().getColumn(1).setPreferredWidth(300);
+            tabla_cursos_grados.getColumnModel().getColumn(2).setPreferredWidth(100);
+            tabla_cursos_grados.getColumnModel().getColumn(3).setPreferredWidth(100);
+            tabla_cursos_grados.getColumnModel().getColumn(4).setPreferredWidth(100);
+        }
 
-        jMenuBar1.add(jMenu1);
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
+        );
+
+        menu_opciones.setText("Opciones");
+
+        item_cambiar_contrasenia.setText("Cambiar contraseña");
+        item_cambiar_contrasenia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                item_cambiar_contraseniaActionPerformed(evt);
+            }
+        });
+        menu_opciones.add(item_cambiar_contrasenia);
+
+        jMenuBar1.add(menu_opciones);
 
         setJMenuBar(jMenuBar1);
 
@@ -271,144 +271,102 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(etiqueta_bienvenida, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(cerrar_sesion, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(0, 170, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 254, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(Campo_Usuario, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(Campo_Año, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap())))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(283, 283, 283)
-                .addComponent(cerrar_sesion, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                                .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(etiqueta_aviso))))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Campo_Usuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(Campo_Año, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cerrar_sesion, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel5)
+                .addComponent(etiqueta_bienvenida)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(ciclo_escolar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(etiqueta_aviso)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cerrar_sesion, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void TablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TablaMouseClicked
-        
-    }//GEN-LAST:event_TablaMouseClicked
-
-    private void Campo_AñoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_Campo_AñoItemStateChanged
-        // TODO add your handling code here:
-        if(Campo_Año.getSelectedIndex() != 1){
-            int posicion = Campo_Año.getSelectedIndex();
-            String p = Años.get(posicion);
-            try{
-           // int a = respuesta.getInt(5);
-            Campo_Usuario.setText(respuesta.getString("NombreUsuario"));
-            //Campo_Apellidos.setText(String.valueOf(respuesta.getInt(5)));
-            idcat = respuesta.getInt(5);
-            stmt = conexion.createStatement();
-            String Opcion = Campo_Año.getSelectedItem().toString();
-            
-            ResultSet rs = stmt.executeQuery("SELECT curso.Nombre, grado.Nombre, grado.Seccion FROM asignacioncat "
-                    + "INNER JOIN catedratico ON asignacioncat.Catedratico_Id = catedratico.Id " 
-                    + "INNER JOIN curso ON asignacioncat.Curso_Id = curso.Id "
-                    + "INNER JOIN cicloescolar ON asignacioncat.CicloEscolar_Id = cicloescolar.Id "
-                    + "INNER JOIN grado ON asignacioncat.Grado_Id = grado.Id "
-                    + "WHERE catedratico.id = "+idcat+" AND cicloescolar.anio = '"+ Opcion+ "'");
-            modelo = new DefaultTableModel (null,titulos);
-            //ResultSet rs = stmt.executeQuery("select* from curso");
-            while(rs.next()){
-                fila[0] = rs.getString("curso.Nombre");
-                fila[1] = rs.getString("grado.Nombre");
-                fila[2] = rs.getString("grado.Seccion");
-                //fila[1] = rs.getString("catedratico.Nombres");
-                modelo.addRow(fila);
-            }
-            Tabla.setModel(modelo);
-            TableColumn ci = Tabla.getColumn("Nombre del curso");
-            ci.setMaxWidth(500);
-            TableColumn ci2 = Tabla.getColumn("Grado");
-            ci2.setMaxWidth(100);
-            TableColumn ci3 = Tabla.getColumn("Seccion");
-            ci3.setMaxWidth(100);
-            
-            
-        }catch (SQLException ex) {
-            Logger.getLogger(ModuloPrincipalCatedratico.class.getName()).log(Level.SEVERE, null, ex);
-        }
-            //String 
-        }
-    }//GEN-LAST:event_Campo_AñoItemStateChanged
-
-    private void TablaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TablaMousePressed
-         try{
-                if(evt.getClickCount() > 1){
-            int fila = Tabla.getSelectedRow();
-            
-            Statement stmt2 = conexion.createStatement();
-            String sql = "SELECT * FROM curso WHERE curso.Nombre = '"+Tabla.getValueAt(fila, 0).toString()+"'";
-            ResultSet respuesta4 = stmt2.executeQuery(sql);
-            int id=0;
-            //System.out.println(id);
-            while (respuesta4.next()){
-                 id = respuesta4.getInt(1);
-                 System.out.println(id); 
-                 idcurso = id;
-             }
-            String sql2 = "SELECT cicloescolar.Id FROM cicloescolar WHERE cicloescolar.Anio = '"+Campo_Año.getSelectedItem().toString()+"'";
-            ResultSet respuesta5 = stmt2.executeQuery(sql2);
-            int id2=0;
-            //System.out.println(id);
-            while (respuesta5.next()){
-                 id2 = respuesta5.getInt(1);
-                 //System.out.println(id); 
-                 idciclo = id2;
-             }
-            
-            System.out.println(idcat);
-            Pantalla s = new Pantalla(conexion,idcat, idcurso, idciclo, this); // Llama a la del Andrés
-            s.setVisible(true);
-            this.setEnabled(false);
+    private void ciclo_escolarItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ciclo_escolarItemStateChanged
+        // Al seleccionar un nuevo ciclo escolar se cargarán los cursos y grados asignados en el ciclo seleccionado
+        int cicloSelec = ciclo_escolar.getSelectedIndex();
+        if (ciclosCargados && cicloSelec != -1) {
+            // Obtención de los Cursos, Grado y Sección asignados al Catedrático en el Ciclo Escolar seleccionado
+            try {
+                Statement sentencia = conexion.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                ResultSet cConsulta = sentencia.executeQuery("SELECT Curso.Id idCurso, Curso.Nombre Curso, Grado.Id idGrado, Grado.Nombre Grado, Grado.Seccion FROM AsignacionCAT "
+                        + "INNER JOIN Curso ON AsignacionCAT.Curso_Id = Curso.Id "
+                        + "INNER JOIN Grado ON AsignacionCAT.Grado_Id = Grado.Id "
+                        + "WHERE AsignacionCAT.Catedratico_Id = "+idCatedratico+" AND AsignacionCAT.Cicloescolar_Id = "+listaIDCiclos.get(cicloSelec));
+                listaIDCursos.clear();
+                listaIDGrados.clear();
+                DefaultTableModel modelCursos = (DefaultTableModel)tabla_cursos_grados.getModel();
+                modelCursos.setRowCount(0); // Elimino los registros de la selección anterior
+                int contador = 0;
+                while (cConsulta.next()) {
+                    listaIDCursos.add(cConsulta.getInt("idCurso"));
+                    listaIDGrados.add(cConsulta.getInt("idGrado"));
+                    modelCursos.addRow(new String[]{
+                        ""+(++contador),
+                        cConsulta.getString("Curso"),
+                        cConsulta.getString("Grado"),
+                        cConsulta.getString("Seccion"),
+                        ciclo_escolar.getSelectedItem().toString()
+                    });
                 }
-        }catch (SQLException ex) {
-            Logger.getLogger(ModuloPrincipalCatedratico.class.getName()).log(Level.SEVERE, null, ex);
-        }   
-    }//GEN-LAST:event_TablaMousePressed
+                // Indico el estado del ciclo escolar seleccionado
+                if (!listaCicloListo.get(cicloSelec))
+                    etiqueta_aviso.setText("El Ciclo Escolar "+ciclo_escolar.getSelectedItem().toString()+" no está Listo.");
+                else if (listaCicloCerrado.get(cicloSelec))
+                    etiqueta_aviso.setText("El Ciclo Escolar "+ciclo_escolar.getSelectedItem().toString()+" ya fue Cerrado.");
+                else
+                    etiqueta_aviso.setText("");
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "No se pudo extraer los Cursos asignados.\n\nDescripción:\n"+ex.getMessage(), "Error en conexión", JOptionPane.ERROR_MESSAGE);
+                Logger.getLogger(ModuloPrincipalCatedratico.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_ciclo_escolarItemStateChanged
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
-        new CambiarContraseña(this, true, conexion, respuesta).setVisible(true);
-            
-            //this.dispose();
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    private void tabla_cursos_gradosMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabla_cursos_gradosMousePressed
+        // La tabla tiene la propiedad de que sólo se puede seleccionar una fila a la vez
+        if (evt.getClickCount() > 1) {
+            int index = tabla_cursos_grados.getSelectedRow();
+            this.setEnabled(false);
+            NotasPorGradoCurso notas = new NotasPorGradoCurso(conexion, this, listaIDCiclos.get(ciclo_escolar.getSelectedIndex()), listaIDGrados.get(index), listaIDCursos.get(index));
+            notas.setVisible(notas.getHacerVisible());
+        }
+    }//GEN-LAST:event_tabla_cursos_gradosMousePressed
+
+    private void item_cambiar_contraseniaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_item_cambiar_contraseniaActionPerformed
+        new CambiarContraseña(conexion, cCatedratico, this, ventanaPadre).setVisible(true);
+    }//GEN-LAST:event_item_cambiar_contraseniaActionPerformed
 
     private void cerrar_sesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cerrar_sesionActionPerformed
         ventanaPadre.setVisible(true);
@@ -416,8 +374,11 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
     }//GEN-LAST:event_cerrar_sesionActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        ventanaPadre.setVisible(true);
-        this.dispose();
+        int opcion = JOptionPane.showOptionDialog(this, "Está seguro que desea cerrar sesión?", "Cerrar sesión", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+        boolean cerrarSesion = (opcion == JOptionPane.YES_OPTION);
+        ventanaPadre.setVisible(cerrarSesion);
+        this.setDefaultCloseOperation(cerrarSesion ? DISPOSE_ON_CLOSE : DO_NOTHING_ON_CLOSE);
+        
     }//GEN-LAST:event_formWindowClosing
 
     /**
@@ -456,21 +417,21 @@ public class ModuloPrincipalCatedratico extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField Campo_Apellidos;
-    private javax.swing.JComboBox<String> Campo_Año;
-    private javax.swing.JTextField Campo_Nombre;
-    private javax.swing.JTextField Campo_Usuario;
-    private javax.swing.JTable Tabla;
     private javax.swing.JButton cerrar_sesion;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JComboBox<String> ciclo_escolar;
+    private javax.swing.JLabel etiqueta_apellidos;
+    private javax.swing.JLabel etiqueta_aviso;
+    private javax.swing.JLabel etiqueta_bienvenida;
+    private javax.swing.JLabel etiqueta_nombres;
+    private javax.swing.JMenuItem item_cambiar_contrasenia;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenu menu_opciones;
+    private javax.swing.JTable tabla_cursos_grados;
     // End of variables declaration//GEN-END:variables
 }

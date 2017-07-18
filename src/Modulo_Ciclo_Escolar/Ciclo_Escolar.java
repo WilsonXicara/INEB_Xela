@@ -565,7 +565,7 @@ public class Ciclo_Escolar extends javax.swing.JDialog {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         try {
-            new Crear_Ciclo_Escolar_1(new Frame(),true, base).setVisible(true);
+            new CrearCicloEscolar(new Frame(), base).setVisible(true);
             this.setVisible(true);
             Cargar_Datos();
         } catch (SQLException ex) {
